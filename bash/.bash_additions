@@ -13,15 +13,7 @@ export GOROOT=/usr/lib/go/
 export GOBIN=$GOROOT/bin/
 export PATH=$PATH:$GOBIN
 
-
-# Ruby binary locations
-export RVM_PATH=/home/mieubrisse/.rvm/bin
-export RUBY_PATH=/home/mieubrisse/.rvm/gems/ruby-1.9.3-p327/bin
-
-export PATH=$PATH:$GOBIN:$RVM_PATH:$RUBY_PATH
-
 # Rebind 'cd' to list contents after changing directory 
 function cd() { builtin cd "${@:-$HOME}" && ls; }
-
 
 # !! Might want to consider making a smarter way for adding paths; i.e. an array of string paths
