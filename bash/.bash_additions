@@ -1,0 +1,27 @@
+# Make bash and all readline programs operate in vi mode
+set -o vi
+
+# Automatically fix 'cd' spelling mistakes
+shopt -s cdspell
+
+# Make completion better
+bind "set completion-ignore-case on"
+bind "set show-all-if-ambiguous on"
+
+# Go language binary location
+export GOROOT=/usr/lib/go/
+export GOBIN=$GOROOT/bin/
+export PATH=$PATH:$GOBIN
+
+
+# Ruby binary locations
+export RVM_PATH=/home/mieubrisse/.rvm/bin
+export RUBY_PATH=/home/mieubrisse/.rvm/gems/ruby-1.9.3-p327/bin
+
+export PATH=$PATH:$GOBIN:$RVM_PATH:$RUBY_PATH
+
+# Rebind 'cd' to list contents after changing directory 
+function cd() { builtin cd "${@:-$HOME}" && ls; }
+
+
+# !! Might want to consider making a smarter way for adding paths; i.e. an array of string paths
