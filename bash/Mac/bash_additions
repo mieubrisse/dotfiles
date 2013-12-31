@@ -1,6 +1,9 @@
 # Make bash and all readline programs operate in vi mode
 set -o vi
 
+# Add bashmarks
+source ~/.local/bin/bashmarks.sh
+
 # ==== cd ===============
 shopt -s cdspell # Automatically fix 'cd' spelling mistakes
 shopt -s autocd # Using 'cd' is so passe
