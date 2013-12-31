@@ -36,9 +36,9 @@ for link, dest in symlinks.iteritems():
         # If user chose to overwrite, delete existing file or directory
         if os.path.isfile(link) or os.path.islink(link):
             os.remove(link)
-        else if os.path.isdir(link):
+        elif os.path.isdir(link):
             shutil.rmtree(link)
-        else
+        else:
             print >> sys.stderr, "Unable to delete file at %s" % (lik)
             continue
     os.symlink(dest, link)
