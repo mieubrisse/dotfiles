@@ -4,6 +4,7 @@ import os
 import sys
 import json
 import subprocess
+import shutil
 
 os.chdir(os.path.dirname(sys.argv[0]))
 subprocess.call(["git", "submodule", "update", "--init", "--recursive"])
@@ -31,7 +32,14 @@ for link, dest in symlinks.iteritems():
                 break
         if choice == "n":
             continue
-
+        
+        # If user chose to overwrite, delete existing file or directory
+        if os.path.isfile(link) or os.path.islink(link):
+            os.remove(link)
+        else if os.path.isdir(link):
+            shutil.rmtree(link)
+        else
+            print >> sys.stderr, "Unable to delete file at %s" % (lik)
+            continue
     os.symlink(dest, link)
     print "Successfully created link %s -> %s" % (link, dest)
-
