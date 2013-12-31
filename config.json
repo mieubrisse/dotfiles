@@ -2,8 +2,8 @@
     "makes" : [
     ],
     "symlinks" : {
-        "~/.bashrc" : "./bash/Mac/bashrc"
-        "~/.bash_profile" : "~/.bashrc"
+        "~/.bashrc" : "./bash/Mac/bashrc",
+        "~/.bash_profile" : "~/.bashrc",
         "~/.vim" : "./vim",
         "~/.vimrc" : "~/.vim/vimrc",
         "~/.gitignore" : "./git/gitignore"
