@@ -1,0 +1,9 @@
+{
+    "makes" : [
+    ]
+    "symlinks" : {
+        "~/.vim" : "./vim",
+        "~/.vimrc" : "~/.vim/vimrc",
+        "~/.gitignore" : "./git/gitignore"
+    }
+}
