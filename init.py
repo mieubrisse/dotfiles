@@ -32,6 +32,6 @@ for link, dest in symlinks.iteritems():
         if choice == "n":
             continue
 
-    os.symlink(expanded_dest, expanded_link)
-    print dest, " -> ", os.path.abspath(expanded_dest)
+    os.symlink(dest, link)
+    print "Successfully created link %s -> %s" % (link, dest)
 
