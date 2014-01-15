@@ -9,6 +9,9 @@ shopt -s cdspell # Automatically fix 'cd' spelling mistakes
 shopt -s autocd # Using 'cd' is so passe
 PROMPT_COMMAND='[[ ${__new_wd:=$PWD} != $PWD ]] && ls; __new_wd=$PWD' # ls whenever changing directories
 
+# Add JAVA_HOME
+export  JAVA_HOME=`/usr/libexec/java_home -v 1.7`
+
 # Combine multi-line entries into one history line
 shopt -s cmdhist
 
@@ -23,15 +26,11 @@ export PATH=$PATH:$GOBIN
 
 # !! Might want to consider making a smarter way for adding paths; i.e. an array of string paths
 
-# Add Palantir folder variable
-export  SD_LECC=/Users/ktoday/Code/SD_LECC/sd-lecc-cad/
-export  CCSO=/Users/ktoday/Code/CCSO/protocol/
-export  QS=/Users/ktoday/Palantir/CCSO/Mac_QS_3.11.1.2/
-export  CAL_DOJ=/Users/ktoday/Code/CalDoJ
-export  GATLING=/Users/ktoday/Code/CalDoJ/gatling
-export  EPRS=/Users/ktoday/Code/EPRS/
 
-# Set Groovy home
-export GROOVY_HOME=/usr/local/opt/groovy/libexec
 
+PATH=$PATH:$HOME/.rvm/bin # Add RVM to PATH for scripting
+# Source RVM scripts
+if [[ -s "$HOME/.rvm/scripts/rvm" ]] ; then
+    source ~/.rvm/scripts/rvm
+fi
 

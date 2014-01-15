@@ -13,15 +13,14 @@ alias la='ls -A'
 # Make find not suck
 alias cif="find . -iname" # Case-insensitive find
 function ff() { # Fuzzy find
-    # echo "INSIDE FUZZY FIND"
     SEARCH_STR="$1"
     shift 1
     cif "*$SEARCH_STR*" "$@"
 }
 
 # Breaks a command result by newline and lets the user manually filter the output
-# E.g. 'coolcp ls' would give the option of copying one of the ls results
-# Handles piped input, so 'ls | coolcp' accomplishes the same as the above
+# E.g. 'filter ls ' would give the option of copying one of the ls results
+# Handles piped input, so 'ls | filter' accomplishes the same as the above
 function filter {
     # If it exists, read data from stdin to handle piped input
     if [ "$(tty)" == 'not a tty' ]; then
@@ -36,23 +35,37 @@ function filter {
         ITEM_ARR=($("$COMMAND" "$@"))
     fi
 
+    # List out the results of the command and let user pick one if there are multiple
     ARR_SIZE="${#ITEM_ARR[@]}"
     if [[ "$ARR_SIZE" -gt 1 ]]; then
         for idx in "${!ITEM_ARR[@]}"; do
-            printf "%s\t%s\n" "$idx" "${ITEM_ARR[$idx]}" >/dev/tty
+            printf "%s\t%s\n" "$idx" "${ITEM_ARR[$idx]}" >/dev/tty  # Have to use /dev/tty to not interfere with user input
         done
         read -p "Use which? " TARGET_IDX </dev/tty >&2
         TARGET_ITEM="${ITEM_ARR[$TARGET_IDX]}"
     elif [[ "$ARR_SIZE" -eq 1 ]]; then
+        printf "One result: \t${ITEM_ARR[0]}\n" >/dev/tty
         TARGET_ITEM="${ITEM_ARR[0]}"
     else
-        echo "No results to copy" >/dev/tty
+        echo "No results to filter" >/dev/tty
         return
     fi
     # echo "Copied $TARGET_ITEM to clipboard" >&2
     printf "$TARGET_ITEM"
 }
-function coolcp() { cat | lazregx "$@" | pbcopy; }
+
+# Use fuzzy find and filter to open a file in Vim
+function vff() {
+    vim `ff "$@" | filter`
+}
+
+# Easily copy the contents of a file
+function clip() {
+    cat "$@" | pbcopy
+}
+
+# I don't remember what this is supposed to do
+# function coolcp() { cat | lazregx "$@" | pbcopy; }
 
 # Source .bashrc for convenience
 alias srcbash=". ~/.bashrc"
@@ -60,15 +73,17 @@ alias srcbash=". ~/.bashrc"
 # Make directory and cd into it
 function mkdircd() { mkdir "$@"; cd "$1"; }
 
-# Color grep
-alias grep='grep -i --color=auto'
+# === grep ===========
+alias csgr='grep -I --color=auto'    # Case-sensitive grep
+alias gr='csgr -i'
 alias fgrep='fgrep --color=auto'
 alias egrep='egrep --color=auto'
-alias gr='grep'
-alias grr='grep -r'
+function rgr() { gr -r "$@" *; }
+function csrgr() { csgr -r "$@" *; }  # Case-sensitive recursive grep
 
-# History grep
-alias hgr='history | grep'
+# Grep chain commands
+alias hgr='history | gr'
+alias pgr='ps aux | gr'
 
 # Add an "alert" alias for long running commands.  Use like so:
 #   sleep 10; alert
@@ -95,11 +110,18 @@ alias   quickchange="/Users/ktoday/scripts/quickchange/quickchange"
 alias ga="git add"
 alias gs="git status"
 alias gl="git log"
+alias gb="git branch"
 alias gl1="git log --graph --abbrev-commit --decorate --date=relative --format=format:'%C(bold blue)%h%C(reset) - %C(bold green)(%ar)%C(reset) %C(white)%s%C(reset) %C(dim white)- %an%C(reset)%C(bold yellow)%d%C(reset)' --all"
-alias gl2="log --graph --abbrev-commit --decorate --format=format:'%C(bold blue)%h%C(reset) - %C(bold cyan)%aD%C(reset) %C(bold green)(%ar)%C(reset)%C(bold yellow)%d%C(reset)%n''          %C(white)%s%C(reset) %C(dim white)- %an%C(reset)' --all"
+alias gl2="git log --graph --abbrev-commit --decorate --format=format:'%C(bold blue)%h%C(reset) - %C(bold cyan)%aD%C(reset) %C(bold green)(%ar)%C(reset)%C(bold yellow)%d%C(reset)%n'' %C(white)%s%C(reset) %C(dim white)- %an%C(reset)' --all"
 alias gcm="git commit"
 alias gcl="git clone"
 alias gco="git checkout"
+alias gf="git fetch"
+alias gpl="git pull"
+function gpsh() {	# Push the branch upstream if it doesn't exist; otherwise just git push
+	BRANCH_NAME="$(git rev-parse --abbrev-ref HEAD)"
+	[[ $(git config "branch.$BRANCH_NAME.merge") == '' ]] && git push -u origin "$BRANCH_NAME" "$@" || git push "$@"; 
+}
 
 # Output redirection functions
 function    unify_output() { 2>&1 "${@}"; }
@@ -109,3 +131,11 @@ function    silent() { "${@}" > /dev/null 2>&1; }
 # Better diff
 alias   diff="colordiff -u"
 
+# Announces a completed task
+function announce() {
+	COMMAND="$@"
+	$COMMAND
+	[[ $? == 127 ]] && return 1	# Don't speak for command not found
+	VOICE_TXT=`printf "$COMMAND" | sed "s/[^A-z ]//g"`" is done"
+	say -v "Vicki" "$VOICE_TXT"
+}
