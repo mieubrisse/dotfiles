@@ -1,11 +1,18 @@
 {
-    "makes" : [
-    ],
     "symlinks" : {
         "~/.bashrc" : "./bash/Mac/bashrc",
+        "~/.bash_logout" : "./bash/Mac/bash_logout",
+        "~/.bash_additions" : "./bash/Mac/bash_additions",
+        "~/.bash_aliases" : "./bash/Mac/bash_aliases",
         "~/.bash_profile" : "~/.bashrc",
+        "~/.vrapperrc" : "~/.vimrc",
         "~/.vim" : "./vim",
         "~/.vimrc" : "~/.vim/vimrc",
         "~/.gitignore" : "./git/gitignore"
-    }
+    },
+    "brews" : [
+        "vim",
+        "git",
+        "jq"
+    ]
 }
