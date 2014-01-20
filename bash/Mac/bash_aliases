@@ -6,8 +6,8 @@ function ls() { # Display an empty line for empty directories
         /bin/ls -G "$@"
     fi
 }
-alias ll='ls -AlhF'
-alias lld='ll -c' # Sort by date last modified
+alias ll='ls -Alhtr'
+alias lld='ll -t' # Sort by date last modified
 alias la='ls -A'
 
 # Make find not suck
@@ -70,6 +70,9 @@ function clip() {
 # Source .bashrc for convenience
 alias srcbash=". ~/.bashrc"
 
+# Have mkdir create parent directories if they don't already exist
+alias mkdir="mkdir -p"
+
 # Make directory and cd into it
 function mkdircd() { mkdir "$@"; cd "$1"; }
 
@@ -116,8 +119,8 @@ alias gl2="git log --graph --abbrev-commit --decorate --format=format:'%C(bold b
 alias gcm="git commit"
 alias gcl="git clone"
 alias gco="git checkout"
-alias gf="git fetch"
-alias gpl="git pull"
+alias gf="git fetch --prune"
+alias gpll="git pull"
 function gpsh() {	# Push the branch upstream if it doesn't exist; otherwise just git push
 	BRANCH_NAME="$(git rev-parse --abbrev-ref HEAD)"
 	[[ $(git config "branch.$BRANCH_NAME.merge") == '' ]] && git push -u origin "$BRANCH_NAME" "$@" || git push "$@"; 
@@ -133,9 +136,8 @@ alias   diff="colordiff -u"
 
 # Announces a completed task
 function announce() {
-	COMMAND="$@"
-	$COMMAND
+	"$@"
 	[[ $? == 127 ]] && return 1	# Don't speak for command not found
-	VOICE_TXT=`printf "$COMMAND" | sed "s/[^A-z ]//g"`" is done"
+	VOICE_TXT=`printf "$1" | sed "s:.*/\(\.*\)::g"`" command is done"	# Speak only command name
 	say -v "Vicki" "$VOICE_TXT"
 }

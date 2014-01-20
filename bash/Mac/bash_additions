@@ -19,16 +19,12 @@ shopt -s cmdhist
 bind "set completion-ignore-case on"
 bind "set show-all-if-ambiguous on"
 
-# Go language binary location
-export GOROOT=/usr/lib/go/
-export GOBIN=$GOROOT/bin/
-export PATH=$PATH:$GOBIN
+# Set all additions to PATH
+PATH_ADDITIONS[0]=$HOME/.rvm/bin	# RVM to PATH for scripting
+for PATH_TO_ADD in "${PATH_ADDITIONS[@]}"; do
+	PATH="$PATH:$PATH_TO_ADD"
+done
 
-# !! Might want to consider making a smarter way for adding paths; i.e. an array of string paths
-
-
-
-PATH=$PATH:$HOME/.rvm/bin # Add RVM to PATH for scripting
 # Source RVM scripts
 if [[ -s "$HOME/.rvm/scripts/rvm" ]] ; then
     source ~/.rvm/scripts/rvm
