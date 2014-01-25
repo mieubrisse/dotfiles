@@ -15,7 +15,7 @@ def process_brews(brews_obj):
 
 
 def process_symlinks(symlink_obj):
-    for link, dest in symlinks.iteritems():
+    for link, dest in symlink_obj.iteritems():
         link = os.path.abspath(os.path.expanduser(link))
         dest = os.path.abspath(os.path.expanduser(dest))
         
@@ -48,5 +48,6 @@ def process_symlinks(symlink_obj):
 os.chdir(os.path.dirname(sys.argv[0]))
 subprocess.call(["git", "submodule", "update", "--init", "--recursive"])
 
-config_file = open("config.json")
+config_file = open("config.json", "r")
 config = json.load(config_file)
+process_symlinks(config["symlinks"])
