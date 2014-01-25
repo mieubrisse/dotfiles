@@ -46,7 +46,7 @@ def process_symlinks(symlink_obj):
 
 def process_block(config_obj):
     """Processes the config array to ensure a setup ordering"""
-    for block in config:
+    for block in config_obj:
         process_symlinks(block["symlinks"])
 
 os.chdir(os.path.dirname(sys.argv[0]))

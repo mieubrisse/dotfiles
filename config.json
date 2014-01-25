@@ -9,11 +9,19 @@
             "~/.bash_additions": "./bash/Mac/bash_additions", 
             "~/.bash_aliases": "./bash/Mac/bash_aliases", 
             "~/.bash_logout": "./bash/Mac/bash_logout", 
-            "~/.bash_profile": "~/.bashrc", 
             "~/.bashrc": "./bash/Mac/bashrc", 
             "~/.gitignore": "./git/gitignore", 
-            "~/.vim": "./vim", 
-            "~/.vimrc": "~/.vim/vimrc", 
+            "~/.vim": "./vim"
+        }
+    }, 
+    {
+        "symlinks": {
+            "~/.bash_profile": "~/.bashrc", 
+            "~/.vimrc": "~/.vim/vimrc"
+        }
+    }, 
+    {
+        "symlinks": {
             "~/.vrapperrc": "~/.vimrc"
         }
     }
