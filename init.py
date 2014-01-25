@@ -45,9 +45,15 @@ def process_symlinks(symlink_obj):
         os.symlink(dest, link)
         print "Successfully created link %s -> %s" % (link, dest)
 
+def process_block(config_obj):
+    """Processes the config array to ensure a setup ordering"""
+    for block in config:
+        process_symlinks(block["symlinks"])
+
 os.chdir(os.path.dirname(sys.argv[0]))
 subprocess.call(["git", "submodule", "update", "--init", "--recursive"])
 
 config_file = open("config.json", "r")
-config = json.load(config_file)
-process_symlinks(config["symlinks"])
+config_obj = json.load(config_file)
+process_block(config_obj)
+
