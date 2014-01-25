@@ -9,9 +9,6 @@ shopt -s cdspell # Automatically fix 'cd' spelling mistakes
 shopt -s autocd # Using 'cd' is so passe
 PROMPT_COMMAND='[[ ${__new_wd:=$PWD} != $PWD ]] && ls; __new_wd=$PWD' # ls whenever changing directories
 
-# Add JAVA_HOME
-export  JAVA_HOME=`/usr/libexec/java_home -v 1.7`
-
 # Combine multi-line entries into one history line
 shopt -s cmdhist
 
