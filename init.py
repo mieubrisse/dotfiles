@@ -8,7 +8,6 @@ import shutil
 
 
 # Add symlinks
-symlinks = config['symlinks']
 def process_brews(brews_obj):
     # Stubbed out for now
     print "Nothing here!"
