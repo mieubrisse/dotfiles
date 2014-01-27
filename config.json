@@ -19,10 +19,5 @@
             "~/.bash_profile": "~/.bashrc", 
             "~/.vimrc": "~/.vim/vimrc"
         }
-    }, 
-    {
-        "symlinks": {
-            "~/.vrapperrc": "~/.vimrc"
-        }
     }
 ]
