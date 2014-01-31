@@ -184,6 +184,14 @@ nnoremap <C-Right> <C-W>>
 " Switch Jedi-Vim Pydoc lookup to Ctrl+K
 let g:jedi#pydoc = "<C-K>"
 
+" SYSTEM CLIPBOARD BINDINGS
+" Copy current selection to system clipboard
+vnoremap + "+y
+" Yank the current line
+nnoremap ++ "+yy
+" Yank the file's contents
+nnoremap +% ggvG"+y''
+
 " Change highlight color on folds to a darker hue
 highlight Folded ctermfg=DarkGrey ctermbg=None
 
