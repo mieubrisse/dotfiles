@@ -25,19 +25,25 @@ def yes_no_prompt(prompt):
         print "Invalid input"
 
 def process_symlinks(symlink_obj):
+    """Processes a 'symlink' block of the config file"""
     for link, dest in symlink_obj.iteritems():
         link = os.path.abspath(os.path.expanduser(link))
         dest = os.path.abspath(os.path.expanduser(dest))
         
         # Make sure destination exists
         if not os.path.exists(dest):
-            print >> sys.stderr, "Error in linking %s -> %s: No file found at %s; skipping link" % (link, dest, dest)
+            print >> sys.stderr, "Error linking %s -> %s: No file found at %s; skipping link" % (link, dest, dest)
             continue
 
         # Give user option to overwrite existing file if link path already exists
-        # Compare with islink first so Python will test if the link itself exists
+        # Compare with islink() first so Python will test if the link itself exists
         if os.path.islink(link) or os.path.exists(link):
-	    if not yes_no_prompt("Error in linking %s -> %s: File already exists at %s; overwrite?"  % (link, dest, link)):
+            # Don't bother user with prompt if link already exists and points to right spot!
+            if os.path.samefile(link, dest):
+                print "Skipping link %s -> %s: link already exists" % (link, dest)
+                continue
+
+	    if not yes_no_prompt("Error linking %s -> %s: File already exists at %s; overwrite?"  % (link, dest, link)):
 	        continue
             
             # If user chose to overwrite, delete existing file or directory
@@ -51,7 +57,7 @@ def process_symlinks(symlink_obj):
                 print >> sys.stderr, "Unable to delete file at %s" % (lik)
                 continue
         os.symlink(dest, link)
-        print "Successfully created link %s -> %s" % (link, dest)
+        print "Successfully linked %s -> %s" % (link, dest)
 
 def process_block(config_obj):
     """Processes the config array to ensure a setup ordering"""
