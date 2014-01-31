@@ -6,10 +6,10 @@
             "jq"
         ], 
         "symlinks": {
-            "~/.bash_additions": "./bash/Mac/bash_additions", 
-            "~/.bash_aliases": "./bash/Mac/bash_aliases", 
-            "~/.bash_logout": "./bash/Mac/bash_logout", 
-            "~/.bashrc": "./bash/Mac/bashrc", 
+            "~/.bash_additions": "./bash/bash_additions", 
+            "~/.bash_aliases": "./bash/bash_aliases", 
+            "~/.bash_logout": "./bash/bash_logout", 
+            "~/.bashrc": "./bash/bashrc", 
             "~/.gitignore": "./git/gitignore", 
             "~/.vim": "./vim"
         }

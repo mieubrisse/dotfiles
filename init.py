@@ -24,6 +24,12 @@ def yes_no_prompt(prompt):
             return False
         print "Invalid input"
 
+def link_exists(link, dest):
+    """Test if a link at 'link' already exists pointing to 'dest'"""
+    if not os.path.exists(link) or not os.path.exists(dest):
+        return False
+    return os.path.islink(link) and os.path.samefile(os.path.relpath(link), os.path.relpath(dest))
+
 def process_symlinks(symlink_obj):
     """Processes a 'symlink' block of the config file"""
     for link, dest in symlink_obj.iteritems():
@@ -39,7 +45,7 @@ def process_symlinks(symlink_obj):
         # Compare with islink() first so Python will test if the link itself exists
         if os.path.islink(link) or os.path.exists(link):
             # Don't bother user with prompt if link already exists and points to right spot!
-            if os.path.samefile(link, dest):
+            if link_exists(link, dest):
                 print "Skipping link %s -> %s: link already exists" % (link, dest)
                 continue
 
