@@ -12,6 +12,17 @@ def process_brews(brews_obj):
     # Stubbed out for now
     print "Nothing here!"
 
+def yes_no_prompt(prompt):
+    """Give user prompt and wait for a 'y' or 'n' input"""
+    print prompt
+    while True:
+	choice = raw_input("[Yn]: ")
+	choice = choice.strip().lower()
+	if choice == "y": 
+	    return True
+        elif choice == "n":
+            return False
+        print "Invalid input"
 
 def process_symlinks(symlink_obj):
     for link, dest in symlink_obj.iteritems():
@@ -22,19 +33,17 @@ def process_symlinks(symlink_obj):
         if not os.path.exists(dest):
             print >> sys.stderr, "Error in linking %s -> %s: No file found at %s; skipping link" % (link, dest, dest)
             continue
+
         # Give user option to overwrite existing file if link path already exists
-        if os.path.exists(link):
-            while True:
-                choice = raw_input("Error in linking %s -> %s: File already exists at %s; overwrite? (y/n): " % (link, dest, link))
-                # choice = raw_input("File already exists at " + str(link) + "; overwrite? (y/n): ")
-                choice = choice.strip().lower()
-                if choice == "y" or choice == "n":
-                    break
-            if choice == "n":
-                continue
+        # Compare with islink first so Python will test if the link itself exists
+        if os.path.islink(link) or os.path.exists(link):
+	    if not yes_no_prompt("Error in linking %s -> %s: File already exists at %s; overwrite?"  % (link, dest, link)):
+	        continue
             
             # If user chose to overwrite, delete existing file or directory
-            if os.path.isfile(link) or os.path.islink(link):
+	    if os.path.islink(link):
+		os.unlink(link)
+            elif os.path.isfile(link):
                 os.remove(link)
             elif os.path.isdir(link):
                 shutil.rmtree(link)
