@@ -109,23 +109,6 @@ alias   quickchange="/Users/ktoday/scripts/quickchange/quickchange"
 # Rebind 'cd' to list contents after changing directory 
 # function cd() { builtin cd "${@:-$HOME}" && ls; }
 
-# Shorter Git commands
-alias ga="git add"
-alias gs="git status -sb"
-alias gb="git branch"
-alias gd="git diff"
-alias gl="git log --graph --abbrev-commit --decorate --date=relative --format=format:'%C(bold blue)%h%C(reset) - %C(bold green)(%ar)%C(reset) %C(white)%s%C(reset) %C(dim white)- %an%C(reset)%C(bold yellow)%d%C(reset)' --all"
-alias gll="git log --graph --abbrev-commit --decorate --format=format:'%C(bold blue)%h%C(reset) - %C(bold cyan)%aD%C(reset) %C(bold green)(%ar)%C(reset)%C(bold yellow)%d%C(reset)%n'' %C(white)%s%C(reset) %C(dim white)- %an%C(reset)' --all"
-alias gcm="git commit"
-alias gcl="git clone"
-alias gco="git checkout"
-alias gf="git fetch --prune"
-alias gpll="git pull"
-function gpsh() {	# Push the branch upstream if it doesn't exist; otherwise just git push
-	BRANCH_NAME="$(git rev-parse --abbrev-ref HEAD)"
-	[[ $(git config "branch.$BRANCH_NAME.merge") == '' ]] && git push -u origin "$BRANCH_NAME" "$@" || git push "$@"; 
-}
-
 # Output redirection functions
 function    unify_output() { 2>&1 "${@}"; }
 function    quiet() { "${@}" 2> /dev/null; }
@@ -137,4 +120,29 @@ function announce() {
 	[[ $? == 127 ]] && return 1	# Don't speak for command not found
 	VOICE_TXT=`printf "$1" | sed "s:.*/\(\.*\)::g"`" command is done"	# Speak only command name
 	say -v "Vicki" "$VOICE_TXT"
+}
+
+# --- Git Commands ------------------------
+# Viewing changes
+alias gs="git status -sb"
+alias gd="git diff --word-diff=color"
+alias gdc="gd --cached"
+alias gl="git log --graph --abbrev-commit --decorate --date=relative --format=format:'%C(bold blue)%h%C(reset) - %C(bold green)(%ar)%C(reset) %C(white)%s%C(reset) %C(dim white)- %an%C(reset)%C(bold yellow)%d%C(reset)' --all"
+alias gll="git log --graph --abbrev-commit --decorate --format=format:'%C(bold blue)%h%C(reset) - %C(bold cyan)%aD%C(reset) %C(bold green)(%ar)%C(reset)%C(bold yellow)%d%C(reset)%n'' %C(white)%s%C(reset) %C(dim white)- %an%C(reset)' --all"
+
+# Making changes
+alias gb="git branch"
+alias gco="git checkout"
+alias ga="git add"
+alias gcm="git commit"
+alias grs="git reset"
+alias grs1="git reset --soft HEAD^"
+
+# Dealing with remotes
+alias gcl="git clone"
+alias gf="git fetch --prune"
+alias gpll="git pull"
+function gpsh() {	# Push the branch upstream if it doesn't exist; otherwise just git push
+	BRANCH_NAME="$(git rev-parse --abbrev-ref HEAD)"
+	[[ $(git config "branch.$BRANCH_NAME.merge") == '' ]] && git push -u origin "$BRANCH_NAME" "$@" || git push "$@"; 
 }
