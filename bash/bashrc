@@ -79,6 +79,11 @@ if [ -f ~/.bash_aliases ]; then
     source ~/.bash_aliases
 fi
 
+# Mac-specific additions
+if [ -f ~/.mac_additions ]; then
+    source ~/.mac_additions
+fi
+
 # Machine-specific additions
 if [ -f ~/.local_additions ]; then
     source ~/.local_additions

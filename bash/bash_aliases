@@ -131,9 +131,6 @@ function    unify_output() { 2>&1 "${@}"; }
 function    quiet() { "${@}" 2> /dev/null; }
 function    silent() { "${@}" > /dev/null 2>&1; }
 
-# Better diff
-alias   diff="colordiff -u"
-
 # Announces a completed task
 function announce() {
 	"$@"

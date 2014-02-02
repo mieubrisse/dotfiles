@@ -1,12 +1,14 @@
 [
     {
         "brews": [
+            "bash-completion",
             "vim", 
             "git", 
             "jq"
         ], 
         "symlinks": {
             "~/.bash_additions": "./bash/bash_additions", 
+            "~/.mac_additions": "./bash/mac_additions", 
             "~/.bash_aliases": "./bash/bash_aliases", 
             "~/.bash_logout": "./bash/bash_logout", 
             "~/.bashrc": "./bash/bashrc", 
