@@ -69,7 +69,7 @@ xterm*|rxvt*)
     ;;
 esac
 
-# Custom user stuff
+# Custom bash additions
 if [ -f ~/.bash_additions ]; then
   source ~/.bash_additions
 fi
@@ -79,12 +79,14 @@ if [ -f ~/.bash_aliases ]; then
     source ~/.bash_aliases
 fi
 
+# Machine-specific additions
+if [ -f ~/.local_additions ]; then
+    source ~/.local_additions
+fi
+
 # enable programmable completion features (you don't need to enable
 # this, if it's already enabled in /etc/bash.bashrc and /etc/profile
 # sources /etc/bash.bashrc).
 if [ -f /etc/bash_completion ] && ! shopt -oq posix; then
     source /etc/bash_completion
 fi
-
-
-PATH=$PATH:$HOME/.rvm/bin # Add RVM to PATH for scripting
