@@ -219,6 +219,11 @@ nnoremap k gk
 " Easily flip paste mode toggle
 nnoremap <Leader>p :set invpaste paste?<CR>
 
+" Screen-centering mappings
+nnoremap <Space> zz
+nnoremap n nzz
+nnoremap N Nzz
+
 "------------------------------------------------------------
 " Commands
 
