@@ -4,13 +4,18 @@ set -o vi
 # Add bashmarks
 source ~/.local/bin/bashmarks.sh
 
-# ==== cd ===============
+# Shell Options
 shopt -s cdspell # Automatically fix 'cd' spelling mistakes
 shopt -s autocd # Using 'cd' is so passe
-PROMPT_COMMAND='[[ ${__new_wd:=$PWD} != $PWD ]] && ls; __new_wd=$PWD' # ls whenever changing directories
+shopt -s cmdhist # Combine multi-line entries into one history line
 
-# Combine multi-line entries into one history line
-shopt -s cmdhist
+# On changing directory, ls and git fetch in background if git directory
+PROMPT_COMMAND='if [[ ${__new_wd:=$PWD} != $PWD ]]; then \
+    ls; \
+    [[ -d ".git" ]] && (git fetch --prune &); \
+fi; \
+__new_wd=$PWD' # ls whenever changing directories
+
 
 # Make completion better
 bind "set completion-ignore-case on"
