@@ -9,6 +9,7 @@ function ls() { # Display an empty line for empty directories
 alias ll='ls -Alhtr'
 alias lld='ll -t' # Sort by date last modified
 alias la='ls -A'
+alias l='ls'
 
 # Make find not suck
 alias cif="find . -iname" # Case-insensitive find
@@ -135,6 +136,8 @@ alias gb="git branch"
 alias gco="git checkout"
 alias ga="git add"
 alias gcm="git commit"
+alias gcmm="git commit -m $1"
+alias gg="git commit -am $1"
 alias grs="git reset"
 alias grs1="git reset --soft HEAD^"
 
