@@ -13,6 +13,7 @@
             "~/.bash_logout": "./bash/bash_logout", 
             "~/.bashrc": "./bash/bashrc", 
             "~/.gitignore": "./git/gitignore", 
+            "~/.gitconfig": "./git/gitconfig", 
             "~/.vim": "./vim"
         }
     }, 
