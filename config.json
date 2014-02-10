@@ -8,7 +8,7 @@
         ], 
         "symlinks": {
             "~/.bash_additions": "./bash/bash_additions", 
-            "~/.mac_additions": "./bash/mac_additions", 
+            "~/.bash_mac": "./bash/bash_mac", 
             "~/.bash_aliases": "./bash/bash_aliases", 
             "~/.bash_logout": "./bash/bash_logout", 
             "~/.bashrc": "./bash/bashrc", 

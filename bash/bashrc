@@ -80,13 +80,13 @@ if [ -f ~/.bash_aliases ]; then
 fi
 
 # Mac-specific additions
-if [ -f ~/.mac_additions ]; then
-    source ~/.mac_additions
+if [ -f ~/.bash_mac ]; then
+    source ~/.bash_mac
 fi
 
 # Machine-specific additions
-if [ -f ~/.local_additions ]; then
-    source ~/.local_additions
+if [ -f ~/.bash_local ]; then
+    source ~/.bash_local
 fi
 
 # enable programmable completion features (you don't need to enable
