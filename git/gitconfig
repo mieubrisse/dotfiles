@@ -5,13 +5,10 @@
 	lg = !"git lg1"
 	assume-unchanged = update-index --assume-unchanged
 	no-assume-unchanged = update-index --no-assume-unchanged
-[user]
-	email = ktoday@palantir.com
-	name = Kevin Today
 [color]
 	ui = auto
 [core]
-	excludesfile = /Users/ktoday/.gitignore
+	excludesfile = ~/.gitignore
 [push]
 	default = simple
 [credential]
@@ -22,3 +19,6 @@
 [mergetool "sourcetree"]
 	cmd = /Applications/SourceTree.app/Contents/Resources/opendiff-w.sh \"$LOCAL\" \"$REMOTE\" -ancestor \"$BASE\" -merge \"$MERGED\"
 	trustExitCode = true
+[include]
+        # Include any local additions to the file
+        path = ~/.gitconfig_local
