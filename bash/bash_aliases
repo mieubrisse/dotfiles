@@ -13,11 +13,12 @@ alias l='ls'
 
 # Make find not suck
 alias cif="find . -iname" # Case-insensitive find
-function ff() { # Fuzzy find
+function fuzzy_find() { 
     SEARCH_STR="$1"
     shift 1
     cif "*$SEARCH_STR*" "$@"
 }
+alias ff="fuzzy_find"
 
 # Breaks a command result by newline and lets the user manually filter the output
 # E.g. 'filter ls ' would give the option of copying one of the ls results
@@ -40,7 +41,14 @@ function filter {
     ARR_SIZE="${#ITEM_ARR[@]}"
     if [[ "$ARR_SIZE" -gt 1 ]]; then
         for idx in "${!ITEM_ARR[@]}"; do
-            printf "%s\t%s\n" "$idx" "${ITEM_ARR[$idx]}" >/dev/tty  # Have to use /dev/tty to not interfere with user input
+            ITEM="${ITEM_ARR[$idx]}"
+            # Add slash at end to denote directory
+            if [[ -d "$ITEM" ]]; then
+                DISPLAY_NAME="$ITEM/"
+            else
+                DISPLAY_NAME="$ITEM"
+            fi
+            printf "%s\t%s\n" "$idx" "$DISPLAY_NAME" >/dev/tty  # Have to use /dev/tty to not interfere with user input
         done
         read -p "Use which? " TARGET_IDX </dev/tty >&2
         TARGET_ITEM="${ITEM_ARR[$TARGET_IDX]}"
@@ -55,10 +63,13 @@ function filter {
     printf "$TARGET_ITEM"
 }
 
-# Use fuzzy find and filter to open a file in Vim
-function vff() {
-    vim `ff "$@" | filter`
+# Fuzzy searches for the given file, then filters output and feeds it into the given command
+# $1 - Command to feed chosen file to
+# $2+ - Arguments passed to fuzzy find
+function use_fuzzy_filter_results() {
+    "$1" `fuzzy_find "${@:2}" | filter`
 }
+alias uff="use_fuzzy_filter_results"
 
 # Easily copy the contents of a file
 function clip() {
