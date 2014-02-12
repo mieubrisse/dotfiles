@@ -132,6 +132,9 @@ function sshl {
     ssh -L "$1":localhost:$1 "${@:2}"
 }
 
+# Command line JSON prettifier
+alias prettify-json="python -mjson.tool"
+
 # Announces a completed task
 function announce() {
 	"$@"
