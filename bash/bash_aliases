@@ -115,6 +115,12 @@ function    unify_output() { 2>&1 "${@}"; }
 function    quiet() { "${@}" 2> /dev/null; }
 function    silent() { "${@}" > /dev/null 2>&1; }
 
+# Easy SSH port forwarding
+function sshl { 
+    echo "ssh -L $1:localhost:$1 ${@:2}" 
+    ssh -L "$1":localhost:$1 "${@:2}"
+}
+
 # Announces a completed task
 function announce() {
 	"$@"
