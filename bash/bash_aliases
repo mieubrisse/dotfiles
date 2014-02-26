@@ -7,7 +7,7 @@ function ls() { # Display an empty line for empty directories
     fi
 }
 alias ll='ls -Alhtr'
-alias lld='ll -t' # Sort by date last modified
+alias llt='ll -t' # Sort by date last modified
 alias la='ls -A'
 alias l='ls'
 
@@ -70,6 +70,7 @@ function use_fuzzy_filter_results() {
     "$1" `fuzzy_find "${@:2}" | filter`
 }
 alias uff="use_fuzzy_filter_results"
+alias vff="uff vim"
 
 # Easily copy the contents of a file
 function clip() {
