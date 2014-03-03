@@ -30,8 +30,12 @@ def link_exists(link, dest):
         return False
     return os.path.islink(link) and os.path.samefile(os.path.relpath(link), os.path.relpath(dest))
 
-def process_symlinks(symlink_obj):
+def process_symlinks(block):
     """Processes a 'symlink' block of the config file"""
+    if "symlinks" not in block:
+        return
+
+    symlink_obj = block["symlinks"]
     for link, dest in symlink_obj.iteritems():
         link = os.path.abspath(os.path.expanduser(link))
         dest = os.path.abspath(os.path.expanduser(dest))
@@ -65,10 +69,30 @@ def process_symlinks(symlink_obj):
         os.symlink(dest, link)
         print "Successfully linked %s -> %s" % (link, dest)
 
+def process_copy(block):
+    """Process a 'copy' block in the config file"""
+    if "copy" not in block:
+        return
+
+    copy_obj = block["copy"]
+    for dest, source in copy_obj.iteritems():
+        dest = os.path.abspath(os.path.expanduser(dest))
+        source = os.path.abspath(os.path.expanduser(source))
+        if not os.path.exists(source):
+            print "No copy source found at %s; skipping" % (source)
+        if os.path.exists(dest): 
+            if yes_no_prompt("Copy error: file already exists at %s; overwrite?" % (dest)):
+                shutil.rmtree(dest)
+            else:
+                continue
+        print "Copied %s to %s" % (source, dest)
+        shutil.copytree(source, dest)
+
 def process_block(config_obj):
     """Processes the config array to ensure a setup ordering"""
     for block in config_obj:
-        process_symlinks(block["symlinks"])
+        process_symlinks(block)
+        process_copy(block)
 
 os.chdir(os.path.dirname(sys.argv[0]))
 subprocess.call(["git", "submodule", "update", "--init", "--recursive"])

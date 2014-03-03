@@ -9,7 +9,11 @@ colorscheme jellybeans
 set splitright
 set splitbelow
 
-
+" Persistent undo history
+set undofile
+set undodir=$HOME/.vim_undo
+set undolevels=1000
+set undoreload=10000
 
 " URL: http://vim.wikia.com/wiki/Example_vimrc
 " Authors: http://vim.wikia.com/wiki/Vim_on_Freenode
