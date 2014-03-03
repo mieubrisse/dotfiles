@@ -20,6 +20,21 @@ function fuzzy_find() {
 }
 alias ff="fuzzy_find"
 
+# Overwrite cd to jump up multiple levels with 'cd <# dir>..' syntax
+cd() {
+    # Check if string is in '<number>..' form
+    REPEAT_TIMES="${1:0:(${#1} - 2)}"
+    if [[ "${1:(-2)}" == ".." ]] && [[ "${#1}" > 2 ]] && [[ $REPEAT_TIMES =~ ^-?[0-9]+$ ]] && [[ $REPEAT_TIMES -ne 0 ]]; then
+        CD_STR=""
+        for i in $(seq 1 $REPEAT_TIMES); do
+            CD_STR="../$CD_STR"
+        done
+        cd "$CD_STR"
+    else
+        builtin cd "$@"
+    fi
+}
+
 # Breaks a command result by newline and lets the user manually filter the output
 # E.g. 'filter ls ' would give the option of copying one of the ls results
 # Handles piped input, so 'ls | filter' accomplishes the same as the above
@@ -118,9 +133,6 @@ alias   quickchange="/Users/ktoday/scripts/quickchange/quickchange"
 
 # Don't want to make srm too easy to use!
 # alias srm="srm -i"
-
-# Rebind 'cd' to list contents after changing directory 
-# function cd() { builtin cd "${@:-$HOME}" && ls; }
 
 # Output redirection functions
 function    unify_output() { 2>&1 "${@}"; }
