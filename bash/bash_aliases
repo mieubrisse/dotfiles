@@ -183,3 +183,5 @@ function gpsh() {	# Push the branch upstream if it doesn't exist; otherwise just
 	BRANCH_NAME="$(git rev-parse --abbrev-ref HEAD)"
 	[[ $(git config "branch.$BRANCH_NAME.merge") == '' ]] && git push -u origin "$BRANCH_NAME" "$@" || git push "$@"; 
 }
+alias gprune-local-dry-run="git branch --merged | grep -v '\*' | grep -v 'master' | grep -v 'develop'"
+alias gprune-local="git branch --merged | grep -v '\*' | grep -v 'master' | grep -v 'develop' | xargs -n 1 git branch -d"
