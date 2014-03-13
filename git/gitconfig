@@ -9,6 +9,7 @@
 	ui = auto
 [core]
 	excludesfile = ~/.gitignore
+        pager = less -S
 [push]
 	default = simple
 [credential]
