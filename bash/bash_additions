@@ -1,6 +1,9 @@
 # Make bash and all readline programs operate in vi mode
 set -o vi
 
+# Shut down Arjun's silly little trick
+mesg no
+
 # Add bashmarks
 source ~/.local/bin/bashmarks.sh
 
