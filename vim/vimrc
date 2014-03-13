@@ -167,8 +167,8 @@ map Y y$
 nnoremap <C-L> :nohl<CR><C-L>
 
 " Map <S-j> and <S-k> to PageDown and PageUp respectively
-noremap <S-J> <C-F>
-noremap <S-K> <C-B>
+noremap <S-J> <C-F>zz
+noremap <S-K> <C-B>zz
 
 " Map backtick to switch buffers quickly = MAY NOT NEED THIS
 " nnoremap ` <C-^>
@@ -194,7 +194,7 @@ vnoremap + "+y
 " Yank the current line
 nnoremap ++ "+yy
 " Yank the file's contents
-nnoremap +% ggvG"+y''
+nnoremap +% gg0VG"+y''
 
 " Change highlight color on folds to a darker hue
 highlight Folded ctermfg=DarkGrey ctermbg=None
@@ -223,7 +223,7 @@ nnoremap k gk
 " Easily flip paste mode toggle
 nnoremap <Leader>p :set invpaste paste?<CR>
 
-" Screen-centering mappings
+" Screen-centering mappings for search
 nnoremap <Space> zz
 nnoremap n nzz
 nnoremap N Nzz
