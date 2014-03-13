@@ -90,9 +90,11 @@ def process_copy(block):
 
 def process_block(config_obj):
     """Processes the config array to ensure a setup ordering"""
-    for block in config_obj:
+    for idx, block in enumerate(config_obj):
+        print("----- Processing Block " + str(idx + 1) + " --------")
         process_symlinks(block)
         process_copy(block)
+        print ""
 
 os.chdir(os.path.dirname(sys.argv[0]))
 subprocess.call(["git", "submodule", "update", "--init", "--recursive"])
