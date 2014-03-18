@@ -82,6 +82,9 @@ set hlsearch
 " which are considered to add usability. Which, if any, of these options to
 " use is very much a personal preference, but they are harmless.
 
+" Highlight current line
+set cursorline
+
 " Use case sensitive search, except when searching
 set noignorecase
 set incsearch
@@ -219,18 +222,19 @@ nnoremap >v i<Return><Esc>
 " Have 'j' and 'k' operate wrapped linewise
 nnoremap j gj
 nnoremap k gk
+vnoremap j gj
+vnoremap k gk
 
 " Easily flip paste mode toggle
 nnoremap <Leader>p :set invpaste paste?<CR>
 
-" Screen-centering mappings for search
+" Screen-centering mappings
 nnoremap <Space> zz
 nnoremap n nzz
 nnoremap N Nzz
+nnoremap `` ``zz
 
 "------------------------------------------------------------
-" Commands
-
 " Easy JSON prettifier
 if !exists(":PrettifyJson")
     :command PrettifyJson %!python -m json.tool
