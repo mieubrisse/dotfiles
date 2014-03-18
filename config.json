@@ -3,6 +3,7 @@
         "brews": [
             "bash-completion",
             "vim", 
+            "less",
             "git", 
             "jq"
         ], 
@@ -24,6 +25,9 @@
         "symlinks": {
             "~/.bash_profile": "~/.bashrc", 
             "~/.vimrc": "~/.vim/vimrc"
-        }
+        },
+        "commands": [
+            "lesskey ./less/lesskey"
+        ]
     }
 ]

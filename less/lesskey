@@ -1,0 +1,8 @@
+#command
+
+    K   back-screen
+    J   forw-screen
+
+#env
+LESS    = -Ri
+
