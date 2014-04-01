@@ -183,10 +183,10 @@ nnoremap SS :mksession! ~/.vim/.saved-session.vim<CR>
 hi MatchParen ctermfg=white
 
 " Rebind arrow keys to make resizing windows easier
-nnoremap <C-Up> <C-W>+
-nnoremap <C-Down> <C-W>-
-nnoremap <C-Left> <C-W><
-nnoremap <C-Right> <C-W>>
+nnoremap <Up> <C-W>+
+nnoremap <Down> <C-W>-
+nnoremap <Left> <C-W><
+nnoremap <Right> <C-W>>
 
 " Switch Jedi-Vim Pydoc lookup to Ctrl+K
 let g:jedi#pydoc = "<C-K>"
