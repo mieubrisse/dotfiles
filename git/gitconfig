@@ -10,6 +10,7 @@
 [core]
 	excludesfile = ~/.gitignore
         pager = less -S
+	editor = /usr/local/bin/vim
 [push]
 	default = simple
 [credential]
