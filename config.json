@@ -28,7 +28,7 @@
         },
         "commands": [
             "lesskey ./less/lesskey"
-            "printf '\n# git checkout alias branch autocompletion\n__git_complete gco _git_checkout' >> git-completion.bash"
+            "printf '\n# git branch alias branch autocompletion\n__git_complete gco _git_branch\n__git_complete gco _git_branch' >> NEED_RIGHT_PATH_TO_COMPLETION_FILE"
         ]
     }
 ]
