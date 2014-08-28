@@ -4,4 +4,4 @@ if [ -f `brew --prefix`/etc/bash_completion ]; then
 fi
 
 # Better diff
-alias   diff="colordiff -u"
+alias   diff="colordiff --ignore-space-change -u"
