@@ -67,3 +67,9 @@
 [submodule "vim/bundle/vim-snippets"]
 	path = vim/bundle/vim-snippets
 	url = https://github.com/honza/vim-snippets
+[submodule "vim/bundle/vim-mustache-handlebars"]
+	path = vim/bundle/vim-mustache-handlebars
+	url = git://github.com/mustache/vim-mustache-handlebars.git
+[submodule "vim/bundle/xmledit"]
+	path = vim/bundle/xmledit
+	url = https://github.com/sukima/xmledit/
