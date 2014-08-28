@@ -11,6 +11,9 @@ alias llt='ll -t' # Sort by date last modified
 alias la='ls -A'
 alias l='ls'
 
+# du should always be human readable
+alias du='du -h'
+
 # Make find not suck
 alias cif="find . -iname" # Case-insensitive find
 function fuzzy_find() { 
@@ -31,6 +34,7 @@ cd() {
         done
         cd "$CD_STR"
     else
+        
         builtin cd "$@"
     fi
 }
@@ -91,12 +95,6 @@ alias vff="uff vim"
 function clip() {
     cat "$@" | pbcopy
 }
-
-# I don't remember what this is supposed to do
-# function coolcp() { cat | lazregx "$@" | pbcopy; }
-
-# Source .bashrc for convenience
-alias srcbash=". ~/.bashrc"
 
 # Have mkdir create parent directories if they don't already exist
 alias mkdir="mkdir -p"
