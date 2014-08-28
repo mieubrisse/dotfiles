@@ -5,6 +5,7 @@
 	lg = !"git lg1"
 	assume-unchanged = update-index --assume-unchanged
 	no-assume-unchanged = update-index --no-assume-unchanged
+        add-origin = remote add origin
 [color]
 	ui = auto
 [core]
