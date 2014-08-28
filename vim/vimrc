@@ -76,11 +76,12 @@ set hlsearch
 
 "------------------------------------------------------------
 " Usability options {{{1
-"
-" These are options that users frequently set in their .vimrc. Some of them
-" change Vim's behaviour in ways which deviate from the true Vi way, but
-" which are considered to add usability. Which, if any, of these options to
-" use is very much a personal preference, but they are harmless.
+
+" Set spellcheck for certain files
+autocmd FileType gitcommit setlocal spell
+autocmd BufNewFile,BufRead *.markdown setlocal spell
+autocmd BufNewFile,BufRead *.md setlocal spell
+autocmd BufNewFile,BufRead *.txt setlocal spell
 
 " Highlight current line
 set cursorline
