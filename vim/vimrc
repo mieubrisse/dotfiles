@@ -1,6 +1,53 @@
-" Add pathogen to Vim
-call pathogen#infect()
-call pathogen#helptags()
+execute pathogen#infect()
+" ------- VUNDLE ------
+" Set 'nocompatible' to ward off unexpected things that your distro might
+" have made, as well as sanely reset options when re-sourcing .vimrc
+" This is also required for Vundle
+set nocompatible
+
+" Required for Vundle install
+""filetype off
+
+" set the runtime path to include Vundle and initialize
+""set rtp+=~/.vim/bundle/Vundle.vim
+""call vundle#begin()
+" alternatively, pass a path where Vundle should install plugins
+" call vundle#begin('~/some/path/here')
+
+""Plugin 'Valloric/YouCompleteMe'
+""Plugin 'kien/ctrlp.vim'
+""Plugin 'davidhalter/jedi-vim'
+""Plugin 'nanotech/jellybeans.vim'
+""Plugin 'scrooloose/nerdtree'
+""Plugin 'msanders/snipmate.vim'
+""Plugin 'tomtom/tcomment_vim'
+""Plugin 'tomtom/tlib_vim'
+""Plugin 'MarcWeber/vim-addon-mw-utils'
+""Plugin 'kchmck/vim-coffee-script'
+""Plugin 'Lokaltog/vim-easymotion'
+""Plugin 'pangloss/vim-javascript'
+""Plugin 'elzr/vim-json'
+""Plugin 'groenewege/vim-less'
+""Plugin 'tpope/vim-markdown'
+""Plugin 'derekwyatt/vim-scala'
+""Plugin 'garbas/vim-snipmate'
+""Plugin 'honza/vim-snippets'
+""Plugin 'tristen/vim-sparkup'
+""Plugin 'tpope/vim-surround'
+""Plugin 'sukima/xmledit'
+""Plugin 'airblade/vim-gitgutter'
+""Plugin 'mustache/vim-mustache-handlebars'
+
+
+" All of your Plugins must be added before the following line
+""call vundle#end()            " required
+
+" Attempt to determine the type of a file based on its name and possibly its
+" contents. Use this to allow intelligent auto-indenting for each filetype,
+" and for plugins that are filetype specific.
+" Required to tun back on for Vundle stuff to work
+filetype plugin indent on
+" ------- VUNDLE ------
 
 " Add Twilight colorscheme
 colorscheme jellybeans
@@ -27,15 +74,6 @@ set undoreload=10000
 "
 " These options and commands enable some very useful features in Vim, that
 " no user should have to live without.
-
-" Set 'nocompatible' to ward off unexpected things that your distro might
-" have made, as well as sanely reset options when re-sourcing .vimrc
-set nocompatible
-
-" Attempt to determine the type of a file based on its name and possibly its
-" contents. Use this to allow intelligent auto-indenting for each filetype,
-" and for plugins that are filetype specific.
-filetype indent plugin on
 
 " Enable syntax highlighting
 syntax on
