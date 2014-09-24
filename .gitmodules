@@ -7,3 +7,6 @@
 [submodule "vim-new/vim-pathogen"]
 	path = vim-new/vim-pathogen
 	url = https://github.com/tpope/vim-pathogen.git
+[submodule "vim/vundle/Vundle.vim"]
+	path = vim/vundle/Vundle.vim
+	url = https://github.com/gmarik/Vundle.vim.git
