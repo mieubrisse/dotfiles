@@ -9,19 +9,23 @@ def print_msg(msg):
 def validate_choices(choice_str, input_lines):
     """Validates the user's string of choices, returning the choices object if successful or raising a RuntimeError if not"""
     indices = []
-    choices = choice_str.split(",")
+    choices = map(str.strip, choice_str.split(","))
     for choice in choices:
         # Ignore empty selections
-        choice = choice.strip()
         if not choice:
             continue
-        choice_range = choice.split("-")
+
+        choice_range = map(str.strip, choice.split("-"))
+
+        # Single choice case
         if len(choice_range) == 1:
             index = choice_range[0]
             try:
                 indices.append([int(index)])
             except ValueError:
                 raise RuntimeError("Choice '" + choice_range + "' must be a digit: " + choice)
+
+        # Choice range case
         elif len(choice_range) == 2:
             if not (choice_range[0].isdigit() and choice_range[1].isdigit()):
                 raise RuntimeError("Choice range '%s-%s' must be digits" % (choice_range[0], choice_range[1]))
@@ -34,8 +38,12 @@ def validate_choices(choice_str, input_lines):
             if range_end >= len(input_lines):
                 raise RuntimeError("Range end '%d' must be less than the list length" % (range_end))
             indices.append([range_start, range_end])
+
+        # WTF case
         else:
             raise RuntimeError("Invalid selection: " + choice)
+
+    # User selected no choices
     if len(indices) == 0:
         raise RuntimeError("Select at least one valid index")
     return indices

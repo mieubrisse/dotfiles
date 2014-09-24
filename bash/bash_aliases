@@ -39,48 +39,8 @@ cd() {
     fi
 }
 
-# Breaks a command result by newline and lets the user manually filter the output
-# E.g. 'filter ls ' would give the option of copying one of the ls results
-# Handles piped input, so 'ls | filter' accomplishes the same as the above
-function filter {
-    # If it exists, read data from stdin to handle piped input
-    if [ "$(tty)" == 'not a tty' ]; then
-        while IFS='' read -r LINE; do
-            ITEM_ARR+=("$LINE")
-        done
-
-    # Otherwise, perform the command the user specifies
-    else
-        COMMAND="$1"
-        shift 1
-        ITEM_ARR=($("$COMMAND" "$@"))
-    fi
-
-    # List out the results of the command and let user pick one if there are multiple
-    ARR_SIZE="${#ITEM_ARR[@]}"
-    if [[ "$ARR_SIZE" -gt 1 ]]; then
-        for idx in "${!ITEM_ARR[@]}"; do
-            ITEM="${ITEM_ARR[$idx]}"
-            # Add slash at end to denote directory
-            if [[ -d "$ITEM" ]]; then
-                DISPLAY_NAME="$ITEM/"
-            else
-                DISPLAY_NAME="$ITEM"
-            fi
-            printf "%s\t%s\n" "$idx" "$DISPLAY_NAME" >/dev/tty  # Have to use /dev/tty to not interfere with user input
-        done
-        read -p "Use which? " TARGET_IDX </dev/tty >&2
-        TARGET_ITEM="${ITEM_ARR[$TARGET_IDX]}"
-    elif [[ "$ARR_SIZE" -eq 1 ]]; then
-        printf "One result: \t${ITEM_ARR[0]}\n" >/dev/tty
-        TARGET_ITEM="${ITEM_ARR[0]}"
-    else
-        echo "No results to filter" >/dev/tty
-        return
-    fi
-    # echo "Copied $TARGET_ITEM to clipboard" >&2
-    printf "$TARGET_ITEM"
-}
+# Allows user to choose which lines of piped input to pass through
+alias filter="~/.bash_utils/filter.py"
 
 # Fuzzy searches for the given file, then filters output and feeds it into the given command
 # $1 - Command to feed chosen file to
