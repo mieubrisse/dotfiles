@@ -6,6 +6,8 @@ import json
 import subprocess
 import shutil
 
+# Script to effortlessly deploy the dotfile repo into the user's system using the config.json file
+
 
 # Add symlinks
 def process_brews(brews_obj):
