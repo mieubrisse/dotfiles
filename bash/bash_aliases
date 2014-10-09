@@ -25,17 +25,21 @@ alias ff="fuzzy_find"
 
 # Overwrite cd to jump up multiple levels with 'cd <# dir>..' syntax
 cd() {
-    # Check if string is in '<number>..' form
-    REPEAT_TIMES="${1:0:(${#1} - 2)}"
-    if [[ "${1:(-2)}" == ".." ]] && [[ "${#1}" > 2 ]] && [[ $REPEAT_TIMES =~ ^-?[0-9]+$ ]] && [[ $REPEAT_TIMES -ne 0 ]]; then
-        CD_STR=""
-        for i in $(seq 1 $REPEAT_TIMES); do
-            CD_STR="../$CD_STR"
-        done
-        cd "$CD_STR"
-    else
-        
+    if [[ "$1" == "-" ]]; then
         builtin cd "$@"
+    else
+        # Check if string is in '<number>..' form
+        REPEAT_TIMES="${1:0:(${#1} - 2)}"
+        if [[ "${1:(-2)}" == ".." ]] && [[ "${#1}" > 2 ]] && [[ $REPEAT_TIMES =~ ^-?[0-9]+$ ]] && [[ $REPEAT_TIMES -ne 0 ]]; then
+            CD_STR=""
+            for i in $(seq 1 $REPEAT_TIMES); do
+                CD_STR="../$CD_STR"
+            done
+            cd "$CD_STR"
+        else
+            
+            builtin cd "$@"
+        fi
     fi
 }
 
