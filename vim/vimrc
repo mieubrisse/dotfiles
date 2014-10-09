@@ -50,6 +50,10 @@ call vundle#end()            " required
 filetype plugin indent on
 " ------- VUNDLE ------
 
+" ------ NERDTree -------
+" Close NERDTree when opening a file
+let NERDTreeQuitOnOpen = 1
+
 " Add Twilight colorscheme
 colorscheme jellybeans
 
