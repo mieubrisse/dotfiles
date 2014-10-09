@@ -25,3 +25,5 @@
 [include]
         # Include any local additions to the file
         path = ~/.gitconfig_local
+[merge]
+	conflictstyle = diff3
