@@ -264,11 +264,15 @@ nnoremap <^ ^d0i<BS><Space><Esc>
 " Split everything after the cursor into a new line
 nnoremap >v i<Return><Esc>
 
-" Have 'j' and 'k' operate wrapped linewise
+" Have movement commands operate linewise
 nnoremap j gj
 nnoremap k gk
+nnoremap ^ g^
+nnoremap $ g$
 vnoremap j gj
 vnoremap k gk
+vnoremap ^ g^
+vnoremap $ g$
 
 " Easily flip paste mode toggle
 nnoremap <Leader>p :set invpaste paste?<CR>
