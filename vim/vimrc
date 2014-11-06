@@ -200,6 +200,9 @@ set expandtab
 "set shiftwidth=2
 "set tabstop=2
 
+" Used for wrapping lines only at words
+set wrap
+set linebreak
 
 "------------------------------------------------------------
 " Mappings {{{1
@@ -282,6 +285,7 @@ nnoremap <Space> zz
 nnoremap n nzz
 nnoremap N Nzz
 nnoremap `` ``zz
+nnoremap '' ''zz
 
 "------------------------------------------------------------
 " Easy JSON prettifier
