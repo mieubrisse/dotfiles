@@ -121,6 +121,12 @@ set hlsearch
 "------------------------------------------------------------
 " Usability options {{{1
 
+" Restore folds when file is reloaded
+" http://vim.wikia.com/wiki/Make_views_automatic
+set viewdir=~/.vim-views
+autocmd BufWinLeave *.* mkview!
+autocmd BufWinEnter *.* silent loadview
+
 " Set spellcheck for certain files
 autocmd FileType gitcommit setlocal spell
 autocmd BufNewFile,BufRead *.markdown setlocal spell
