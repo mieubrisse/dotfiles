@@ -49,11 +49,17 @@ call vundle#end()            " required
 " and for plugins that are filetype specific.
 " Required to tun back on for Vundle stuff to work
 filetype plugin indent on
-" ------- VUNDLE ------
+" ---------------------
+
+" ------ Vim Markdown -------
+" This is *probably* not needed??
+" autocmd BufNewFile,BufReadPost *.md set filetype=markdown
+" ---------------------------
 
 " ------ NERDTree -------
 " Close NERDTree when opening a file
 let NERDTreeQuitOnOpen = 1
+" -----------------------
 
 " Add Twilight colorscheme
 colorscheme jellybeans
@@ -64,7 +70,7 @@ set splitbelow
 
 " Persistent undo history
 set undofile
-set undodir=$HOME/.vim_undo
+set undodir=$HOME/.vim-undo
 set undolevels=1000
 set undoreload=10000
 
