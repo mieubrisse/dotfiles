@@ -1,6 +1,8 @@
+#!/bin/bash
+
 # ls conveniences
 function ls() { # Display an empty line for empty directories
-    if [[ $(/bin/ls $@ | wc -l) -eq 0 ]]; then
+    if [[ $(/bin/ls "${@}" | wc -l) -eq 0 ]]; then
         echo 
     else
         /bin/ls -G "$@"
@@ -30,9 +32,10 @@ cd() {
     else
         # Check if string is in '<number>..' form
         REPEAT_TIMES="${1:0:(${#1} - 2)}"
-        if [[ "${1:(-2)}" == ".." ]] && [[ "${#1}" > 2 ]] && [[ $REPEAT_TIMES =~ ^-?[0-9]+$ ]] && [[ $REPEAT_TIMES -ne 0 ]]; then
+        if [[ "${1:(-2)}" == ".." ]] && [[ "${#1}" -gt 2 ]] && [[ $REPEAT_TIMES =~ ^-?[0-9]+$ ]] && [[ $REPEAT_TIMES -ne 0 ]]; then
             CD_STR=""
             for i in $(seq 1 $REPEAT_TIMES); do
+                # Yes Shellcheck, I know we don't use the indexing variable 'i'
                 CD_STR="../$CD_STR"
             done
             cd "$CD_STR"
@@ -50,14 +53,14 @@ alias filter="~/.bash_utils/filter.py"
 # $1 - Command to feed chosen file to
 # $2+ - Arguments passed to fuzzy find
 function use_fuzzy_filter_results() {
-    "$1" `fuzzy_find "${@:2}" | filter`
+    "$1" "$(fuzzy_find "${@:2}" | filter)"
 }
 alias uff="use_fuzzy_filter_results"
 alias vff="uff vim"
 
-# Easily copy the contents of a file
+# Easily copy the contents of one or more file
 function clip() {
-    cat "$@" | pbcopy
+    cat "${@}" | pbcopy
 }
 
 # Have mkdir create parent directories if they don't already exist
@@ -71,21 +74,22 @@ alias csgr='grep -I --color=auto'    # Case-sensitive grep
 alias gr='csgr -i'
 alias fgrep='fgrep --color=auto'
 alias egrep='egrep --color=auto'
-function rgr() { gr -r "$@" *; }
-function csrgr() { csgr -r "$@" *; }  # Case-sensitive recursive grep
+function rgr() { gr -r "$@" ./*; }
+function csrgr() { csgr -r "$@" ./*; }  # Case-sensitive recursive grep
 
 # Grep chain commands
 alias hgr='history | gr'
 alias pgr='ps aux | gr'
 
 # Add an "alert" alias for long running commands.  Use like so:
-#   sleep 10; alert
-alias alert='notify-send --urgency=low -i "$([ $? = 0 ] && echo terminal || echo error)" "$(history|tail -n1|sed -e '\''s/^\s*[0-9]\+\s*//;s/[;&|]\s*alert$//'\'')"'
+# TODO This is broken
+# alias alert="notify-send --urgency=low -i \"$([ $? = 0 ] && echo terminal || echo error)\" \"$(history|tail -n1|sed -e '\''s/^\s*[0-9]\+\s*//;s/[;&|]\s*alert\$//'\'')\""
 
 # Map command to open last vim session
 alias   v="vim"
-VIM_SESSION="~/.vim/.saved-session.vim"
-alias   vims="vim -S $VIM_SESSION"
+# TODO I have never used this and maybe I never will
+VIM_SESSION=~/.vim/.saved-session.vim
+alias   vims="vim -S ${VIM_SESSION}"
 
 # Jobs should show PID by default
 alias   jobs="jobs -l"
@@ -104,8 +108,9 @@ function    silent() { "${@}" > /dev/null 2>&1; }
 
 # Easy SSH port forwarding
 function sshl { 
-    echo "ssh -L $1:localhost:$1 ${@:2}" 
-    ssh -L "$1":localhost:$1 "${@:2}"
+    COMMAND="${@:2}"
+    echo "ssh -L $1:localhost:$1 ${COMMAND}" 
+    ssh -L "$1":localhost:"$1" "${COMMAND}"
 }
 
 # Command line JSON prettifier
@@ -115,8 +120,8 @@ alias prettify-json="python -mjson.tool"
 function announce() {
 	"$@"
 	[[ $? == 127 ]] && return 1	# Don't speak for command not found
-	VOICE_TXT=`printf "$1" | sed "s:.*/\(\.*\)::g"`" command is done"	# Speak only command name
-	say -v "Vicki" "$VOICE_TXT"
+	VOICE_TXT=$(printf "%s" "${1}" | sed "s:.*/\(\.*\)::g")" command is done"	# Speak only command name
+	say -v "Vicki" "${VOICE_TXT}"
 }
 
 # --- Git Commands ------------------------
@@ -144,7 +149,11 @@ alias gf="git fetch --prune"
 alias gpll="git pull"
 function gpsh() {	# Push the branch upstream if it doesn't exist; otherwise just git push
 	BRANCH_NAME="$(git rev-parse --abbrev-ref HEAD)"
-	[[ $(git config "branch.$BRANCH_NAME.merge") == '' ]] && git push -u origin "$BRANCH_NAME" "$@" || git push "$@"; 
+	if [[ $(git config "branch.$BRANCH_NAME.merge") == '' ]]; then
+            git push -u origin "$BRANCH_NAME" "$@"
+        else
+            git push "$@"
+        fi
 }
 alias gprune-local-dry-run="git branch --merged | grep -v '\*' | grep -v 'master' | grep -v 'develop'"
 alias gprune-local="git branch --merged | grep -v '\*' | grep -v 'master' | grep -v 'develop' | xargs -n 1 git branch -d"
