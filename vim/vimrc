@@ -228,7 +228,7 @@ map Y y$
 
 " Map <C-L> (redraw screen) to also turn off search highlighting until the
 " next search
-nnoremap <C-L> :nohl<CR><C-L>
+nnoremap <Leader>l :nohl<CR><C-L>
 
 " Map <S-j> and <S-k> to PageDown and PageUp respectively
 noremap <S-J> <C-F>zz
