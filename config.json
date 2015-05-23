@@ -17,7 +17,8 @@
             "~/.gitconfig": "./git/gitconfig", 
             "~/.vim": "./vim",
             "~/.bash_utils": "./bash/utils",
-            "~/.editrc:": "./bash/editrc"
+            "~/.editrc": "./bash/editrc",
+            "~/Library/Preferences/com.googlecode.iterm2.plist": "./iterm/iterm2.plist"
         },
         "copy": {
             "~/.vim_undo": "./vim/vim_undo"
