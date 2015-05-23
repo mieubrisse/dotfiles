@@ -31,7 +31,7 @@ Plugin 'elzr/vim-json'
 Plugin 'groenewege/vim-less'
 Plugin 'kshenoy/vim-signature'
 Plugin 'tpope/vim-markdown'
-Plugin 'derekwyatt/vim-scala'
+" Plugin 'derekwyatt/vim-scala'
 " Plugin 'garbas/vim-snipmate'
 " Plugin 'honza/vim-snippets'
 " Plugin 'tristen/vim-sparkup'
@@ -249,9 +249,6 @@ nnoremap <Down> <C-W>-
 nnoremap <Left> <C-W><
 nnoremap <Right> <C-W>>
 
-" Switch Jedi-Vim Pydoc lookup to Ctrl+K
-let g:jedi#pydoc = "<C-K>"
-
 " SYSTEM CLIPBOARD BINDINGS
 " Copy current selection to system clipboard
 vnoremap + "+y
@@ -305,3 +302,15 @@ nnoremap '' ''zz
 if !exists(":PrettifyJson")
     :command PrettifyJson %!python -m json.tool
 endif
+
+" Insert and command-line mode Caps Lock.
+" Lock search keymap to be the same as insert mode.
+set imsearch=-1
+
+" Load the keymap that acts like capslock.
+set keymap=insert-capslock
+" Turn it off by default.
+set iminsert=0
+" Kill the capslock when leaving insert mode.
+autocmd InsertLeave * set iminsert=0
+" set statusline^=%k
