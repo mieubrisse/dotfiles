@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# Datetime
+alias today='date +%F'
+
 # ls conveniences
 function ls() { # Display an empty line for empty directories
     if [[ $(/bin/ls "${@}" | wc -l) -eq 0 ]]; then

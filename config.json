@@ -16,7 +16,8 @@
             "~/.gitignore": "./git/gitignore", 
             "~/.gitconfig": "./git/gitconfig", 
             "~/.vim": "./vim",
-            "~/.bash_utils": "./bash/utils"
+            "~/.bash_utils": "./bash/utils",
+            "~/.editrc:": "./bash/editrc"
         },
         "copy": {
             "~/.vim_undo": "./vim/vim_undo"
