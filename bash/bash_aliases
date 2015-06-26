@@ -19,6 +19,73 @@ alias l='ls'
 # du should always be human readable
 alias du='du -h'
 
+# $1 - arguments to pass to ls
+# $2 - function to use to sort ls results (head|tail)
+# $3 - number of results to ask for from head/tail
+function _ls_results {
+    ls $1 | $2 -n $3
+}
+
+# Returns the __ most-recently-modified files
+function newest {
+    if [[ $# -eq 0 ]]; then
+        NUM_RESULTS=1
+    else
+        NUM_RESULTS=$1
+    fi
+    _ls_results '-tr' 'tail' $NUM_RESULTS
+}
+
+# Returns the __ least-recently-modified files
+function oldest {
+    if [[ $# -eq 0 ]]; then
+        NUM_RESULTS=1
+    else
+        NUM_RESULTS=$1
+    fi
+    _ls_results '-tr' 'head' $NUM_RESULTS
+}
+
+# Returns the __ first files alphabetically from ls
+function first {
+    if [[ $# -eq 0 ]]; then
+        NUM_RESULTS=1
+    else
+        NUM_RESULTS=$1
+    fi
+    _ls_results '' 'head' $NUM_RESULTS
+}
+
+# Returns the __ last files alphabetically from ls
+function last {
+    if [[ $# -eq 0 ]]; then
+        NUM_RESULTS=1
+    else
+        NUM_RESULTS=$1
+    fi
+    _ls_results '' 'tail' $NUM_RESULTS
+}
+
+# Returns the __ biggest files by filesize
+function biggest {
+    if [[ $# -eq 0 ]]; then
+        NUM_RESULTS=1
+    else
+        NUM_RESULTS=$1
+    fi
+    _ls_results '-Sr' 'head' $NUM_RESULTS
+}
+
+# Returns the __ smallest files by filesize
+function smallest {
+    if [[ $# -eq 0 ]]; then
+        NUM_RESULTS=1
+    else
+        NUM_RESULTS=$1
+    fi
+    _ls_results '-Sr' 'tail' $NUM_RESULTS
+}
+
 # Make find not suck
 alias cif="find . -iname" # Case-insensitive find
 function fuzzy_find() { 
