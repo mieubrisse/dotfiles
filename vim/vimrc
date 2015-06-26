@@ -309,8 +309,9 @@ set imsearch=-1
 
 " Load the keymap that acts like capslock.
 set keymap=insert-capslock
+
+inoremap <C-u> <C-^>
 " Turn it off by default.
 set iminsert=0
 " Kill the capslock when leaving insert mode.
 autocmd InsertLeave * set iminsert=0
-" set statusline^=%k
