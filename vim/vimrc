@@ -22,6 +22,8 @@ call vundle#begin('~/.vundle')
 Plugin 'nanotech/jellybeans.vim'
 " Plugin 'scrooloose/nerdtree'
 Plugin 'tomtom/tcomment_vim'
+Plugin 'davidhalter/jedi-vim'
+Plugin 'ervandew/supertab'
 " Plugin 'tomtom/tlib_vim'
 " Plugin 'MarcWeber/vim-addon-mw-utils'
 " Plugin 'kchmck/vim-coffee-script'
@@ -50,6 +52,12 @@ call vundle#end()            " required
 " Required to tun back on for Vundle stuff to work
 filetype plugin indent on
 " ---------------------
+
+" Switch Jedi-Vim Pydoc lookup to Ctrl+K
+let g:jedi#pydoc = "<C-K>"
+
+" SuperTab configurations to make life easier
+let g:SuperTabDefaultCompletionType = "<C-x><C-o>"
 
 " ------ Vim Markdown -------
 " This is *probably* not needed??
