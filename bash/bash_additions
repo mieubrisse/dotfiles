@@ -31,3 +31,25 @@ if [[ -s "$HOME/.rvm/scripts/rvm" ]] ; then
     source ~/.rvm/scripts/rvm
 fi
 
+# Searches for a gradlew file up the tree and uses it for gradle commands
+# Add 'nocd' as the first argument to run the gradle commands from the directory you're in at the moment
+function gradle() {
+    ORIG_DIR="$PWD"
+    while [[ "$PWD" != "/" ]]; do
+        if [[ -f "./gradlew" ]]; then
+            if [[ "$1" == "nocd" ]]; then
+                GRADLE_DIR=$(pwd)
+                cd "$ORIG_DIR"
+                echo "$GRADLE_DIR"/gradlew "${@:2}"
+                "$GRADLE_DIR"/gradlew "${@:2}"
+            else
+                ./gradlew "$@"
+                cd "$ORIG_DIR"
+            fi
+            return 0
+        else
+            cd ..
+        fi
+    done
+    echo "No gradle file found"
+}
