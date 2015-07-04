@@ -164,10 +164,6 @@ alias   vims="vim -S ${VIM_SESSION}"
 # Jobs should show PID by default
 alias   jobs="jobs -l"
 
-# TODO This should probably be moved elsewhere
-# Quickly manage Palantir quickstarts
-alias   quickchange="/Users/ktoday/scripts/quickchange/quickchange"
-
 # Don't want to make srm too easy to use!
 # alias srm="srm -i"
 
