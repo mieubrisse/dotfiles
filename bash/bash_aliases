@@ -226,3 +226,6 @@ alias gprune-local="git branch --merged | grep -v '\*' | grep -v 'master' | grep
 
 # Just because it's intuitive
 alias eject="diskutil unmount"
+
+# Because I do Py
+alias ipy="ipython"
