@@ -20,10 +20,17 @@ call vundle#begin('~/.vundle')
 " :PluginClean      - confirms removal of unused plugins; append `!` to auto-approve removal
 " Plugin 'Valloric/YouCompleteMe'
 Plugin 'nanotech/jellybeans.vim'
+Plugin 'tfnico/vim-gradle'
+Plugin 'kien/ctrlp.vim'
 " Plugin 'scrooloose/nerdtree'
 Plugin 'tomtom/tcomment_vim'
 Plugin 'davidhalter/jedi-vim'
 Plugin 'ervandew/supertab'
+
+" All the Vim YAML plugins are miserable...
+" Plugin 'avakhov/vim-yaml'
+" Plugin 'chase/vim-ansible-yaml'
+
 " Plugin 'tomtom/tlib_vim'
 " Plugin 'MarcWeber/vim-addon-mw-utils'
 " Plugin 'kchmck/vim-coffee-script'
@@ -41,6 +48,7 @@ Plugin 'tpope/vim-markdown'
 Plugin 'sukima/xmledit'
 Plugin 'airblade/vim-gitgutter'
 Plugin 'mustache/vim-mustache-handlebars'
+Plugin 'fatih/vim-go'
 
 
 " All of your Plugins must be added before the following line
@@ -53,21 +61,34 @@ call vundle#end()            " required
 filetype plugin indent on
 " ---------------------
 
+" ------ Ansible YAML --------
+" Vim's built-in YAML doesn't handle indentation well, so we need to use the only
+" YAML plugin that actually does it right
+" Why do all the YAML plugins suck... :(
+" au BufRead,BufNewFile *.yml set filetype=ansible
+" au BufRead,BufNewFile *.yaml set filetype=ansible
+autocmd FileType *.yml setlocal noautoindent
+autocmd FileType *.yaml setlocal noautoindent
+" ----------------------------
+
+" ------ Jedi Vim -------
 " Switch Jedi-Vim Pydoc lookup to Ctrl+K
-let g:jedi#pydoc = "<C-K>"
+let g:jedi#documentation_command = "<C-K>"
+" -----------------------
 
-" SuperTab configurations to make life easier
+" ------ SuperTab -------
+" Use Vim's omnicomplete for SuperTab
 let g:SuperTabDefaultCompletionType = "<C-x><C-o>"
-
-" ------ Vim Markdown -------
-" This is *probably* not needed??
-" autocmd BufNewFile,BufReadPost *.md set filetype=markdown
-" ---------------------------
+" -----------------------
 
 " ------ NERDTree -------
 " Close NERDTree when opening a file
 let NERDTreeQuitOnOpen = 1
 " -----------------------
+
+" ------ Ctrl P ------
+let g:ctrlp_working_path_mode = 'ra'
+" --------------------
 
 " Add Twilight colorscheme
 colorscheme jellybeans
@@ -118,6 +139,7 @@ set hidden
 
 " Better command-line completion
 set wildmenu
+set wildignore+=*.so,*.swp,*.zip,*.jar
 
 " Show partial commands in the last line of the screen
 set showcmd
@@ -131,15 +153,16 @@ set hlsearch
 " script, <http://www.vim.org/scripts/script.php?script_id=1876>.
 " set nomodeline
 
-
 "------------------------------------------------------------
 " Usability options {{{1
 
 " Restore folds when file is reloaded
 " http://vim.wikia.com/wiki/Make_views_automatic
-set viewdir=~/.vim-views
-autocmd BufWinLeave *.* mkview!
-autocmd BufWinEnter *.* silent loadview
+
+" TODO Turning views off for now, because they cause a lot of tricksy behavior
+" set viewdir=~/.vim-views
+" autocmd BufWinLeave *.* mkview!
+" autocmd BufWinEnter *.* silent loadview
 
 " Set spellcheck for certain files
 autocmd FileType gitcommit setlocal spell
