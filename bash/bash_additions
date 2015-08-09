@@ -33,7 +33,7 @@ fi
 
 # Searches for a gradlew file up the tree and uses it for gradle commands
 # Add 'nocd' as the first argument to run the gradle commands from the directory you're in at the moment
-function gradle() {
+function gradle_search() {
     ORIG_DIR="$PWD"
     while [[ "$PWD" != "/" ]]; do
         if [[ -f "./gradlew" ]]; then
@@ -53,3 +53,6 @@ function gradle() {
     done
     echo "No gradle file found"
 }
+
+# Set up jenv
+eval "$(jenv init -)"

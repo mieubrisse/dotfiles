@@ -2,6 +2,7 @@
 
 # Datetime
 alias today='date +%F'
+alias now='date +%F_%H-%M-%S'
 
 # ls conveniences
 function ls() { # Display an empty line for empty directories
@@ -94,6 +95,14 @@ function fuzzy_find() {
     cif "*$SEARCH_STR*" "$@"
 }
 alias ff="fuzzy_find"
+
+# Easy ls finding
+function fuzzy_ls() {
+    SEARCH_STR="$1"
+    # TODO Make this join separated words with stars
+    cif "*${SEARCH_STR}*" -maxdepth 1
+}
+alias fl="fuzzy_ls"
 
 # Overwrite cd to jump up multiple levels with 'cd <# dir>..' syntax
 cd() {
@@ -229,3 +238,27 @@ alias eject="diskutil unmount"
 
 # Because I do Py
 alias ipy="ipython"
+
+alias chrome="open -a 'Google Chrome'"
+
+alias sp="vim -o"
+alias vsp="vim -O"
+
+# Handy convenience function for opening a meeting notes file from template
+function meeting() {
+    if [[ "${#}" -ne 3 ]]; then
+        echo -e "Usage:\tmeeting <template filepath> <note destination dir> <note name>"
+        return 1
+    fi
+    dest_dirpath="${1}"
+    template_filepath="${2}"
+    filename="${3}"
+    filepath="${dest_dirpath}/$(today)_${filename%%.md}.md"
+    echo "${filepath}"
+
+    if ! [[ -f "${filepath}" ]]; then
+        vim -c "read ${template_filepath}" "${filepath}"
+    else
+        vim "${filepath}"
+    fi
+}
