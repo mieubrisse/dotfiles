@@ -92,16 +92,14 @@ alias cif="find . -iname" # Case-insensitive find
 function fuzzy_find() { 
     SEARCH_STR="$1"
     shift 1
-    cif "*$SEARCH_STR*" "$@"
+    cif "*${SEARCH_STR}*" ${@}
 }
-alias ff="fuzzy_find"
-
-# Easy ls finding
 function fuzzy_ls() {
     SEARCH_STR="$1"
-    # TODO Make this join separated words with stars
-    cif "*${SEARCH_STR}*" -maxdepth 1
+    shift 1
+    cif "*${SEARCH_STR}*" -maxdepth 1 ${@}
 }
+alias ff="fuzzy_find"
 alias fl="fuzzy_ls"
 
 # Overwrite cd to jump up multiple levels with 'cd <# dir>..' syntax
@@ -130,12 +128,14 @@ alias filter="~/.bash_utils/filter.py"
 
 # Fuzzy searches for the given file, then filters output and feeds it into the given command
 # $1 - Command to feed chosen file to
-# $2+ - Arguments passed to fuzzy find
-function use_fuzzy_filter_results() {
-    "$1" "$(fuzzy_find "${@:2}" | filter)"
+# $2 - Command to generate results for filtering
+# $3+ - Arguments passed to command for generating results to filter
+function use_command_filter_results() {
+    "$1" "$(${2} "${@:3}" | filter)"
 }
-alias uff="use_fuzzy_filter_results"
-alias vff="uff vim"
+
+alias vff="use_command_filter_results vim fuzzy_find"
+alias vfl="use_command_filter_results vim fuzzy_ls"
 
 # Easily copy the contents of one or more file
 function clip() {
