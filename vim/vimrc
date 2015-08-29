@@ -90,8 +90,11 @@ let NERDTreeQuitOnOpen = 1
 let g:ctrlp_working_path_mode = 'ra'
 " --------------------
 
-" Add Twilight colorscheme
+" ------ Jellybeans Color Scheme ------
 colorscheme jellybeans
+let g:jellybeans_background_color_256 = "000000"
+" --------------------
+
 
 " Open splits on the right and bottom
 set splitright
