@@ -104,7 +104,8 @@ alias fl="fuzzy_ls"
 
 # Overwrite cd to jump up multiple levels with 'cd <# dir>..' syntax
 cd() {
-    if [[ "$1" == "-" ]]; then
+    # If string isn't long enough, use builtin cd anyways
+    if [[ ${#1} -lt 3 ]]; then
         builtin cd "$@"
     else
         # Check if string is in '<number>..' form
@@ -246,16 +247,17 @@ alias vsp="vim -O"
 
 # Handy convenience function for opening a meeting notes file from template
 function meeting() {
-    if [[ "${#}" -ne 3 ]]; then
-        echo -e "Usage:\tmeeting <template filepath> <note destination dir> <note name>"
+    if [[ "${#}" -lt 3 ]]; then
+        echo -e "Usage:\tmeeting <note destination dir> <template filepath> <note name fragment> [<note name fragment>...]"
         return 1
     fi
     dest_dirpath="${1}"
-    template_filepath="${2}"
-    filename="${3}"
+    shift
+    template_filepath="${1}"
+    shift
+    args_str="${@}"
+    filename="${args_str// /-}"
     filepath="${dest_dirpath}/$(today)_${filename%%.md}.md"
-    echo "${filepath}"
-
     if ! [[ -f "${filepath}" ]]; then
         vim -c "read ${template_filepath}" "${filepath}"
     else

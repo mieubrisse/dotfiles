@@ -33,7 +33,7 @@ Plugin 'ervandew/supertab'
 
 " Plugin 'tomtom/tlib_vim'
 " Plugin 'MarcWeber/vim-addon-mw-utils'
-" Plugin 'kchmck/vim-coffee-script'
+Plugin 'kchmck/vim-coffee-script'
 Plugin 'Lokaltog/vim-easymotion'
 Plugin 'pangloss/vim-javascript'
 Plugin 'elzr/vim-json'
@@ -151,6 +151,9 @@ set showcmd
 " mapping of <C-L> below)
 set hlsearch
 
+" Highlight matching parantheses, brackets, braces, etc.
+set showmatch
+
 " Modelines have historically been a source of security vulnerabilities. As
 " such, it may be a good idea to disable them and use the securemodelines
 " script, <http://www.vim.org/scripts/script.php?script_id=1876>.
@@ -159,10 +162,9 @@ set hlsearch
 "------------------------------------------------------------
 " Usability options {{{1
 
+" TODO Turning Vim file views off for now, because they cause a lot of tricksy behavior
 " Restore folds when file is reloaded
 " http://vim.wikia.com/wiki/Make_views_automatic
-
-" TODO Turning views off for now, because they cause a lot of tricksy behavior
 " set viewdir=~/.vim-views
 " autocmd BufWinLeave *.* mkview!
 " autocmd BufWinEnter *.* silent loadview
@@ -230,6 +232,11 @@ set notimeout ttimeout ttimeoutlen=200
 " Use <F11> to toggle between 'paste' and 'nopaste'
 set pastetoggle=<F11>
 
+" Folding options
+set foldenable          " Turn on folding
+set foldlevelstart=10   " Default show up to 10 levels of folds open on start
+set foldnestmax=10      " Don't allow past 10 levels of fold nesting
+set foldmethod=indent   " Automatically fold based on indentation (yay, Python)
 
 "------------------------------------------------------------
 " Indentation options {{{1
@@ -349,3 +356,18 @@ inoremap <C-u> <C-^>
 set iminsert=0
 " Kill the capslock when leaving insert mode.
 autocmd InsertLeave * set iminsert=0
+
+" Set line numbers in netrw file explorer
+let g:netrw_bufsettings = 'noma nomod nu nobl nowrap ro'
+
+" Netrw opens in new window
+noremap <Leader>e :Vex!<CR>
+
+" Better split navigation
+nnoremap <C-f> <C-w>l
+nnoremap <C-b> <C-w>h
+nnoremap <Leader>q <C-w>q
+
+" Better tab navigation
+noremap <C-Left> :tabp<CR>
+noremap <C-Right> :tabn<CR>

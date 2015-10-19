@@ -1,12 +1,6 @@
 # Make bash and all readline programs operate in vi mode
 set -o vi
 
-# Shut down Arjun's silly little trick
-mesg no
-
-# Add bashmarks
-source ~/.local/bin/bashmarks.sh
-
 # Shell Options
 shopt -s cdspell # Automatically fix 'cd' spelling mistakes
 shopt -s autocd # Using 'cd' is so passe
