@@ -101,10 +101,10 @@
         "gnuplot": {
             "options": [
                 "--with-cairo", 
+                "--with-x11", 
                 "--without-lua", 
-                "--with-pdflib-lite", 
                 "--with-wxmac", 
-                "--with-x11"
+                "--with-pdflib-lite"
             ], 
             "versions": [
                 "5.0.0"
@@ -211,8 +211,8 @@
         }, 
         "mutt": {
             "options": [
-                "--with-trash-patch", 
-                "--with-s-lang"
+                "--with-s-lang", 
+                "--with-trash-patch"
             ], 
             "versions": [
                 "1.5.23_2"
@@ -356,8 +356,14 @@
         }
     }, 
     "casks": {
+        "hipchat": {
+            "versions": "3.3.6-202"
+        }, 
         "java": {
             "versions": "1.8.0_60-b27"
+        }, 
+        "kindle": {
+            "versions": "41015"
         }, 
         "xquartz": {
             "versions": "2.7.7"
