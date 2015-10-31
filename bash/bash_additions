@@ -9,6 +9,7 @@ shopt -s cmdhist # Combine multi-line entries into one history line
 # On changing directory, ls and git fetch in background if git directory
 PROMPT_COMMAND='if [[ ${__new_wd:=$PWD} != $PWD ]]; then ls; [[ -d ".git" ]] && command -v git >/dev/null 2>&1 && (git fetch --prune &); fi; __new_wd=$PWD'
 
+export EDITOR="vim"
 
 # Make completion better
 bind "set completion-ignore-case on"

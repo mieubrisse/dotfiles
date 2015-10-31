@@ -369,3 +369,10 @@ nnoremap <Leader>q <C-w>q
 " Better tab navigation
 noremap <C-Left> :tabp<CR>
 noremap <C-Right> :tabn<CR>
+
+" Allow editing Mac crontab with Vim a la
+" http://superuser.com/questions/359580/error-adding-cronjobs-in-mac-os-x-lion
+if $VIM_CRONTAB == "true"
+    set nobackup
+    set nowritebackup
+endif

@@ -4,6 +4,10 @@
 alias today='date +%F'
 alias now='date +%F_%H-%M-%S'
 
+# Allow editing Mac crontab with Vim per:
+# http://superuser.com/questions/359580/error-adding-cronjobs-in-mac-os-x-lion
+alias crontab="VIM_CRONTAB=true crontab"
+
 # ls conveniences
 function ls() { # Display an empty line for empty directories
     if [[ $(/bin/ls "${@}" | wc -l) -eq 0 ]]; then
