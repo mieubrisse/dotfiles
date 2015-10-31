@@ -44,20 +44,8 @@ def _get_brews():
         matches = re.search('Built from source with:(.*)$', package_info, re.MULTILINE)
         package_options = matches.group(1).split() if matches else []
         return_obj[package] = { 
-                "versions": package_versions[os.path.basename(package)],
-                "options": package_options,
-                }
-    return return_obj
-
-def _get_casks():
-    output_lines = subprocess.check_output([_BREW_CMD, "cask", "list"]).splitlines()
-    return_obj = {}
-    for cask in output_lines:
-        cask_info = subprocess.check_output([_BREW_CMD, "cask", "info", cask])
-        matches = re.search("^" + cask + r": ([^\s]+)$", cask_info, re.MULTILINE)
-        cask_versions = matches.group(1) if matches is not None else []
-        return_obj[cask] = {
-                "versions": cask_versions,
+                "versions": sorted(package_versions[os.path.basename(package)]),
+                "options": sorted(package_options),
                 }
     return return_obj
 
@@ -80,8 +68,8 @@ def main(argv):
     return_obj["brews"] = brews
     return_obj["taps"] = subprocess.check_output([_BREW_CMD, "tap"]).splitlines()
 
-    casks_obj = _get_casks() if _CASK_BREWNAME in brews else []
-    return_obj["casks"] = casks_obj
+    casks_list = subprocess.check_output([_BREW_CMD, "cask", "list"]).splitlines() if _CASK_BREWNAME in brews else []
+    return_obj["casks"] = casks_list
 
     with open(output_filepath, 'w') as output_fp:
         json.dump(return_obj, output_fp, indent=4, sort_keys=True)
@@ -89,15 +77,21 @@ def main(argv):
     if do_git_commit:
         output_dirpath = os.path.dirname(output_filepath)
         git_cmd = ["git", "-C", output_dirpath]
-        git_commands = [["add", output_filepath], ["commit", "-m", commit_msg], ["push"]]
 
-        git_commands = map(lambda args_list: git_cmd + args_list, git_commands)
-        for command in git_commands:
-            try:
-                subprocess.check_output(command, stderr=subprocess.STDOUT)
-            except subprocess.CalledProcessError as e:
-                _print_error("'{}' failed with exit code {} and output:\n{}".format(" ".join(command), e.returncode, e.output))
-                return 1
+        if subprocess.call(git_cmd + ["diff-index", "--quiet", "HEAD"]) == 1:
+            git_commands = [
+                    ["add", output_filepath], 
+                    ["commit", "-m", commit_msg], 
+                    # TODO Debugging
+                    # git_cmd + ["push"],
+                    ]
+            git_commands = map(lambda command_fragment: git_cmd + command_fragment, git_commands)
+            for command in git_commands:
+                try:
+                    subprocess.check_output(command, stderr=subprocess.STDOUT)
+                except subprocess.CalledProcessError as e:
+                    _print_error("'{}' failed with exit code {} and output:\n{}".format(" ".join(command), e.returncode, e.output))
+                    return 1
 
     return 0
 
