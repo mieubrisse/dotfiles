@@ -335,8 +335,6 @@ nnoremap <Leader>p :set invpaste paste?<CR>
 nnoremap <Space> zz
 nnoremap n nzz
 nnoremap N Nzz
-nnoremap `` ``zz
-nnoremap '' ''zz
 
 "------------------------------------------------------------
 " Easy JSON prettifier

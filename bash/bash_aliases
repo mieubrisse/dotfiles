@@ -90,14 +90,12 @@ function smallest {
 # Make find not suck
 alias cif="find . -iname" # Case-insensitive find
 function fuzzy_find() { 
-    SEARCH_STR="$1"
-    shift 1
-    cif "*${SEARCH_STR}*" ${@}
+    ARGS="${@}"
+    cif "*${ARGS// /*}*"
 }
 function fuzzy_ls() {
-    SEARCH_STR="$1"
-    shift 1
-    cif "*${SEARCH_STR}*" -maxdepth 1 ${@}
+    ARGS="${@}"
+    cif "*${ARGS// /*}*" -maxdepth 1
 }
 alias ff="fuzzy_find"
 alias fl="fuzzy_ls"
