@@ -44,6 +44,8 @@ def _get_brews():
         matches = re.search('Built from source with:(.*)$', package_info, re.MULTILINE)
         package_options = matches.group(1).split() if matches else []
         return_obj[package] = { 
+                # Sorting is necessary because the order we get these from Homebrew is non-deterministic
+                # If we don't sort, we'll be committing changes in ordering constantly
                 "versions": sorted(package_versions[os.path.basename(package)]),
                 "options": sorted(package_options),
                 }
@@ -78,7 +80,7 @@ def main(argv):
         output_dirpath = os.path.dirname(output_filepath)
         git_cmd = ["git", "-C", output_dirpath]
 
-        if subprocess.call(git_cmd + ["diff-index", "--quiet", "HEAD"]) == 1:
+        if subprocess.call(git_cmd + ["diff", "--quiet", output_filepath]) == 1:
             git_commands = [
                     ["add", output_filepath], 
                     ["commit", "-m", commit_msg], 
