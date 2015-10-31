@@ -84,8 +84,7 @@ def main(argv):
             git_commands = [
                     ["add", output_filepath], 
                     ["commit", "-m", commit_msg], 
-                    # TODO Debugging
-                    # git_cmd + ["push"],
+                    ["push"],
                     ]
             git_commands = map(lambda command_fragment: git_cmd + command_fragment, git_commands)
             for command in git_commands:
