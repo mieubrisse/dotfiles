@@ -61,6 +61,12 @@
                 "6.3.26"
             ]
         }, 
+        "gcc": {
+            "options": [], 
+            "versions": [
+                "5.2.0"
+            ]
+        }, 
         "gdal": {
             "options": [], 
             "versions": [
@@ -158,6 +164,12 @@
             ], 
             "versions": [
                 "2.4.33"
+            ]
+        }, 
+        "homebrew/science/glpk": {
+            "options": [], 
+            "versions": [
+                "4.52"
             ]
         }, 
         "htop-osx": {
@@ -267,6 +279,12 @@
                 "1.5.3"
             ]
         }, 
+        "py2cairo": {
+            "options": [], 
+            "versions": [
+                "1.10.0_1"
+            ]
+        }, 
         "qt": {
             "options": [], 
             "versions": [
@@ -371,6 +389,8 @@
         "atlassian/tap", 
         "caskroom/cask", 
         "homebrew/dupes", 
+        "homebrew/python", 
+        "homebrew/science", 
         "homebrew/versions"
     ]
 }
