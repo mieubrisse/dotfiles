@@ -184,6 +184,12 @@
                 "6.9.1-1"
             ]
         }, 
+        "jansson": {
+            "options": [], 
+            "versions": [
+                "2.7"
+            ]
+        }, 
         "jenv": {
             "options": [], 
             "versions": [
@@ -194,6 +200,18 @@
             "options": [], 
             "versions": [
                 "1.5"
+            ]
+        }, 
+        "libconfig": {
+            "options": [], 
+            "versions": [
+                "1.5"
+            ]
+        }, 
+        "libevent": {
+            "options": [], 
+            "versions": [
+                "2.0.22"
             ]
         }, 
         "libxslt": {
