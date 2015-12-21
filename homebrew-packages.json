@@ -316,6 +316,12 @@
                 "3.5.3"
             ]
         }, 
+        "ravenac95/sudolikeaboss/sudolikeaboss": {
+            "options": [], 
+            "versions": [
+                "0.2.0"
+            ]
+        }, 
         "ruby": {
             "options": [], 
             "versions": [
@@ -413,6 +419,7 @@
         "homebrew/dupes", 
         "homebrew/python", 
         "homebrew/science", 
-        "homebrew/versions"
+        "homebrew/versions", 
+        "ravenac95/sudolikeaboss"
     ]
 }
