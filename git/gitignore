@@ -1,3 +1,6 @@
+# Jenv
+.java_version
+
 # Stupid Mac...
 .DS_Store
 
@@ -36,3 +39,6 @@ local.properties
 
 # Ignore Vim helptags
 doc/tags
+
+.gradle
+build
