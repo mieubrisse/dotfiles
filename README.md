@@ -1,4 +1,4 @@
-# Mieubriss'e Dotfiles Repo
+# Mieubrisse's Dotfiles Repo
 
 ## Commad Line Stuff
 * "clip FILE" copies the file to the system clipboard (Mac only)
