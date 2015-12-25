@@ -7,7 +7,7 @@ shopt -s autocd # Using 'cd' is so passe
 shopt -s cmdhist # Combine multi-line entries into one history line
 
 # On changing directory, ls and git fetch in background if git directory
-PROMPT_COMMAND='if [[ ${__new_wd:=$PWD} != $PWD ]]; then ls; [[ -d ".git" ]] && command -v git >/dev/null 2>&1 && (git fetch --prune &); fi; __new_wd=$PWD'
+PROMPT_COMMAND='if [[ ${__new_wd:=$PWD} != $PWD ]]; then ls; [[ -d ".git" ]] && command -v git >/dev/null 2>&1 && ( [ -n "$(git fetch --prune 2>&1)" ] && printf "\ngit-pull needed\n" & ); fi; __new_wd=$PWD'
 
 export EDITOR="vim"
 
@@ -26,28 +26,3 @@ if [[ -s "$HOME/.rvm/scripts/rvm" ]] ; then
     source ~/.rvm/scripts/rvm
 fi
 
-# Searches for a gradlew file up the tree and uses it for gradle commands
-# Add 'nocd' as the first argument to run the gradle commands from the directory you're in at the moment
-function gradle_search() {
-    ORIG_DIR="$PWD"
-    while [[ "$PWD" != "/" ]]; do
-        if [[ -f "./gradlew" ]]; then
-            if [[ "$1" == "nocd" ]]; then
-                GRADLE_DIR=$(pwd)
-                cd "$ORIG_DIR"
-                echo "$GRADLE_DIR"/gradlew "${@:2}"
-                "$GRADLE_DIR"/gradlew "${@:2}"
-            else
-                ./gradlew "$@"
-                cd "$ORIG_DIR"
-            fi
-            return 0
-        else
-            cd ..
-        fi
-    done
-    echo "No gradle file found"
-}
-
-# Set up jenv
-eval "$(jenv init -)"

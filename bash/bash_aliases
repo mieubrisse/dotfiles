@@ -154,10 +154,15 @@ function mkdircd() { mkdir "$@"; cd "$1"; }
 # === grep ===========
 alias csgr='grep -I --color=auto'    # Case-sensitive grep
 alias gr='csgr -i'
+alias csegr='grep -I --color=auto' # Case-sensitive egrep
+alias egr='csegr -i'
 alias fgrep='fgrep --color=auto'
 alias egrep='egrep --color=auto'
-function rgr() { gr -r "$@" ./*; }
-function csrgr() { csgr -r "$@" ./*; }  # Case-sensitive recursive grep
+function rgr() { gr --exclude-dir="." --exclude-dir=".." -r "$@" * .*; }
+function csrgr() { csgr --exclude-dir="." --exclude-dir=".." -r "$@" * .*; }  # Case-sensitive recursive grep
+function ergr() { egr --exclude-dir="." --exclude-dir=".." -r "$@" * .*; }
+function csergr() { csegr --exclude-dir="." --exclude-dir=".." -r "$@" * .*; }  # Case-sensitive recursive egrep
+
 
 # Grep chain commands
 alias hgr='history | gr'
@@ -266,3 +271,29 @@ function meeting() {
         vim "${filepath}"
     fi
 }
+
+# Searches for a gradlew file up the tree and uses it for gradle commands
+# Add 'nocd' as the first argument to run the gradle commands from the directory you're in at the moment
+function gradle_search() {
+    ORIG_DIR="$PWD"
+    while [[ "$PWD" != "/" ]]; do
+        if [[ -f "./gradlew" ]]; then
+            if [[ "$1" == "nocd" ]]; then
+                GRADLE_DIR=$(pwd)
+                cd "$ORIG_DIR"
+                echo "$GRADLE_DIR"/gradlew "${@:2}"
+                "$GRADLE_DIR"/gradlew "${@:2}"
+            else
+                ./gradlew "$@"
+                cd "$ORIG_DIR"
+            fi
+            return 0
+        else
+            cd ..
+        fi
+    done
+    echo "No gradle file found"
+}
+alias grd="gradle_search"
+
+alias rsync="rsync --perms --progress"
