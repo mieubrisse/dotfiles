@@ -20,6 +20,7 @@ call vundle#begin('~/.vundle')
 " :PluginClean      - confirms removal of unused plugins; append `!` to auto-approve removal
 " Plugin 'Valloric/YouCompleteMe'
 Plugin 'nanotech/jellybeans.vim'
+" Plugin 'vim-scripts/groovy.vim'
 Plugin 'tfnico/vim-gradle'
 Plugin 'kien/ctrlp.vim'
 " Plugin 'scrooloose/nerdtree'
@@ -74,6 +75,13 @@ autocmd FileType *.yaml setlocal noautoindent
 " ------ Jedi Vim -------
 " Switch Jedi-Vim Pydoc lookup to Ctrl+K
 let g:jedi#documentation_command = "<C-K>"
+let g:jedi#popup_select_first = 1
+
+" This turns off the annoying 'insert the autocomplete match if there's only one'
+" behavior
+if v:version >= 705 || (v:version == 704 && has('patch775'))
+    set completeopt=menuone,longest,preview,noinsert
+endif
 " -----------------------
 
 " ------ SuperTab -------
@@ -95,6 +103,17 @@ colorscheme jellybeans
 let g:jellybeans_background_color_256 = "000000"
 " --------------------
 
+" ------ netrw --------------------
+" Set line numbers in netrw file explorer
+let g:netrw_bufsettings = 'noma nomod nu nobl nowrap ro'
+" ---------------------------------
+
+" Allow editing Mac crontab with Vim a la
+" http://superuser.com/questions/359580/error-adding-cronjobs-in-mac-os-x-lion
+if $VIM_CRONTAB == "true"
+    set nobackup
+    set nowritebackup
+endif
 
 " Open splits on the right and bottom
 set splitright
@@ -166,14 +185,20 @@ set showmatch
 " Restore folds when file is reloaded
 " http://vim.wikia.com/wiki/Make_views_automatic
 " set viewdir=~/.vim-views
-" autocmd BufWinLeave *.* mkview!
-" autocmd BufWinEnter *.* silent loadview
+" augroup views
+"     autocmd!
+"     autocmd BufWinLeave *.* mkview!
+"     autocmd BufWinEnter *.* silent loadview
+" augroup END
 
 " Set spellcheck for certain files
-autocmd FileType gitcommit setlocal spell
-autocmd BufNewFile,BufRead *.markdown setlocal spell
-autocmd BufNewFile,BufRead *.md setlocal spell
-autocmd BufNewFile,BufRead *.txt setlocal spell
+augroup spellcheck
+    autocmd!
+    autocmd FileType gitcommit setlocal spell
+    autocmd BufNewFile,BufRead *.markdown setlocal spell
+    autocmd BufNewFile,BufRead *.md setlocal spell
+    autocmd BufNewFile,BufRead *.txt setlocal spell
+augroup END
 
 " Highlight current line
 set cursorline
@@ -236,7 +261,7 @@ set pastetoggle=<F11>
 set foldenable          " Turn on folding
 set foldlevelstart=10   " Default show up to 10 levels of folds open on start
 set foldnestmax=10      " Don't allow past 10 levels of fold nesting
-set foldmethod=indent   " Automatically fold based on indentation (yay, Python)
+autocmd FileType *.py setlocal foldmethod=indent   " Automatically fold based on indentation (yay, Python)
 
 "------------------------------------------------------------
 " Indentation options {{{1
@@ -271,15 +296,8 @@ map Y y$
 " next search
 nnoremap <Leader>l :nohl<CR><C-L>
 
-" Map <S-j> and <S-k> to PageDown and PageUp respectively
-noremap <S-J> <C-F>zz
-noremap <S-K> <C-B>zz
-
 " Map backtick to switch buffers quickly = MAY NOT NEED THIS
 " nnoremap ` <C-^>
-
-" Map hotkey to save an edition session
-nnoremap SS :mksession! ~/.vim/.saved-session.vim<CR>
 
 " Allow flashing cursor to be seen when matching parenthesis
 hi MatchParen ctermfg=white
@@ -312,10 +330,10 @@ augroup END
 nnoremap ]<Space> o<Esc>
 nnoremap [<Space> O<Esc>
 
-" Join a line to the previous one 
+" Joins the current line to the previous one with a space
 nnoremap <^ ^d0i<BS><Space><Esc>
 
-" Split everything after the cursor into a new line
+" Splits everything after the cursor into a new line
 nnoremap >v i<Return><Esc>
 
 " Have movement commands operate linewise
@@ -325,11 +343,13 @@ nnoremap ^ g^
 nnoremap $ g$
 vnoremap j gj
 vnoremap k gk
-vnoremap ^ g^
-vnoremap $ g$
+
+" Map <S-j> and <S-k> to PageDown and PageUp respectively
+noremap <S-J> <C-F>zz
+noremap <S-K> <C-B>zz
 
 " Easily flip paste mode toggle
-nnoremap <Leader>p :set invpaste paste?<CR>
+nnoremap <Leader>pp :set invpaste paste?<CR>
 
 " Screen-centering mappings
 nnoremap <Space> zz
@@ -342,24 +362,49 @@ if !exists(":PrettifyJson")
     :command PrettifyJson %!python -m json.tool
 endif
 
+function! DoPrettifyXML()
+  " save the filetype so we can restore it later
+  let l:origft = &ft
+  set ft=
+  " delete the xml header if it exists. This will
+  " permit us to surround the document with fake tags
+  " without creating invalid xml.
+  1s/<?xml .*?>//e
+  " insert fake tags around the entire document.
+  " This will permit us to pretty-format excerpts of
+  " XML that may contain multiple top-level elements.
+  0put ='<PrettyXML>'
+  $put ='</PrettyXML>'
+  silent %!xmllint --format -
+  " xmllint will insert an <?xml?> header. it's easy enough to delete
+  " if you don't want it.
+  " delete the fake tags
+  2d
+  $d
+  " restore the 'normal' indentation, which is one extra level
+  " too deep due to the extra tags we wrapped around the document.
+  silent %<
+  " back to home
+  1
+  " restore the filetype
+  exe "set ft=" . l:origft
+endfunction
+command! PrettifyXML call DoPrettifyXML()
+
+" This gives us a CAPSLOCK that turns itself off during insert mode, but it
+" can't be used during Ex commands so it's not very useful...
 " Insert and command-line mode Caps Lock.
-" Lock search keymap to be the same as insert mode.
-set imsearch=-1
-
-" Load the keymap that acts like capslock.
-set keymap=insert-capslock
-
-inoremap <C-u> <C-^>
-" Turn it off by default.
-set iminsert=0
-" Kill the capslock when leaving insert mode.
-autocmd InsertLeave * set iminsert=0
-
-" Set line numbers in netrw file explorer
-let g:netrw_bufsettings = 'noma nomod nu nobl nowrap ro'
-
-" Netrw opens in new window
-noremap <Leader>e :Vex!<CR>
+" " Lock search keymap to be the same as insert mode.
+" set imsearch=-1
+" 
+" " Load the keymap that acts like capslock.
+" set keymap=insert-capslock
+" 
+" inoremap <C-u> <C-^>
+" " Turn it off by default.
+" set iminsert=0
+" " Kill the capslock when leaving insert mode.
+" autocmd InsertLeave * set iminsert=0
 
 " Better split navigation
 nnoremap <C-f> <C-w>l
@@ -370,9 +415,21 @@ nnoremap <Leader>q <C-w>q
 noremap <C-Left> :tabp<CR>
 noremap <C-Right> :tabn<CR>
 
-" Allow editing Mac crontab with Vim a la
-" http://superuser.com/questions/359580/error-adding-cronjobs-in-mac-os-x-lion
-if $VIM_CRONTAB == "true"
-    set nobackup
-    set nowritebackup
-endif
+" Easy way to echo a line for Bash debugging
+nnoremap <Leader>bd V:s/"/\\"/g<CR>^iecho "<ESC>$a"<ESC>
+
+" Easy opening of splits
+nnoremap <Leader>v :vsp 
+nnoremap <Leader>s :sp
+nnoremap <Leader>e :e 
+
+" Easy mapping for writing a file
+nnoremap <Leader>w :w<CR>
+
+" Operators for easy operation on parantheses and quotes
+onoremap p i(
+onoremap q i"
+
+" Python conveniences
+" TODO This doesn't work (<leader>p does something but I don't know what)
+vnoremap <Leader>pa :s/_\(\w\+)_ARGVAR/& = "\L\1"/g<CR>
