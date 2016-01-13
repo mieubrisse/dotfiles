@@ -286,6 +286,12 @@
                 "9.20.1"
             ]
         }, 
+        "palantir/insta/insta": {
+            "options": [], 
+            "versions": [
+                "0.1.5"
+            ]
+        }, 
         "pango": {
             "options": [], 
             "versions": [
@@ -421,6 +427,7 @@
         "homebrew/python", 
         "homebrew/science", 
         "homebrew/versions", 
+        "palantir/insta", 
         "ravenac95/sudolikeaboss"
     ]
 }
