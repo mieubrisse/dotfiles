@@ -272,6 +272,37 @@ function meeting() {
     fi
 }
 
+# Convenience method for starting a new set of meeting notes for a project
+# NOTE: This relies on having the 
+function easy_meeting() {
+    if [ -z "${meeting_notes_template_filepath}" ]; then
+        echo "meeting_notes_template_filepath variable is unset; make sure it gets set in ~/.bash_local" >&2
+        return 1
+    fi
+
+    project="${1}"
+    shift 1
+    meeting_notes_dirpath="${HOME}/Documents/${project,,}/meeting-notes"
+    if ! [ -d "${meeting_notes_dirpath}" ]; then
+        mkdir "${meeting_notes_dirpath}"
+    fi
+    meeting "${meeting_notes_dirpath}" "${meeting_notes_template_filepath}" ${@}
+}
+
+# Convenience method for converting meeting notes to Markdown
+function easy_chrome() {
+    project="${1}"
+    shift 1
+    meeting_notes_dirpath="${HOME}/Documents/${project,,}/meeting-notes"
+    (
+        cd "${meeting_notes_dirpath}"
+        matching_files="$(fuzzy_ls ${@} | filter)"
+        if ! [ -z "${matching_files}" ]; then
+            chrome ${matching_files}
+        fi
+    )
+}
+
 # Searches for a gradlew file up the tree and uses it for gradle commands
 # Add 'nocd' as the first argument to run the gradle commands from the directory you're in at the moment
 function gradle_search() {
