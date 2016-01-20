@@ -328,3 +328,11 @@ function gradle_search() {
 alias grd="gradle_search"
 
 alias rsync="rsync --perms --progress"
+
+# Easy SSH aliases
+# Interesting tidbit: I used to have a 'for line in $(grep '^Host.....)' thing here, but 
+# one of my HostName entries in my SSH config file was '*', which was getting Bash glob-expanded and causing problems!
+# Lesson learned...
+grep '^Host' "${HOME}/.ssh/config" | grep -v '*' | awk '{print $2}' | while read -r ssh_host; do
+    alias ${ssh_host}="ssh ${ssh_host}"
+done
