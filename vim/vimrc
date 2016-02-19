@@ -27,6 +27,7 @@ Plugin 'kien/ctrlp.vim'
 Plugin 'tomtom/tcomment_vim'
 Plugin 'davidhalter/jedi-vim'
 Plugin 'ervandew/supertab'
+Plugin 'leafgarland/typescript-vim'
 
 " All the Vim YAML plugins are miserable...
 " Plugin 'avakhov/vim-yaml'
@@ -96,6 +97,9 @@ let NERDTreeQuitOnOpen = 1
 
 " ------ Ctrl P ------
 let g:ctrlp_working_path_mode = 'ra'
+
+" We want cross-session caching for those big projects
+let g:ctrlp_clear_cache_on_exit = 0
 " --------------------
 
 " ------ Jellybeans Color Scheme ------
