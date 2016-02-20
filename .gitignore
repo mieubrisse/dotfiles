@@ -1,0 +1,2 @@
+# Ignored because the Jinja template is the authoritative source here (to avoid revealing local info)
+backup-homebrew-wrapper.sh

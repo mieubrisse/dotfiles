@@ -20,7 +20,7 @@ call vundle#begin('~/.vundle')
 " :PluginClean      - confirms removal of unused plugins; append `!` to auto-approve removal
 " Plugin 'Valloric/YouCompleteMe'
 Plugin 'nanotech/jellybeans.vim'
-" Plugin 'vim-scripts/groovy.vim'
+Plugin 'vim-scripts/groovy.vim'
 Plugin 'tfnico/vim-gradle'
 Plugin 'kien/ctrlp.vim'
 " Plugin 'scrooloose/nerdtree'

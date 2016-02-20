@@ -32,7 +32,10 @@ script_filename="$(basename ${0})"
 log_filepath="${logs_dirpath}/${script_filename}_$(date +%F_%H-%M).log"
 cmd="python ${backup_script} -c ${output_filepath}"
 if [[ "${cron_mode}" == "true" ]]; then
-    ${cmd} &> "${log_filepath}"
+    cmd="${cmd} &> ${log_filepath}"
+fi
+if eval "${cmd}"; then
+    echo "${0} completed successfully" > ${log_filepath}
 else
-    ${cmd}
+    echo "${0} exited with an error" > ${log_filepath}
 fi

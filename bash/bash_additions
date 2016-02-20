@@ -54,31 +54,30 @@ shopt -s cmdhist # Combine multi-line entries into one history line
 function __prompt_command() {
     local LAST_EXIT_CODE="${?}"
 
-    if [[ ${__new_wd:=$PWD} != $PWD ]]; then 
-        ls
-        [[ -d ".git" ]] && command -v git >/dev/null 2>&1 && ( [ -n "$(git fetch --prune 2>&1)" ] && printf "\ngit-pull needed\n" & )
-    fi
-    __new_wd=$PWD
-
-
-
     local RESET_COLOR='\[\e[0m\]'
     local RED='\[\e[0;31m\]'
     local GREEN='\[\e[0;32m\]'
     local PURPLE='\[\e[0;35m\]'
     local BRIGHT_RED='\[\e[1;31m\]'
     local BRIGHT_GREEN='\[\e[1;32m\]'
-    local BRIGHT_YEL='\[\e[1;33m\]'
+    local BRIGHT_YELLOW='\[\e[1;33m\]'
     local BRIGHT_BLUE='\[\e[1;34m\]'
+    local BRIGHT_PURPLE='\[\e[1;35m\]'
 
     if [ ${LAST_EXIT_CODE} == 0 ]; then
-        local NAME_COLOR="${BRIGHT_GREEN}"
+        local NAME_COLOR="${BRIGHT_PURPLE}"
     else
         local NAME_COLOR="${BRIGHT_RED}"
     fi
     
     # Bold move: don't show user/hostname
-    PS1="${RESET_COLOR}${NAME_COLOR}> \w${RESET_COLOR} "
+    PS1="\n${RESET_COLOR}${NAME_COLOR}> \w${RESET_COLOR} "
+
+    if [[ ${__new_wd:=$PWD} != $PWD ]]; then 
+        ls
+        [[ -d ".git" ]] && command -v git >/dev/null 2>&1 && ( [ -n "$(git fetch --prune 2>&1)" ] && echo -e "\n\e[1;35mGIT FETCHED THINGS\e[0m" & )
+    fi
+    __new_wd=$PWD
 }
 PROMPT_COMMAND=__prompt_command
 
