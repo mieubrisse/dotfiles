@@ -71,7 +71,7 @@ function __prompt_command() {
     fi
     
     # Bold move: don't show user/hostname
-    PS1="\n${RESET_COLOR}${NAME_COLOR}> \w${RESET_COLOR} "
+    PS1="${RESET_COLOR}${NAME_COLOR}> \w${RESET_COLOR} "
 
     if [[ ${__new_wd:=$PWD} != $PWD ]]; then 
         ls

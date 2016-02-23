@@ -71,7 +71,10 @@ else:
     indices = []
     while not selection_valid:
         print_msg("Use which? ")
-        choice_str = raw_input()
+        try :
+            choice_str = raw_input()
+        except KeyboardInterrupt:
+            sys.exit(1)
         try: 
             indices = validate_choices(choice_str, input_lines)
             selection_valid = True;

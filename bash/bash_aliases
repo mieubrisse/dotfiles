@@ -129,6 +129,13 @@ cd() {
 # Allows user to choose which lines of piped input to pass through
 alias filter="~/.bash_utils/filter.py"
 
+# Pipes the output of the given command to filter
+function _pipe_to_filter() {
+    "${@}" | filter
+}
+alias flf="_pipe_to_filter fuzzy_ls"
+alias fff="_pipe_to_filter fuzzy_find"
+
 # Fuzzy searches for the given file, then filters output and feeds it into the given command
 # $1 - Command to feed chosen file to
 # $2 - Command to generate results for filtering
@@ -185,6 +192,7 @@ alias   jobs="jobs -l"
 # alias srm="srm -i"
 
 # Output redirection functions
+# TODO These don't seem to work so well..
 function    unify_output() { 2>&1 "${@}"; }
 function    quiet() { "${@}" 2> /dev/null; }
 function    silent() { "${@}" > /dev/null 2>&1; }
@@ -200,11 +208,12 @@ function sshl {
 alias prettify-json="python -mjson.tool"
 
 # Announces a completed task
+# TODO Doesn't seem to work
 function announce() {
-	"$@"
-	[[ $? == 127 ]] && return 1	# Don't speak for command not found
-	VOICE_TXT=$(printf "%s" "${1}" | sed "s:.*/\(\.*\)::g")" command is done"	# Speak only command name
-	say -v "Vicki" "${VOICE_TXT}"
+    "$@"
+    [[ $? == 127 ]] && return 1	# Don't speak for command not found
+    VOICE_TXT=$(printf "%s" "${1}" | sed "s:.*/\(\.*\)::g")" command is done"	# Speak only command name
+    say -v "Vicki" "${VOICE_TXT}"
 }
 
 # --- Git Commands ------------------------
@@ -336,3 +345,132 @@ alias rsync="rsync --perms --progress"
 grep '^Host' "${HOME}/.ssh/config" | grep -v '*' | awk '{print $2}' | while read -r ssh_host; do
     alias ${ssh_host}="ssh ${ssh_host}"
 done
+
+# Helper function to get a Gitflow param
+# $1 - Partially-qualified param name, e.g. 'branch.master' or 'prefix.release'
+# STDOUT - Config parameter
+# RETURN - Return code of 'git config' command to retrieve the parameter
+function _get_gitflow_param() {
+    config_param="gitflow.${1}"
+    git config --get "${config_param}"
+    retcode=${?}
+    if [ ${retcode} -ne 0 ]; then
+        echo "Error: Could not retrieve Gitflow param ${config_param}"
+    fi
+    return ${retcode}
+}
+
+# Helper method to ensure that the develop and master branches are up-to-date with their remotes, and
+#  returns a nonzero exit code if this is not the case
+function _ensure_branch_sync() {
+    git fetch
+
+    # Check against the remotes
+    for config_param in master develop; do 
+        config_value="$(_get_gitflow_param "branch.${config_param}" || 1)"
+        diff_output="$(git log "${config_value}..origin/${config_value}" --oneline)"
+        [ -z "${diff_output}" ] || return 2
+    done
+}
+
+# Helper function to undo the effects of 'git flow release finish <version>', which are a pain to do
+#  by hand
+# RETURN - 0 if successful, >0 otherwise
+function _gitflow_release_unfinish() {
+    develop_branch="$(_get_gitflow_param "branch.develop" || return 1)"
+    master_branch="$(_get_gitflow_param "branch.master" || return 1)"
+    release_prefix="$(_get_gitflow_param "prefix.release" || return 1)"
+    version_tag="$(_get_gitflow_param "prefix.versiontag" || return 1)"
+
+    # We DON'T want the branches to be synced here since the user should fix this manually if they are
+    if _ensure_branch_sync; then
+        echo "Error: master and/or develop branch have been pushed to remote; you'll need to do this manually" >&2
+        return 2
+    fi
+
+    newest_master_tag="$(git describe --tags --abbrev=0 "${master_branch}")"
+    if [ -z "${newest_master_tag}" ]; then
+        echo "Error: No version to unrelease" >&2
+        return 3
+    fi
+
+    release_branch_tip="$(git merge-base "${develop_branch}" "${master_branch}")"
+    if [ -z "${release_branch_tip}" ]; then
+        echo "Error: Could not find common ancestor of ${develop_branch} and ${master_branch}"
+        return 4
+    fi
+
+    # If the user isn't using X.X.X-dev tags, we don't want to accidentally delete an old tag
+    newest_develop_tag="$(git describe --tags --match='*-dev' --abbrev=0 "${develop_branch}")"
+    if [ -z "${newest_develop_tag}" ] || [ "${newest_develop_tag%%-dev}" == "${newest_master_tag}" ]; then
+        delete_develop_tag=false
+    else
+        delete_develop_tag=true
+    fi
+
+    newest_release_branch_name="${release_prefix}${newest_master_tag}"
+
+    echo "To undo 'git flow release finish ${newest_master_tag##${version_tag}}' we'll:"
+    echo ""
+    echo " - Undo merge: ${newest_release_branch_name} => ${develop_branch}"
+    echo " - Undo merge: ${newest_release_branch_name} => ${master_branch}"
+    echo " - Delete tag: ${newest_master_tag} on ${master_branch}"
+    if ${delete_develop_tag}; then
+        echo " - Delete tag: ${newest_develop_tag} on ${develop_branch}"
+    fi
+    echo " - Recreate branch: ${newest_release_branch_name}"
+    echo ""
+    echo "We will NOT change anything on the remote!"
+    echo ""
+    read -p "Is this okay? ENTER for YES, Ctrl-C for NO"
+
+    git checkout "${develop_branch}"
+    git reset --hard HEAD^
+    git checkout "${master_branch}"
+    git reset --hard HEAD^
+    git tag -d "${newest_master_tag}"
+    if ${delete_develop_tag}; then
+        git tag -d "${newest_develop_tag}"
+    fi
+    git branch "${newest_release_branch_name}" "${release_branch_tip}"
+}
+
+# A saner wrapper around Gitflow that:
+# - auto-creates an empty commit after '_gitflow release start X.X.X' and tags it with X.X.X-rc
+# - auto-creates the X.X.X-dev tag after '_gitflow release finish X.X.X'
+# - allows you to undo the last release finish with '_gitflow release unfinish'
+function _gitflow() {
+    # If we're starting a release, make sure to push an empty commit and add the vX.X.X-rc tag
+    if [ "${1}" == "release" ] && [ "${2}" == "start" ]; then
+        develop_branch="$(_get_gitflow_param "branch.develop" || return 1)"
+        if ! _ensure_branch_sync; then
+            echo "Error: master and/or develop branch are out of sync with their remotes" >&2
+            return 1
+        fi
+
+        version="${!#}"
+        git-flow ${@} && 
+            git commit --allow-empty -m "Starting release/${version}" && 
+            git tag "${version}-rc"
+    # If we're finishing a release, make sure to tag the develop branch with vX.X.X-dev
+    elif [ "${1}" == "release" ] && [ "${2}" == "finish" ]; then
+        develop_branch="$(_get_gitflow_param "branch.develop" || return 1)"
+        master_branch="$(_get_gitflow_param "branch.master" || return 1)"
+        if ! _ensure_branch_sync; then
+            echo "Error: master and/or develop branch are out of sync with their remotes" >&2
+            return 1
+        fi
+
+        version="${!#}"
+        git-flow ${@} &&
+            read -p "We just merged ${version}; which version is next? " next_version &&
+            git checkout "${develop_branch}" &&
+            git tag "${next_version}-dev"
+    elif [ "${1}" == "release" ] && [ "${2}" == "unfinish" ]; then
+        _gitflow_release_unfinish
+    else
+        git-flow ${@}
+    fi
+}
+
+alias gfl="_gitflow"
