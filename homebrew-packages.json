@@ -415,6 +415,7 @@
         "firefox", 
         "flux", 
         "hipchat", 
+        "intellij-idea", 
         "java", 
         "kindle", 
         "skype", 
@@ -422,6 +423,7 @@
         "soapui", 
         "spotify", 
         "steam", 
+        "teamviewer", 
         "telegram", 
         "wireshark", 
         "xquartz"
@@ -430,6 +432,7 @@
         "atlassian/tap", 
         "caskroom/cask", 
         "homebrew/dupes", 
+        "homebrew/games", 
         "homebrew/python", 
         "homebrew/science", 
         "homebrew/versions", 
