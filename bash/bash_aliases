@@ -28,7 +28,7 @@ alias du='du -h'
 # $2 - function to use to sort ls results (head|tail)
 # $3 - number of results to ask for from head/tail
 function _ls_results {
-    ls $1 | $2 -n $3
+    ls "$1" | "$2" -n "$3"
 }
 
 # Returns the __ most-recently-modified files
@@ -38,7 +38,7 @@ function newest {
     else
         NUM_RESULTS=$1
     fi
-    _ls_results '-tr' 'tail' $NUM_RESULTS
+    _ls_results '-tr' 'tail' "$NUM_RESULTS"
 }
 
 # Returns the __ least-recently-modified files
@@ -48,7 +48,7 @@ function oldest {
     else
         NUM_RESULTS=$1
     fi
-    _ls_results '-tr' 'head' $NUM_RESULTS
+    _ls_results '-tr' 'head' "$NUM_RESULTS"
 }
 
 # Returns the __ first files alphabetically from ls
@@ -58,7 +58,7 @@ function first {
     else
         NUM_RESULTS=$1
     fi
-    _ls_results '' 'head' $NUM_RESULTS
+    _ls_results '' 'head' "$NUM_RESULTS"
 }
 
 # Returns the __ last files alphabetically from ls
@@ -68,7 +68,7 @@ function last {
     else
         NUM_RESULTS=$1
     fi
-    _ls_results '' 'tail' $NUM_RESULTS
+    _ls_results '' 'tail' "$NUM_RESULTS"
 }
 
 # Returns the __ biggest files by filesize
@@ -78,7 +78,7 @@ function biggest {
     else
         NUM_RESULTS=$1
     fi
-    _ls_results '-Sr' 'head' $NUM_RESULTS
+    _ls_results '-Sr' 'head' "$NUM_RESULTS"
 }
 
 # Returns the __ smallest files by filesize
@@ -88,7 +88,7 @@ function smallest {
     else
         NUM_RESULTS=$1
     fi
-    _ls_results '-Sr' 'tail' $NUM_RESULTS
+    _ls_results '-Sr' 'tail' "$NUM_RESULTS"
 }
 
 # Make find not suck
@@ -114,10 +114,9 @@ cd() {
         REPEAT_TIMES="${1:0:(${#1} - 2)}"
         if [[ "${1:(-2)}" == ".." ]] && [[ "${#1}" -gt 2 ]] && [[ $REPEAT_TIMES =~ ^-?[0-9]+$ ]] && [[ $REPEAT_TIMES -ne 0 ]]; then
             CD_STR=""
-            for i in $(seq 1 $REPEAT_TIMES); do
-                # Yes Shellcheck, I know we don't use the indexing variable 'i'
+            while read; do
                 CD_STR="../$CD_STR"
-            done
+            done < <(seq 1 "${REPEAT_TIMES}")
             cd "$CD_STR"
         else
             
@@ -149,7 +148,7 @@ alias vfl="use_command_filter_results vim fuzzy_ls"
 
 # Easily copy the contents of one or more file
 function clip() {
-    cat "${@}" | pbcopy
+    pbcopy < "${@}"
 }
 
 # Have mkdir create parent directories if they don't already exist
@@ -165,10 +164,10 @@ alias csegr='grep -I --color=auto' # Case-sensitive egrep
 alias egr='csegr -i'
 alias fgrep='fgrep --color=auto'
 alias egrep='egrep --color=auto'
-function rgr() { gr --exclude-dir="." --exclude-dir=".." -r "$@" * .*; }
-function csrgr() { csgr --exclude-dir="." --exclude-dir=".." -r "$@" * .*; }  # Case-sensitive recursive grep
-function ergr() { egr --exclude-dir="." --exclude-dir=".." -r "$@" * .*; }
-function csergr() { csegr --exclude-dir="." --exclude-dir=".." -r "$@" * .*; }  # Case-sensitive recursive egrep
+function rgr() { gr --exclude-dir="." --exclude-dir=".." -r "$@" ./* ./.*; }
+function csrgr() { csgr --exclude-dir="." --exclude-dir=".." -r "$@" ./* ./.*; }  # Case-sensitive recursive grep
+function ergr() { egr --exclude-dir="." --exclude-dir=".." -r "$@" ./* ./.*; }
+function csergr() { csegr --exclude-dir="." --exclude-dir=".." -r "$@" ./* ./.*; }  # Case-sensitive recursive egrep
 
 
 # Grep chain commands
@@ -200,8 +199,7 @@ function    silent() { "${@}" > /dev/null 2>&1; }
 # Easy SSH port forwarding
 function sshl { 
     COMMAND="${@:2}"
-    echo "ssh -L $1:localhost:$1 ${COMMAND}" 
-    ssh -L "$1":localhost:"$1" "${COMMAND}"
+    ssh -L "${1}:localhost:${1}" "${COMMAND[@]}"
 }
 
 # Command line JSON prettifier
@@ -295,7 +293,7 @@ function easy_meeting() {
     if ! [ -d "${meeting_notes_dirpath}" ]; then
         mkdir "${meeting_notes_dirpath}"
     fi
-    meeting "${meeting_notes_dirpath}" "${meeting_notes_template_filepath}" ${@}
+    meeting "${meeting_notes_dirpath}" "${meeting_notes_template_filepath}" "${@}"
 }
 
 # Convenience method for converting meeting notes to Markdown
@@ -305,9 +303,9 @@ function easy_chrome() {
     meeting_notes_dirpath="${HOME}/Documents/${project,,}/meeting-notes"
     (
         cd "${meeting_notes_dirpath}"
-        matching_files="$(fuzzy_ls ${@} | filter)"
-        if ! [ -z "${matching_files}" ]; then
-            chrome ${matching_files}
+        fuzzy_ls "${@}" | filter | readarray -t matching_files
+        if ! [ ${#matching_files[@]} -eq 0 ]; then
+            chrome "${matching_files[@]}"
         fi
     )
 }
@@ -332,7 +330,8 @@ function gradle_search() {
             cd ..
         fi
     done
-    echo "No gradle file found"
+    cd "${ORIG_DIR}"
+    echo "No gradlew file found in any parent directories" >&2
 }
 alias grd="gradle_search"
 
@@ -342,8 +341,8 @@ alias rsync="rsync --perms --progress"
 # Interesting tidbit: I used to have a 'for line in $(grep '^Host.....)' thing here, but 
 # one of my HostName entries in my SSH config file was '*', which was getting Bash glob-expanded and causing problems!
 # Lesson learned...
-grep '^Host' "${HOME}/.ssh/config" | grep -v '*' | awk '{print $2}' | while read -r ssh_host; do
-    alias ${ssh_host}="ssh ${ssh_host}"
+grep '^Host' "${HOME}/.ssh/config" | grep -v '[*]' | awk '{print $2}' | while read -r ssh_host; do
+    alias "${ssh_host}"="ssh '${ssh_host}'"
 done
 
 # Helper function to get a Gitflow param
@@ -449,7 +448,7 @@ function _gitflow() {
         fi
 
         version="${!#}"
-        git-flow ${@} && 
+        git-flow "${@}" && 
             git commit --allow-empty -m "Starting release/${version}" && 
             git tag "${version}-rc"
     # If we're finishing a release, make sure to tag the develop branch with vX.X.X-dev
@@ -462,15 +461,17 @@ function _gitflow() {
         fi
 
         version="${!#}"
-        git-flow ${@} &&
+        git-flow "${@}" &&
             read -p "We just merged ${version}; which version is next? " next_version &&
             git checkout "${develop_branch}" &&
             git tag "${next_version}-dev"
     elif [ "${1}" == "release" ] && [ "${2}" == "unfinish" ]; then
         _gitflow_release_unfinish
     else
-        git-flow ${@}
+        git-flow "${@}"
     fi
 }
 
 alias gfl="_gitflow"
+
+alias virtualenv="pyenv virtualenv"
