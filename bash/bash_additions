@@ -63,6 +63,7 @@ function __prompt_command() {
     local BRIGHT_YELLOW='\[\e[1;33m\]'
     local BRIGHT_BLUE='\[\e[1;34m\]'
     local BRIGHT_PURPLE='\[\e[1;35m\]'
+    local DARK_GREY='\[\e[1;30m\]'
 
     if [ ${LAST_EXIT_CODE} == 0 ]; then
         local NAME_COLOR="${BRIGHT_PURPLE}"
@@ -71,7 +72,7 @@ function __prompt_command() {
     fi
     
     # Bold move: don't show user/hostname
-    PS1="${RESET_COLOR}${NAME_COLOR}> \w${RESET_COLOR} "
+    PS1="${RESET_COLOR}${DARK_GREY}[$(date +%H:%M:%S)] ${NAME_COLOR}\w${RESET_COLOR} "
 
     if [[ ${__new_wd:=$PWD} != $PWD ]]; then 
         ls

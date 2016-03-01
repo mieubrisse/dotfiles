@@ -12,6 +12,12 @@ shopt -s histverify
 HISTSIZE=1000
 HISTFILESIZE=10000
 
+# Add timestamps to history file
+HISTTIMEFORMAT='%F %T '
+
+# Don't log calls to the boring commands
+HISTIGNORE='ls:bg:fg:history'
+
 # check the window size after each command and, if necessary,
 # update the values of LINES and COLUMNS.
 shopt -s checkwinsize
