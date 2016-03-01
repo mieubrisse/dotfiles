@@ -24,6 +24,7 @@ Plugin 'vim-scripts/groovy.vim'
 Plugin 'tfnico/vim-gradle'
 Plugin 'kien/ctrlp.vim'
 " Plugin 'scrooloose/nerdtree'
+Plugin 'scrooloose/syntastic'
 Plugin 'tomtom/tcomment_vim'
 Plugin 'davidhalter/jedi-vim'
 Plugin 'ervandew/supertab'
@@ -46,7 +47,7 @@ Plugin 'tpope/vim-markdown'
 " Plugin 'garbas/vim-snipmate'
 " Plugin 'honza/vim-snippets'
 " Plugin 'tristen/vim-sparkup'
-" Plugin 'tpope/vim-surround'
+Plugin 'tpope/vim-surround'
 Plugin 'sukima/xmledit'
 Plugin 'airblade/vim-gitgutter'
 Plugin 'mustache/vim-mustache-handlebars'
@@ -84,6 +85,18 @@ if v:version >= 705 || (v:version == 704 && has('patch775'))
     set completeopt=menuone,longest,preview,noinsert
 endif
 " -----------------------
+
+" ------ Syntastic -------
+set statusline+=%#warningmsg#
+set statusline+=%{SyntasticStatuslineFlag()}
+set statusline+=%*
+
+let g:syntastic_always_populate_loc_list = 1
+let g:syntastic_auto_loc_list = 1
+let g:syntastic_check_on_open = 1
+let g:syntastic_check_on_wq = 0
+let g:syntastic_loc_list_height=5
+" ------------------------
 
 " ------ SuperTab -------
 " Use Vim's omnicomplete for SuperTab
@@ -257,6 +270,9 @@ set number
 
 " Quickly time out on keycodes, but never time out on mappings
 set notimeout ttimeout ttimeoutlen=200
+
+" Lazy redraw, from sensible.vim
+set lazyredraw
 
 " Use <F11> to toggle between 'paste' and 'nopaste'
 set pastetoggle=<F11>
