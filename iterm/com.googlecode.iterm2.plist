@@ -146,7 +146,7 @@
 	<key>HideScrollbar</key>
 	<false/>
 	<key>HideTab</key>
-	<true/>
+	<false/>
 	<key>HighlightTabLabels</key>
 	<true/>
 	<key>HotKeyBookmark</key>
@@ -208,7 +208,7 @@
 		<string>^h</string>
 	</dict>
 	<key>NSWindow Frame Preferences</key>
-	<string>0 393 924 485 0 0 1440 878 </string>
+	<string>88 283 924 485 0 0 1440 878 </string>
 	<key>NSWindow Frame SUStatusFrame</key>
 	<string>380 489 384 129 0 0 1440 878 </string>
 	<key>NSWindow Frame iTerm Window 0</key>
