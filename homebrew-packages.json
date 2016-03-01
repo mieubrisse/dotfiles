@@ -316,6 +316,12 @@
                 "1.10.0_1"
             ]
         }, 
+        "pyenv": {
+            "options": [], 
+            "versions": [
+                "20160202"
+            ]
+        }, 
         "qt": {
             "options": [], 
             "versions": [
