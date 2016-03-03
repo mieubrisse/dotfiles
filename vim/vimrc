@@ -52,6 +52,7 @@ Plugin 'sukima/xmledit'
 Plugin 'airblade/vim-gitgutter'
 Plugin 'mustache/vim-mustache-handlebars'
 Plugin 'fatih/vim-go'
+Plugin 'vim-airline/vim-airline'
 
 
 " All of your Plugins must be added before the following line
@@ -87,15 +88,16 @@ endif
 " -----------------------
 
 " ------ Syntastic -------
-set statusline+=%#warningmsg#
-set statusline+=%{SyntasticStatuslineFlag()}
-set statusline+=%*
-
 let g:syntastic_always_populate_loc_list = 1
 let g:syntastic_auto_loc_list = 1
 let g:syntastic_check_on_open = 1
 let g:syntastic_check_on_wq = 0
 let g:syntastic_loc_list_height=5
+" ------------------------
+
+" ------ Airline -------
+let g:airline_left_sep=''
+let g:airline_right_sep=''
 " ------------------------
 
 " ------ SuperTab -------
@@ -244,6 +246,7 @@ set nostartofline
 set ruler
 
 " Always display the status line, even if only one window is displayed
+" NOTE: This was disabled due to it not playing nicely with Syntastic
 set laststatus=2
 
 " Instead of failing a command because of unsaved changes, instead raise a
