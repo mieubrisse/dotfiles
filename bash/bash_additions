@@ -64,15 +64,27 @@ function __prompt_command() {
     local BRIGHT_BLUE='\[\e[1;34m\]'
     local BRIGHT_PURPLE='\[\e[1;35m\]'
     local DARK_GREY='\[\e[1;30m\]'
+    local BLACK_FORE_LIGHT_GREY_BACK='\[\e[48;5;0;38;5;254m\]'
+    local INVERTED_COLOR='\[\e[7m\]'
 
     if [ ${LAST_EXIT_CODE} == 0 ]; then
         local NAME_COLOR="${BRIGHT_PURPLE}"
     else
         local NAME_COLOR="${BRIGHT_RED}"
     fi
+
     
     # Bold move: don't show user/hostname
     PS1="${RESET_COLOR}${DARK_GREY}[$(date +%H:%M:%S)] ${NAME_COLOR}\w${RESET_COLOR} "
+
+    # If directory is a Git repo, add the branch name
+    local branch_name="$(git rev-parse --abbrev-ref HEAD 2>/dev/null)"
+    if [ -n "${branch_name}" ]; then
+        if [ "${branch_name}" == "HEAD" ]; then
+            branch_name="$(git rev-parse --short HEAD)"
+        fi
+        PS1+="${BRIGHT_YELLOW}(${branch_name})${RESET_COLOR} "
+    fi
 
     if [[ ${__new_wd:=$PWD} != $PWD ]]; then 
         ls

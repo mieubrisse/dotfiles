@@ -169,7 +169,6 @@ function csrgr() { csgr --exclude-dir="." --exclude-dir=".." -r "$@" ./* ./.*; }
 function ergr() { egr --exclude-dir="." --exclude-dir=".." -r "$@" ./* ./.*; }
 function csergr() { csegr --exclude-dir="." --exclude-dir=".." -r "$@" ./* ./.*; }  # Case-sensitive recursive egrep
 
-
 # Grep chain commands
 alias hgr='history | gr'
 alias pgr='ps aux | gr'
@@ -220,7 +219,7 @@ alias gs="git status -sb"
 alias gsh="git show"
 alias gd="git diff --word-diff=color"
 alias gdc="gd --cached"
-alias gl="git log --graph --abbrev-commit --decorate --date=relative --format=format:'%C(bold blue)%h%C(reset) - %C(bold green)(%ar)%C(reset) %C(white)%s%C(reset) %C(dim white)- %an%C(reset)%C(bold yellow)%d%C(reset)' --all"
+alias gl="git log --graph --abbrev-commit --decorate --date=relative --format=format:'%C(bold blue)%h%C(reset) - %C(bold green)(%ar)%C(reset) %C(white)%s%C(reset) %C(bold black)[%an]%C(reset)%C(bold yellow)%d%C(reset)' --all"
 alias gll="git log --graph --abbrev-commit --decorate --format=format:'%C(bold blue)%h%C(reset) - %C(bold cyan)%aD%C(reset) %C(bold green)(%ar)%C(reset)%C(bold yellow)%d%C(reset)%n'' %C(white)%s%C(reset) %C(dim white)- %an%C(reset)' --all"
 
 # Making changes
