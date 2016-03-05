@@ -37,34 +37,72 @@ shopt -s cdspell # Automatically fix 'cd' spelling mistakes
 shopt -s autocd # Using 'cd' is so passe
 shopt -s cmdhist # Combine multi-line entries into one history line
 
+# Helper function to get foreground and background colors
+function __get_color() {
+    local place="${1}"
+    local color="${2}"
+
+    if [ "${place}" == "fore" ]; then
+        local val="38"
+    else
+        local val="48"
+    fi
+
+    echo '\[\e['${val}';5;'${color}'m\]'
+}
+
 # On changing directory, ls and git fetch in background if git directory
 function __prompt_command() {
     local LAST_EXIT_CODE="${?}"
 
+    # Regular ASCII colors
     local RESET_COLOR='\[\e[0m\]'
+    local BOLD="$(tput bold)"
     # local RED='\[\e[0;31m\]'
     # local GREEN='\[\e[0;32m\]'
     # local PURPLE='\[\e[0;35m\]'
     local BRIGHT_RED='\[\e[1;31m\]'
-    # local BRIGHT_GREEN='\[\e[1;32m\]'
+    local BRIGHT_GREEN='\[\e[1;32m\]'
     # local BRIGHT_YELLOW='\[\e[1;33m\]'
-    # local BRIGHT_BLUE='\[\e[1;34m\]'
-    local BRIGHT_PURPLE='\[\e[1;35m\]'
+     local BRIGHT_BLUE='\[\e[1;34m\]'
+    # local BRIGHT_PURPLE='\[\e[1;35m\]'
     local DARK_GREY='\[\e[1;30m\]'
     # local BLACK_FORE_LIGHT_GREY_BACK='\[\e[48;5;0;38;5;254m\]'
     # local INVERTED_COLOR='\[\e[7m\]'
+    local DARK_GREY_BACK='\[\e[1;30m\]'
+
+    # Sexy 256-color colors
+    local SXY_TIMESTAMP_FORE='\[\e[38;5;243m\]'
+    local SXY_TIMESTAMP_BACK='\[\e[48;5;235m\]'
+    # local SXY_DIR_FORE='\[\e[38;5;94m\]'
+    local SXY_DIR_FORE=''
+    local SXY_DIR_BACK='\[\e[48;5;234m\]'
+    local SXY_ERROR_FORE=''
+    local SXY_ERROR_BACK='\[\e[48;5;88m\]'
+    local SXY_COMMAND_FORE=''
+    local LIGHT_GREY_BLUE=110
+    local light_grey=243
+    local very_dark_grey=235
+    local very2_dark_grey=234
+    local dark_red=88
+
+    local timestamp_color="$(__get_color back ${very2_dark_grey})$(__get_color fore ${light_grey})"
+    local SUCCESS_DIR_COLOR="$(__get_color back ${very_dark_grey})"
+    local ERROR_DIR_COLOR="$(__get_color back ${dark_red})"
+    local command_color="${BOLD}$(__get_color fore ${LIGHT_GREY_BLUE})"
 
     if [ ${LAST_EXIT_CODE} == 0 ]; then
-        local NAME_COLOR="${BRIGHT_PURPLE}"
+        local dir_color="${SUCCESS_DIR_COLOR}"
+        # local NAME_COLOR=""
     else
-        local NAME_COLOR="${BRIGHT_RED}"
+        local dir_color="${ERROR_DIR_COLOR}"
     fi
 
-
-    # Bold move: don't show user/hostname
-    PS1="${RESET_COLOR}${DARK_GREY}[$(date +%H:%M:%S)] ${NAME_COLOR}\w${RESET_COLOR} "
-
+    PS1="${RESET_COLOR}"
+    PS1="${timestamp_color} $(date +%H:%M:%S) ${RESET_COLOR}"
+    PS1+="${dir_color} \w ${RESET_COLOR}"
     PS1+="$(bash ~/.bash_utils/git-prompt-addition.sh)"
+    PS1+="${RESET_COLOR} ${command_color}"
 
     if [[ ${__new_wd:=$PWD} != $PWD ]]; then
         ls
@@ -74,6 +112,9 @@ function __prompt_command() {
 }
 PROMPT_COMMAND=__prompt_command
 
+# This is a hacky and awesome thing that allows me to change my command color text but not the output. See:
+# http://unix.stackexchange.com/questions/198723/change-color-of-input-text-not-output
+trap 'echo -ne "\e[0m"' DEBUG
 
 export EDITOR="vim"
 

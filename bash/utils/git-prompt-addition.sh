@@ -8,11 +8,19 @@
 #
 
 # Prompt colors
+# TODO Move control of these colors back to .bashrc
 RESET_COLOR='\[\e[0m\]'
-RED='\[\e[0;31m\]'
-GREEN='\[\e[0;32m\]'
-BRIGHT_YELLOW='\[\e[1;33m\]'
-BRIGHT_RED='\[\e[1;31m\]'
+# BOLD="$(tput bold)"
+YELLOW_FORE='\[\e[38;5;226m\]'
+DARKISH_GREY_BACK='\[\e[48;5;236m\]'
+GREEN_FORE='\[\e[38;5;28m\]'
+RED_FORE='\[\e[38;5;124m\]'
+ELECTRIC_PURPLE_FORE='\[\e[38;5;129m\]'
+
+branch_color="${YELLOW_FORE}${DARKISH_GREY_BACK}"
+local_color="${ELECTRIC_PURPLE_FORE}${DARKISH_GREY_BACK}"
+ahead_color="${GREEN_FORE}${DARKISH_GREY_BACK}"
+behind_color="${RED_FORE}${DARKISH_GREY_BACK}"
 
 git_status="$( LC_ALL=C git status --porcelain --branch 2>/dev/null )"
 retcode="${?}"
@@ -70,18 +78,18 @@ else
     fi
 fi
 
-returnstr="${RESET_COLOR}${BRIGHT_YELLOW}(${branch}${RESET_COLOR}"
+# returnstr="${RESET_COLOR}${BRIGHT_YELLOW}(${branch}${RESET_COLOR}"
+returnstr="${branch_color} ${branch} ${RESET_COLOR}"
 if [ "${remote}" == "_NO_REMOTE_TRACKING_" ]; then
-    returnstr+=" ${BRIGHT_RED}local${RESET_COLOR}"
+    returnstr+="${local_color}L ${RESET_COLOR}"
 else
     if [ -n "${num_ahead}" ]; then
-        returnstr+="${GREEN}+${num_ahead}${RESET_COLOR}"
+        returnstr+="${ahead_color}+${num_ahead} ${RESET_COLOR}"
     fi
     if [ -n "${num_behind}" ]; then
-        returnstr+="${RED}-${num_behind}${RESET_COLOR}"
+        returnstr+="${behind_color}-${num_behind} ${RESET_COLOR}"
     fi
 fi
-returnstr+="${BRIGHT_YELLOW})${RESET_COLOR} "
 echo "${returnstr}"
 
 
