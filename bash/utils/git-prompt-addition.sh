@@ -72,7 +72,7 @@ fi
 
 returnstr="${RESET_COLOR}${BRIGHT_YELLOW}(${branch}${RESET_COLOR}"
 if [ "${remote}" == "_NO_REMOTE_TRACKING_" ]; then
-    returnstr+="${BRIGHT_RED}L${RESET_COLOR}"
+    returnstr+=" ${BRIGHT_RED}local${RESET_COLOR}"
 else
     if [ -n "${num_ahead}" ]; then
         returnstr+="${GREEN}+${num_ahead}${RESET_COLOR}"
