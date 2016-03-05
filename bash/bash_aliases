@@ -445,9 +445,25 @@ function _gitflow() {
             echo "Error: master and/or develop branch are out of sync with their remotes" >&2
             return 1
         fi
+        version_tag="$(_get_gitflow_param "prefix.versiontag" || return 1)"
 
-        version="${!#}"
-        git-flow "${@}" && 
+        # Try and autodetect the version if a user doesn't specify one
+        local command="git-flow ${@}"
+        if [ ${#} -eq 2 ]; then
+            newest_develop_tag="$(git describe --tags --match='*-dev' --abbrev=0 "${develop_branch}")"
+            minus_version_tag="${newest_develop_tag##${version_tag}}"
+            version="${minus_version_tag%%-dev}"
+            if [ -z "${version}" ]; then
+                echo "Error: Couldn't autodetect version from latest develop branch; specify a version instead" >&2
+                return 1
+            fi
+            read -p "What version should we release with? (${version}): " corrected_version 
+            version="${corrected_version:-${version}}"
+            command+=" ${version}"
+        else 
+            version="${!#}"
+        fi
+        eval "${command}" && 
             git commit --allow-empty -m "Starting release/${version}" && 
             git tag "${version}-rc"
     # If we're finishing a release, make sure to tag the develop branch with vX.X.X-dev
