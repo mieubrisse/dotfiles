@@ -34,12 +34,12 @@ shopt -s cmdhist # Combine multi-line entries into one history line
 #
 # if [ -n "$force_color_prompt" ]; then
 #     if [ -x /usr/bin/tput ] && tput setaf 1 >&/dev/null; then
-# 	# We have color support; assume it's compliant with Ecma-48
-# 	# (ISO/IEC-6429). (Lack of such support is extremely rare, and such
-# 	# a case would tend to support setf rather than setaf.)
-# 	color_prompt='yes'
+#     # We have color support; assume it's compliant with Ecma-48
+#     # (ISO/IEC-6429). (Lack of such support is extremely rare, and such
+#     # a case would tend to support setf rather than setaf.)
+#     color_prompt='yes'
 #     else
-# 	color_prompt='no'
+#     color_prompt='no'
 #     fi
 # fi
 
@@ -73,22 +73,30 @@ function __prompt_command() {
         local NAME_COLOR="${BRIGHT_RED}"
     fi
 
-    
+
     # Bold move: don't show user/hostname
     PS1="${RESET_COLOR}${DARK_GREY}[$(date +%H:%M:%S)] ${NAME_COLOR}\w${RESET_COLOR} "
 
-    # If directory is a Git repo, add the branch name
-    local branch_name="$(git rev-parse --abbrev-ref HEAD 2>/dev/null)"
-    if [ -n "${branch_name}" ]; then
-        if [ "${branch_name}" == "HEAD" ]; then
-            branch_name="$(git rev-parse --short HEAD)"
-        fi
-        PS1+="${BRIGHT_YELLOW}(${branch_name})${RESET_COLOR} "
-    fi
+    # # If directory is a Git repo, add the branch name
+    # local git_addition=""
+    # local branch_name="$(git rev-parse --abbrev-ref HEAD 2>/dev/null)"
+    # local get_branch_retcode="${?}"
+    # local commit_hash="$(git rev-parse --short HEAD 2>/dev/null)"
+    # local get_commit_retcode="${?}"
+    # if [ ${get_branch_retcode} -eq 0 ] && [ -n "${branch_name}" ] && [ "${branch_name}" != "HEAD" ]; then
+    #     git_addition="${branch_name}"
+    # elif [ ${get_commit_retcode} -eq 0 ] && [ -n "${commit_hash}" ]; then
+    #     git_addition="${commit_hash}"
+    # fi
+    # if [ -n "${git_addition}" ]; then
+    #     PS1+="${BRIGHT_YELLOW}(${git_addition})${RESET_COLOR} "
+    # fi
 
-    if [[ ${__new_wd:=$PWD} != $PWD ]]; then 
+    PS1+="$(bash ~/.bash_utils/git-prompt-addition.sh)"
+
+    if [[ ${__new_wd:=$PWD} != $PWD ]]; then
         ls
-        [[ -d ".git" ]] && command -v git >/dev/null 2>&1 && ( [ -n "$(git fetch --prune 2>&1)" ] && echo -e "\n\e[1;35mGIT FETCHED THINGS\e[0m" & )
+        [[ -d ".git" ]] && command -v git >/dev/null 2>&1 && ( [ -n "$(git fetch --prune 2>&1)" ] && echo -e "\n\e[1;32mGIT FETCHED THINGS\e[0m" & )
     fi
     __new_wd=$PWD
 }
@@ -102,9 +110,9 @@ bind "set completion-ignore-case on"
 bind "set show-all-if-ambiguous on"
 
 # Set all additions to PATH
-PATH_ADDITIONS[0]=$HOME/.rvm/bin	# RVM to PATH for scripting
+PATH_ADDITIONS[0]=$HOME/.rvm/bin    # RVM to PATH for scripting
 for PATH_TO_ADD in "${PATH_ADDITIONS[@]}"; do
-	PATH="$PATH:$PATH_TO_ADD"
+    PATH="$PATH:$PATH_TO_ADD"
 done
 
 # Source RVM scripts
