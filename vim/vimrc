@@ -92,12 +92,20 @@ let g:syntastic_always_populate_loc_list = 1
 let g:syntastic_auto_loc_list = 1
 let g:syntastic_check_on_open = 1
 let g:syntastic_check_on_wq = 0
-let g:syntastic_loc_list_height=5
+let g:syntastic_loc_list_height=3
 " ------------------------
 
 " ------ Airline -------
 let g:airline_left_sep=''
 let g:airline_right_sep=''
+
+" I really only care about percentage through file, so only show me that
+let g:airline_section_z = airline#section#create(['%3p%%'])
+" call airline#parts#define_raw('linenr', '%l')
+" call airline#parts#define_accent('linenr', 'bold')
+" let g:airline_section_z = airline#section#create(['%3p%% ',
+"             \ g:airline_symbols.linenr .' ', 'linenr', ':%c '])
+
 " ------------------------
 
 " ------ SuperTab -------
@@ -419,10 +427,10 @@ command! PrettifyXML call DoPrettifyXML()
 " Insert and command-line mode Caps Lock.
 " " Lock search keymap to be the same as insert mode.
 " set imsearch=-1
-" 
+"
 " " Load the keymap that acts like capslock.
 " set keymap=insert-capslock
-" 
+"
 " inoremap <C-u> <C-^>
 " " Turn it off by default.
 " set iminsert=0
@@ -442,9 +450,9 @@ noremap <C-Right> :tabn<CR>
 nnoremap <Leader>bd V:s/"/\\"/g<CR>^iecho "<ESC>$a"<ESC>
 
 " Easy opening of splits
-nnoremap <Leader>v :vsp 
+nnoremap <Leader>v :vsp
 nnoremap <Leader>s :sp
-nnoremap <Leader>e :e 
+nnoremap <Leader>e :e
 
 " Easy mapping for writing a file
 nnoremap <Leader>w :w<CR>
