@@ -48,7 +48,7 @@ function __get_color() {
         local val="48"
     fi
 
-    echo '\[\e['${val}';5;'${color}'m\]'
+    echo '\[\e['"${val}"';5;'"${color}"'m\]'
 }
 
 # On changing directory, ls and git fetch in background if git directory
@@ -61,41 +61,33 @@ function __prompt_command() {
     # local RED='\[\e[0;31m\]'
     # local GREEN='\[\e[0;32m\]'
     # local PURPLE='\[\e[0;35m\]'
-    local BRIGHT_RED='\[\e[1;31m\]'
-    local BRIGHT_GREEN='\[\e[1;32m\]'
+    # local BRIGHT_RED='\[\e[1;31m\]'
+    # local BRIGHT_GREEN='\[\e[1;32m\]'
     # local BRIGHT_YELLOW='\[\e[1;33m\]'
-     local BRIGHT_BLUE='\[\e[1;34m\]'
+    # local BRIGHT_BLUE='\[\e[1;34m\]'
     # local BRIGHT_PURPLE='\[\e[1;35m\]'
-    local DARK_GREY='\[\e[1;30m\]'
+    # local DARK_GREY='\[\e[1;30m\]'
     # local BLACK_FORE_LIGHT_GREY_BACK='\[\e[48;5;0;38;5;254m\]'
     # local INVERTED_COLOR='\[\e[7m\]'
-    local DARK_GREY_BACK='\[\e[1;30m\]'
+    # local DARK_GREY_BACK='\[\e[1;30m\]'
 
     # Sexy 256-color colors
-    local SXY_TIMESTAMP_FORE='\[\e[38;5;243m\]'
-    local SXY_TIMESTAMP_BACK='\[\e[48;5;235m\]'
     # local SXY_DIR_FORE='\[\e[38;5;94m\]'
-    local SXY_DIR_FORE=''
-    local SXY_DIR_BACK='\[\e[48;5;234m\]'
-    local SXY_ERROR_FORE=''
-    local SXY_ERROR_BACK='\[\e[48;5;88m\]'
-    local SXY_COMMAND_FORE=''
-    local LIGHT_GREY_BLUE=110
+    # local LIGHT_GREY_BLUE=110
     local light_grey=243
     local very_dark_grey=235
     local very2_dark_grey=234
+    local red=1
     local dark_red=88
+    local green=76
 
     local timestamp_color="$(__get_color back ${very2_dark_grey})$(__get_color fore ${light_grey})"
-    local SUCCESS_DIR_COLOR="$(__get_color back ${very_dark_grey})"
-    local ERROR_DIR_COLOR="$(__get_color back ${dark_red})"
-    local command_color="${BOLD}$(__get_color fore ${LIGHT_GREY_BLUE})"
+    # local command_color="${BOLD}$(__get_color fore ${LIGHT_GREY_BLUE})"
+    local command_color="${BOLD}$(__get_color fore ${green})"
 
-    if [ ${LAST_EXIT_CODE} == 0 ]; then
-        local dir_color="${SUCCESS_DIR_COLOR}"
-        # local NAME_COLOR=""
-    else
-        local dir_color="${ERROR_DIR_COLOR}"
+    local dir_color="${BOLD}$(__get_color back "${very_dark_grey}")"
+    if [ ${LAST_EXIT_CODE} -ne 0 ]; then
+        dir_color+="$(__get_color fore "${red}")"
     fi
 
     PS1="${RESET_COLOR}"

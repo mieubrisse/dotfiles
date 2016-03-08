@@ -140,7 +140,8 @@ alias fff="_pipe_to_filter fuzzy_find"
 # $2 - Command to generate results for filtering
 # $3+ - Arguments passed to command for generating results to filter
 function use_command_filter_results() {
-    "$1" "$(${2} "${@:3}" | filter)"
+    # Workd-splitting is intentional here
+    $1 "$(${2} "${@:3}" | filter)"
 }
 
 alias vff="use_command_filter_results vim fuzzy_find"
@@ -226,6 +227,11 @@ alias gll="git log --graph --abbrev-commit --decorate --format=format:'%C(bold b
 alias gb="git branch"
 alias gco="git checkout"
 alias ga="git add"
+
+# TODO It's getting to the point where I need a better system for dealing with fuzzy find/ls results..
+alias gaff="use_command_filter_results 'git add' fuzzy_find"
+alias gafl="use_command_filter_results 'git add' fuzzy_ls"
+
 alias gcm="git commit"
 alias gcmm="git commit -m $1"
 alias gg="git commit -am $1"
