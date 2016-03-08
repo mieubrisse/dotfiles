@@ -14,13 +14,13 @@ RESET_COLOR='\[\e[0m\]'
 YELLOW_FORE='\[\e[38;5;226m\]'
 DARKISH_GREY_BACK='\[\e[48;5;236m\]'
 # GREEN_FORE='\[\e[38;5;28m\]'
-BRIGHT_GREEN_FORE='\[\e[38;5;10m\]'
+GREEN_FORE='\[\e[38;5;76m\]'
 RED_FORE='\[\e[38;5;124m\]'
 ELECTRIC_PURPLE_FORE='\[\e[38;5;129m\]'
 
 branch_color="${YELLOW_FORE}${DARKISH_GREY_BACK}"
 local_color="${ELECTRIC_PURPLE_FORE}${DARKISH_GREY_BACK}"
-ahead_color="${BRIGHT_GREEN_FORE}${DARKISH_GREY_BACK}"
+ahead_color="${GREEN_FORE}${DARKISH_GREY_BACK}"
 behind_color="${RED_FORE}${DARKISH_GREY_BACK}"
 
 git_status="$( LC_ALL=C git status --porcelain --branch 2>/dev/null )"

@@ -77,7 +77,7 @@ function __prompt_command() {
     local light_grey=243
     local very_dark_grey=235
     local very2_dark_grey=234
-    local red=1
+    local red=124
     local dark_red=88
     local green=76
 
