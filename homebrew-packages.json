@@ -172,6 +172,12 @@
                 "2.4.33"
             ]
         }, 
+        "homebrew/php/php56": {
+            "options": [], 
+            "versions": [
+                "5.6.19"
+            ]
+        }, 
         "homebrew/science/glpk": {
             "options": [], 
             "versions": [
@@ -439,6 +445,7 @@
         "caskroom/cask", 
         "homebrew/dupes", 
         "homebrew/games", 
+        "homebrew/php", 
         "homebrew/python", 
         "homebrew/science", 
         "homebrew/versions", 
