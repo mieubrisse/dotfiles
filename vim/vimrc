@@ -122,6 +122,9 @@ nnoremap <Leader>gb :Git branch<Space>
 nnoremap <Leader>go :Git checkout<Space>
 nnoremap <Leader>gps :Dispatch! git push<CR>
 nnoremap <Leader>gpl :Dispatch! git pull<CR>
+
+command! GDiffCached :Git! diff --cached
+nnoremap <Leader>gdc :GDiffCached<cr>
 " ------------------------
 
 " ------ SuperTab -------
@@ -460,29 +463,49 @@ command! PrettifyXML call DoPrettifyXML()
 " " Kill the capslock when leaving insert mode.
 " autocmd InsertLeave * set iminsert=0
 
+" Better buffer nav
+nnoremap <Leader>b :b#
+
 " Better split navigation
-nnoremap <C-f> <C-w>l
-nnoremap <C-b> <C-w>h
-nnoremap <Leader>q <C-w>q
+nnoremap <C-y> <C-w>h
+nnoremap <C-i> <C-w>k
+nnoremap <C-u> <C-w>j
+nnoremap <C-o> <C-w>l
+nnoremap <Left> <C-w>h
+nnoremap <Right> <C-w>l
+nnoremap <Down> <C-w>j
+nnoremap <Up> <C-w>k
+nnoremap <Leader>x <C-w>q
 
 " Better tab navigation
-noremap <C-Left> :tabp<CR>
-noremap <C-Right> :tabn<CR>
+nnoremap <Leader>tt :tabnew<CR>
+nnoremap <Leader>tn :tabn<CR>
+nnoremap <Leader>tp :tabp<CR>
+nnoremap <Leader>te :tabedit <CR>
+nnoremap <Leader>tq :tabclose<CR>
+nnoremap <Leader>tx :tabclose<CR>
 
 " Easy way to echo a line for Bash debugging
-nnoremap <Leader>bd V:s/"/\\"/g<CR>^iecho "<ESC>$a"<ESC>
+nnoremap <Leader>db V:s/"/\\"/g<CR>^iecho "<ESC>$a"<ESC>
 
+" TODO Figure out how to make Syntastic shut up about the trailing spaces
 " Easy opening of splits
-nnoremap <Leader>v :vsp
-nnoremap <Leader>s :sp
-nnoremap <Leader>e :e
+nnoremap <Leader>v :vsp 
+nnoremap <Leader>s :sp 
+nnoremap <Leader>e :e 
 
-" Easy mapping for writing a file
+" NOTE: These are cool, but I really shouldn't get used to them for cross-box
+" muscle memory... but I love them
+" Easy mapping for writing and quitting files
 nnoremap <Leader>w :w<CR>
+noremap <Leader>q :q<CR>
+noremap <C-d> :q<CR>
+nnoremap <Leader>x :wq<CR>
 
+" NOTE: I probably don't really want to get used to these
 " Operators for easy operation on parantheses and quotes
-onoremap p i(
-onoremap q i"
+" onoremap p i(
+" onoremap q i"
 
 " Python conveniences
 " TODO This doesn't work (<leader>p does something but I don't know what)
