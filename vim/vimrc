@@ -53,6 +53,7 @@ Plugin 'airblade/vim-gitgutter'
 Plugin 'mustache/vim-mustache-handlebars'
 Plugin 'fatih/vim-go'
 Plugin 'vim-airline/vim-airline'
+Plugin 'tpope/vim-fugitive'
 
 
 " All of your Plugins must be added before the following line
@@ -106,6 +107,25 @@ let g:airline_section_z = airline#section#create(['%3p%%'])
 " let g:airline_section_z = airline#section#create(['%3p%% ',
 "             \ g:airline_symbols.linenr .' ', 'linenr', ':%c '])
 
+" ------------------------
+
+" ------ Fugitive -------
+nnoremap <Leader>gs :Gstatus<CR>
+nnoremap <Leader>ga :Git add %:p<CR><CR>
+nnoremap <Leader>gcm :Gcommit -v -q<CR>
+" Dunno what this one does so leaving it out for now
+" nnoremap <Leader>gt :Gcommit -v -q %:p<CR>
+nnoremap <Leader>gdd :Gdiff<CR>
+nnoremap <Leader>ge :Gedit<CR>
+nnoremap <Leader>gr :Gread<CR>
+nnoremap <Leader>gw :Gwrite<CR><CR>
+nnoremap <Leader>gl :silent! Glog<CR>:bot copen<CR>
+nnoremap <Leader>gp :Ggrep<Space>
+nnoremap <Leader>gm :Gmove<Space>
+nnoremap <Leader>gb :Git branch<Space>
+nnoremap <Leader>go :Git checkout<Space>
+nnoremap <Leader>gps :Dispatch! git push<CR>
+nnoremap <Leader>gpl :Dispatch! git pull<CR>
 " ------------------------
 
 " ------ SuperTab -------
