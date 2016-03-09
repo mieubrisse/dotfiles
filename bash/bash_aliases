@@ -31,6 +31,10 @@ function _ls_results {
     ls "$1" | "$2" -n "$3"
 }
 
+# TODO Idea:
+# "newest", "oldest", etc. can also take in a path to search for files on, perhaps? E.g. "newest 3 ~/Downloads*.par" says
+# "Find the newest 3 files in ~/Downloads.par"
+
 # Returns the __ most-recently-modified files
 function newest {
     if [[ $# -eq 0 ]]; then
@@ -40,6 +44,7 @@ function newest {
     fi
     _ls_results '-tr' 'tail' "$NUM_RESULTS"
 }
+alias latest="newest"
 
 # Returns the __ least-recently-modified files
 function oldest {
@@ -50,6 +55,7 @@ function oldest {
     fi
     _ls_results '-tr' 'head' "$NUM_RESULTS"
 }
+alias earliest="oldest"
 
 # Returns the __ first files alphabetically from ls
 function first {
@@ -91,6 +97,9 @@ function smallest {
     _ls_results '-Sr' 'tail' "$NUM_RESULTS"
 }
 
+# TODO Idea:
+# Fuzzy_find and fuzzy_ls can take an additional argument of the directory to search!
+
 # Make find not suck
 alias cif="find . -iname" # Case-insensitive find
 function fuzzy_find() { 
@@ -127,6 +136,7 @@ cd() {
 
 # Allows user to choose which lines of piped input to pass through
 alias filter="~/.bash_utils/filter.py"
+alias ft="filter"
 
 # Pipes the output of the given command to filter
 function _pipe_to_filter() {
@@ -134,6 +144,11 @@ function _pipe_to_filter() {
 }
 alias flf="_pipe_to_filter fuzzy_ls"
 alias fff="_pipe_to_filter fuzzy_find"
+
+# TODO Idea:
+# Store a history of fuzzy find + filter searches,
+#  and remember the choices the user makes so we
+#  can give them a default choice the next time
 
 # Fuzzy searches for the given file, then filters output and feeds it into the given command
 # $1 - Command to feed chosen file to
@@ -232,11 +247,23 @@ alias ga="git add"
 alias gaff="use_command_filter_results 'git add' fuzzy_find"
 alias gafl="use_command_filter_results 'git add' fuzzy_ls"
 
+alias empty-commit="git commit --allow-empty -m $1"
 alias gcm="git commit"
 alias gcmm="git commit -m $1"
 alias gg="git commit -am $1"
 alias grs="git reset"
 alias grs1="git reset --soft HEAD^"
+
+# TODO Finish me!
+# Fugitive.vim additions
+# function __fugitive_git_status() {
+#     if [ local git_dirpath="$(git rev-parse --git-dir)"
+#     local retcode=${?}
+#     if [ 
+# }
+#
+# alias vgs="
+# alias egs="
 
 # Dealing with remotes
 alias gcl="git clone"
@@ -261,6 +288,7 @@ alias ipy="ipython"
 
 alias chrome="open -a 'Google Chrome'"
 
+alias e="vim "
 alias sp="vim -o"
 alias vsp="vim -O"
 
@@ -367,6 +395,7 @@ function _get_gitflow_param() {
 # Helper method to ensure that the develop and master branches are up-to-date with their remotes, and
 #  returns a nonzero exit code if this is not the case
 function _ensure_branch_sync() {
+    echo "Checking that master & develop are in sync with remotes..."
     git fetch
 
     # Check against the remotes
@@ -438,6 +467,13 @@ function _gitflow_release_unfinish() {
     fi
     git branch "${newest_release_branch_name}" "${release_branch_tip}"
 }
+
+# TODO Idea:
+# Add a "gitflow release push" command that pushes the tags and branches from the last release and
+# deletes the "release/X.X.X" branch on the remote
+
+# TODO Idea:
+# When doing "gitflow release finish", autodetect the version of the release to finish
 
 # A saner wrapper around Gitflow that:
 # - auto-creates an empty commit after '_gitflow release start X.X.X' and tags it with X.X.X-rc

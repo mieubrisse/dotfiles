@@ -56,8 +56,11 @@ function __prompt_command() {
     local LAST_EXIT_CODE="${?}"
 
     # Regular ASCII colors
-    local RESET_COLOR='\[\e[0m\]'
-    local BOLD="$(tput bold)"
+    # NOTE: The wrapping \[ and \] are necessary so Bash can  correctly calculate the size
+    #  of the prompt:
+    # https://wiki.archlinux.org/index.php/Bash/Prompt_customization#Terminfo_escape_sequences
+    local RESET_COLOR="\[$(tput sgr0)\]"
+    local BOLD="\[$(tput bold)\]"
     # local RED='\[\e[0;31m\]'
     # local GREEN='\[\e[0;32m\]'
     # local PURPLE='\[\e[0;35m\]'
@@ -75,26 +78,31 @@ function __prompt_command() {
     # local SXY_DIR_FORE='\[\e[38;5;94m\]'
     # local LIGHT_GREY_BLUE=110
     local light_grey=243
+    local dark_grey=236
     local very_dark_grey=235
     local very2_dark_grey=234
     local red=124
     local dark_red=88
-    local green=76
+    # local green=76
+    local algae_green=76
 
-    local timestamp_color="$(__get_color back ${very2_dark_grey})$(__get_color fore ${light_grey})"
-    # local command_color="${BOLD}$(__get_color fore ${LIGHT_GREY_BLUE})"
-    local command_color="${BOLD}$(__get_color fore ${green})"
+    local timestamp_color="$(__get_color back ${very_dark_grey})$(__get_color fore ${light_grey})"
+    local command_color="${BOLD}$(__get_color fore ${algae_green})"
+    
 
     local dir_color="${BOLD}$(__get_color back "${very_dark_grey}")"
     if [ ${LAST_EXIT_CODE} -ne 0 ]; then
         dir_color+="$(__get_color fore "${red}")"
     fi
 
-    PS1="${RESET_COLOR}"
-    PS1="${timestamp_color} $(date +%H:%M:%S) ${RESET_COLOR}"
-    PS1+="${dir_color} \w ${RESET_COLOR}"
+    PS1="${RESET_COLOR}${timestamp_color} $(date +%H:%M:%S) ${RESET_COLOR}"
+    PS1+="${dir_color}\w ${RESET_COLOR}"
     PS1+="$(bash ~/.bash_utils/git-prompt-addition.sh)"
-    PS1+="${RESET_COLOR} ${command_color}"
+    PS1+=" ${RESET_COLOR}"
+
+    # NOTE: Colored input text seems to fuck up history searching? :'(
+    # local command_color="${BOLD}$(__get_color fore ${algae_green})"
+    PS1+="${command_color}"
 
     if [[ ${__new_wd:=$PWD} != $PWD ]]; then
         ls
