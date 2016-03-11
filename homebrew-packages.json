@@ -328,7 +328,7 @@
                 "1.10.0_1"
             ]
         }, 
-        "pyenv": {
+        "pyenv-virtualenv": {
             "options": [], 
             "versions": [
                 "20160202"
