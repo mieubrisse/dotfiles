@@ -1,6 +1,9 @@
 # Jenv
 .java_version
 
+# Pyenv
+.python-version
+
 # Stupid Mac...
 .DS_Store
 

@@ -78,6 +78,13 @@
 			<key>Text</key>
 			<string></string>
 		</dict>
+		<key>0x74-0x40000</key>
+		<dict>
+			<key>Action</key>
+			<integer>27</integer>
+			<key>Text</key>
+			<string>EB950F04-0CCD-4F26-BDC7-29A17FACA656</string>
+		</dict>
 		<key>0xf700-0x300000</key>
 		<dict>
 			<key>Action</key>
@@ -207,14 +214,16 @@
 		<key>WindowSelect Previous Tab</key>
 		<string>^h</string>
 	</dict>
+	<key>NSWindow Frame NSFontPanel</key>
+	<string>-1762 532 445 270 -2560 0 2560 1440 </string>
 	<key>NSWindow Frame Preferences</key>
-	<string>88 283 924 485 0 0 1440 878 </string>
+	<string>318 293 924 485 0 0 1440 878 </string>
 	<key>NSWindow Frame SUStatusFrame</key>
 	<string>380 489 384 129 0 0 1440 878 </string>
 	<key>NSWindow Frame iTerm Window 0</key>
-	<string>0 13 1433 865 0 0 1440 878 </string>
+	<string>0 553 713 865 0 0 2560 1418 </string>
 	<key>NSWindow Frame iTerm Window 1</key>
-	<string>0 50 2041 1071 0 0 2048 1130 </string>
+	<string>0 13 1433 865 0 0 1440 878 </string>
 	<key>NSWindow Frame iTerm Window 2</key>
 	<string>-1600 -48 1600 1200 -1600 -48 1600 1200 </string>
 	<key>New Bookmarks</key>
@@ -931,7 +940,16 @@
 			<key>Transparency</key>
 			<real>0.0</real>
 			<key>Triggers</key>
-			<array/>
+			<array>
+				<dict>
+					<key>action</key>
+					<string>AlertTrigger</string>
+					<key>parameter</key>
+					<string>Build failed</string>
+					<key>regex</key>
+					<string>BUILD FAILED</string>
+				</dict>
+			</array>
 			<key>Unlimited Scrollback</key>
 			<false/>
 			<key>Use Bold Font</key>
@@ -959,7 +977,7 @@
 	<key>NoSyncTimeOfLastPromo</key>
 	<real>477567670.06024098</real>
 	<key>NoSyncTimeOfLastPromoDownload</key>
-	<real>478437143.20731801</real>
+	<real>479885331.510777</real>
 	<key>OnlyWhenMoreTabs</key>
 	<true/>
 	<key>OpenArrangementAtStartup</key>
@@ -1024,7 +1042,7 @@
 	<key>SUHasLaunchedBefore</key>
 	<true/>
 	<key>SULastCheckTime</key>
-	<date>2016-02-29T11:12:20Z</date>
+	<date>2016-03-17T05:26:51Z</date>
 	<key>SavePasteHistory</key>
 	<false/>
 	<key>ShowBookmarkName</key>

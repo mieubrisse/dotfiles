@@ -10,19 +10,20 @@
 # Prompt colors
 # TODO Move control of these colors back to .bashrc
 RESET_COLOR='\[\e[0m\]'
+RESET_BOLD='\[\e[21m\]'
 # BOLD="\[$(tput bold)\]"
 YELLOW_FORE='\[\e[38;5;226m\]'
 # DARKISH_GREY_BACK='\[\e[48;5;236m\]'
 VERY_DARK_GREY_BACK='\[\e[48;5;235m\]'
-# GREEN_FORE='\[\e[38;5;28m\]'
-GREEN_FORE='\[\e[38;5;2m\]'
+GREEN_FORE='\[\e[38;5;28m\]'
+# GREEN_FORE='\[\e[38;5;2m\]'
 RED_FORE='\[\e[38;5;124m\]'
 ELECTRIC_PURPLE_FORE='\[\e[38;5;129m\]'
 
-branch_color="${YELLOW_FORE}${VERY_DARK_GREY_BACK}"
-local_color="${ELECTRIC_PURPLE_FORE}${VERY_DARK_GREY_BACK}"
-ahead_color="${VERY_DARK_GREY_BACK}${BOLD}${GREEN_FORE}"
-behind_color="${VERY_DARK_GREY_BACK}${BOLD}${RED_FORE}"
+branch_color="${YELLOW_FORE}"
+local_color="${ELECTRIC_PURPLE_FORE}"
+ahead_color="${GREEN_FORE}"
+behind_color="${RED_FORE}"
 
 git_status="$( LC_ALL=C git status --porcelain --branch 2>/dev/null )"
 retcode="${?}"
@@ -79,17 +80,19 @@ else
 fi
 
 # returnstr="${RESET_COLOR}${BRIGHT_YELLOW}(${branch}${RESET_COLOR}"
-returnstr="${branch_color}${branch} ${RESET_COLOR}"
+returnstr="${branch_color}(${branch}"
 if [ "${remote}" == "_NO_REMOTE_TRACKING_" ]; then
-    returnstr+="${local_color}L ${RESET_COLOR}"
+    returnstr+="${local_color} L"
 else
     if [ -n "${num_ahead}" ]; then
-        returnstr+="${ahead_color}+${num_ahead} ${RESET_COLOR}"
+        # returnstr+="${BOLD}${ahead_color}+${num_ahead}${RESET_BOLD}"
+        returnstr+="${ahead_color}+${num_ahead}"
     fi
     if [ -n "${num_behind}" ]; then
-        returnstr+="${behind_color}-${num_behind} ${RESET_COLOR}"
+        returnstr+="${BOLD}${behind_color}-${num_behind}${RESET_BOLD}"
     fi
 fi
+returnstr+="${branch_color}) "
 echo "${returnstr}"
 
 
