@@ -334,6 +334,12 @@
                 "20160202"
             ]
         }, 
+        "python": {
+            "options": [], 
+            "versions": [
+                "2.7.9"
+            ]
+        }, 
         "qt": {
             "options": [], 
             "versions": [
