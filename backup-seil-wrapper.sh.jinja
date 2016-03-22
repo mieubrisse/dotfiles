@@ -1,0 +1,45 @@
+#!/bin/bash
+# Print the usage message and exit.
+function usage {
+    echo ""
+    echo "Usage: $(basename $0) [-h] [-c]"
+    echo ""
+    echo "Backus up the Homebrew installation for reinstallation later"
+    echo ""
+    echo " -h   Prints this help message"
+    echo " -c   Set if script is being called via cron to send output to the hardcoded log directory"
+       
+    # Exit as error for nesting scripts
+    exit 1
+}
+
+echo "THIS ISN'T FINISHED YET" >&2
+exit 99
+
+cron_mode="false"
+
+# Parse command line arguments to override defaults.
+while getopts 'hc' flag; do
+    case "$flag" in
+        h) usage ;;
+        c) cron_mode="true" ;;
+    esac
+done
+
+# TODO Ansible-ize these!!
+export PATH="{{ homebrew_root_dirpath }}/bin:${PATH}"
+backup_script="{{ backup_script_repo}}/backup_homebrew.py"
+output_filepath="{{ git_repo_dirpath }}/homebrew-packages.json"
+logs_dirpath="{{ logs_dirpath }}/homebrew-backup"
+
+script_filename="$(basename ${0})"
+log_filepath="${logs_dirpath}/${script_filename}_$(date +%F_%H-%M).log"
+cmd="python ${backup_script} -c ${output_filepath}"
+if [[ "${cron_mode}" == "true" ]]; then
+    cmd="${cmd} &> ${log_filepath}"
+fi
+if eval "${cmd}"; then
+    echo "${0} completed successfully" > ${log_filepath}
+else
+    echo "${0} exited with an error" > ${log_filepath}
+fi
