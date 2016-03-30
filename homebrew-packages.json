@@ -1,21 +1,9 @@
 {
     "brews": {
-        "arping": {
-            "options": [], 
-            "versions": [
-                "2.12"
-            ]
-        }, 
-        "atlassian/tap/atlassian-plugin-sdk": {
-            "options": [], 
-            "versions": [
-                "5.0.3"
-            ]
-        }, 
         "bash": {
             "options": [], 
             "versions": [
-                "4.2.45"
+                "4.3.42"
             ]
         }, 
         "bash-completion": {
@@ -24,16 +12,10 @@
                 "1.3"
             ]
         }, 
-        "berkeley-db": {
+        "cask": {
             "options": [], 
             "versions": [
-                "5.3.28"
-            ]
-        }, 
-        "caskroom/cask/brew-cask": {
-            "options": [], 
-            "versions": [
-                "0.59.0"
+                "0.7.4"
             ]
         }, 
         "chromedriver": {
@@ -42,54 +24,40 @@
                 "2.21"
             ]
         }, 
+        "cmake": {
+            "options": [], 
+            "versions": [
+                "3.5.0"
+            ]
+        }, 
         "colordiff": {
             "options": [], 
             "versions": [
-                "1.0.13"
+                "1.0.16"
             ]
         }, 
         "diff-so-fancy": {
             "options": [], 
             "versions": [
-                "0.4.1"
+                "0.6.3"
             ]
         }, 
-        "elasticsearch": {
+        "emacs": {
             "options": [], 
             "versions": [
-                "1.2.1", 
-                "1.7.1"
-            ]
-        }, 
-        "ettercap": {
-            "options": [], 
-            "versions": [
-                "0.8.2"
-            ]
-        }, 
-        "fetchmail": {
-            "options": [], 
-            "versions": [
-                "6.3.26"
+                "24.5"
             ]
         }, 
         "gcc": {
             "options": [], 
             "versions": [
-                "5.2.0"
-            ]
-        }, 
-        "gdal": {
-            "options": [], 
-            "versions": [
-                "1.10.0"
+                "5.3.0"
             ]
         }, 
         "git": {
             "options": [], 
             "versions": [
-                "1.8.2.3", 
-                "1.8.5.2"
+                "2.7.4"
             ]
         }, 
         "git-flow": {
@@ -98,120 +66,28 @@
                 "0.4.1"
             ]
         }, 
-        "git-imerge": {
+        "gnupg": {
             "options": [], 
             "versions": [
-                "0.7.0"
-            ]
-        }, 
-        "giter8": {
-            "options": [], 
-            "versions": [
-                "0.5.3"
-            ]
-        }, 
-        "gnupg2": {
-            "options": [], 
-            "versions": [
-                "2.0.23"
-            ]
-        }, 
-        "gnuplot": {
-            "options": [
-                "--with-cairo", 
-                "--with-pdflib-lite", 
-                "--with-wxmac", 
-                "--with-x11", 
-                "--without-lua"
-            ], 
-            "versions": [
-                "5.0.0"
-            ]
-        }, 
-        "go": {
-            "options": [], 
-            "versions": [
-                "1.4.2"
+                "1.4.20"
             ]
         }, 
         "gradle": {
             "options": [], 
             "versions": [
-                "2.4"
-            ]
-        }, 
-        "graphicsmagick": {
-            "options": [], 
-            "versions": [
-                "1.3.21"
-            ]
-        }, 
-        "groovy": {
-            "options": [], 
-            "versions": [
-                "2.1.7"
-            ]
-        }, 
-        "homebrew/dupes/apple-gcc42": {
-            "options": [], 
-            "versions": [
-                "4.2.1-5666.3"
-            ]
-        }, 
-        "homebrew/dupes/less": {
-            "options": [], 
-            "versions": [
-                "458"
-            ]
-        }, 
-        "homebrew/dupes/ncurses": {
-            "options": [], 
-            "versions": [
-                "5.9"
-            ]
-        }, 
-        "homebrew/dupes/openldap": {
-            "options": [
-                "--with-berkeley-db"
-            ], 
-            "versions": [
-                "2.4.33"
-            ]
-        }, 
-        "homebrew/php/php56": {
-            "options": [], 
-            "versions": [
-                "5.6.19"
-            ]
-        }, 
-        "homebrew/science/glpk": {
-            "options": [], 
-            "versions": [
-                "4.52"
+                "2.12"
             ]
         }, 
         "htop-osx": {
             "options": [], 
             "versions": [
-                "0.8.2.1"
-            ]
-        }, 
-        "imagemagick": {
-            "options": [], 
-            "versions": [
-                "6.9.1-1"
-            ]
-        }, 
-        "jansson": {
-            "options": [], 
-            "versions": [
-                "2.7"
+                "0.8.2.8"
             ]
         }, 
         "jenv": {
             "options": [], 
             "versions": [
-                "0.4.3"
+                "0.4.4"
             ]
         }, 
         "jq": {
@@ -220,61 +96,10 @@
                 "1.5"
             ]
         }, 
-        "libconfig": {
-            "options": [], 
-            "versions": [
-                "1.5"
-            ]
-        }, 
-        "libevent": {
-            "options": [], 
-            "versions": [
-                "2.0.22"
-            ]
-        }, 
-        "libxslt": {
-            "options": [], 
-            "versions": [
-                "1.1.28"
-            ]
-        }, 
-        "lua": {
-            "options": [], 
-            "versions": [
-                "5.1.5"
-            ]
-        }, 
-        "lzop": {
-            "options": [], 
-            "versions": [
-                "1.03"
-            ]
-        }, 
-        "mercurial": {
-            "options": [], 
-            "versions": [
-                "3.4.2"
-            ]
-        }, 
-        "mutt": {
-            "options": [
-                "--with-s-lang", 
-                "--with-trash-patch"
-            ], 
-            "versions": [
-                "1.5.23_2"
-            ]
-        }, 
         "netcat": {
             "options": [], 
             "versions": [
                 "0.7.1"
-            ]
-        }, 
-        "nmap": {
-            "options": [], 
-            "versions": [
-                "6.40"
             ]
         }, 
         "node": {
@@ -282,50 +107,7 @@
                 "--without-npm"
             ], 
             "versions": [
-                "0.12.2_1", 
-                "5.1.1"
-            ]
-        }, 
-        "ossp-uuid": {
-            "options": [], 
-            "versions": [
-                "1.6.2"
-            ]
-        }, 
-        "osxfuse": {
-            "options": [], 
-            "versions": [
-                "2.6.4"
-            ]
-        }, 
-        "p7zip": {
-            "options": [], 
-            "versions": [
-                "9.20.1"
-            ]
-        }, 
-        "palantir/insta/insta": {
-            "options": [], 
-            "versions": [
-                "0.1.5"
-            ]
-        }, 
-        "pango": {
-            "options": [], 
-            "versions": [
-                "1.36.8"
-            ]
-        }, 
-        "postgis": {
-            "options": [], 
-            "versions": [
-                "1.5.3"
-            ]
-        }, 
-        "py2cairo": {
-            "options": [], 
-            "versions": [
-                "1.10.0_1"
+                "5.9.0"
             ]
         }, 
         "pyenv-virtualenv": {
@@ -334,22 +116,16 @@
                 "20160202"
             ]
         }, 
-        "python": {
-            "options": [], 
-            "versions": [
-                "2.7.9"
-            ]
-        }, 
         "qt": {
             "options": [], 
             "versions": [
-                "4.8.6"
+                "4.8.7_2"
             ]
         }, 
         "rabbitmq": {
             "options": [], 
             "versions": [
-                "3.5.3"
+                "3.6.1"
             ]
         }, 
         "ravenac95/sudolikeaboss/sudolikeaboss": {
@@ -358,110 +134,16 @@
                 "0.2.0"
             ]
         }, 
-        "ruby": {
-            "options": [], 
-            "versions": [
-                "2.0.0-p0", 
-                "2.1.0"
-            ]
-        }, 
-        "sbt": {
-            "options": [], 
-            "versions": [
-                "0.13.8"
-            ]
-        }, 
-        "scala": {
-            "options": [], 
-            "versions": [
-                "2.11.7"
-            ]
-        }, 
-        "shellcheck": {
-            "options": [], 
-            "versions": [
-                "0.3.2"
-            ]
-        }, 
-        "snappy": {
-            "options": [], 
-            "versions": [
-                "1.1.3"
-            ]
-        }, 
-        "ssh-copy-id": {
-            "options": [], 
-            "versions": [
-                "6.2p2"
-            ]
-        }, 
-        "stunnel": {
-            "options": [], 
-            "versions": [
-                "5.22"
-            ]
-        }, 
-        "typesafe-activator": {
-            "options": [], 
-            "versions": [
-                "1.2.2"
-            ]
-        }, 
         "vim": {
             "options": [], 
             "versions": [
-                "7.4", 
-                "7.4.052", 
-                "7.4.898"
-            ]
-        }, 
-        "wget": {
-            "options": [], 
-            "versions": [
-                "1.14"
-            ]
-        }, 
-        "wireshark": {
-            "options": [], 
-            "versions": [
-                "1.12.6"
+                "7.4.1589"
             ]
         }
     }, 
-    "casks": [
-        "1password", 
-        "alfred", 
-        "anki", 
-        "battle-net", 
-        "box-sync", 
-        "calibre", 
-        "disk-inventory-x", 
-        "firefox", 
-        "flux", 
-        "hipchat", 
-        "intellij-idea", 
-        "java", 
-        "kindle", 
-        "skype", 
-        "slate", 
-        "soapui", 
-        "spotify", 
-        "steam", 
-        "teamviewer", 
-        "telegram", 
-        "wireshark", 
-        "xquartz"
-    ], 
+    "casks": [], 
     "taps": [
-        "atlassian/tap", 
         "caskroom/cask", 
-        "homebrew/dupes", 
-        "homebrew/games", 
-        "homebrew/php", 
-        "homebrew/python", 
-        "homebrew/science", 
-        "homebrew/versions", 
-        "palantir/insta", 
         "ravenac95/sudolikeaboss"
     ]
 }
