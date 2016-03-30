@@ -37,19 +37,46 @@ shopt -s cdspell # Automatically fix 'cd' spelling mistakes
 shopt -s autocd # Using 'cd' is so passe
 shopt -s cmdhist # Combine multi-line entries into one history line
 
-# Helper function to get foreground and background colors
-function __get_color() {
-    local place="${1}"
-    local color="${2}"
+export EDITOR="vim"
 
-    if [ "${place}" == "fore" ]; then
-        local val="38"
-    else
-        local val="48"
-    fi
+# Make completion better
+bind "set completion-ignore-case on"
+bind "set show-all-if-ambiguous on"
 
-    echo '\[\e['"${val}"';5;'"${color}"'m\]'
-}
+export PYENV_ROOT="$HOME/.pyenv"
+
+# Set all additions to PATH
+PATH_ADDITIONS=()
+PATH_ADDITIONS+=("$HOME/.rvm/bin")    # RVM to PATH for scripting
+PATH_ADDITIONS+=("$PYENV_ROOT/bin:$PATH")
+for PATH_TO_ADD in "${PATH_ADDITIONS[@]}"; do
+    PATH="$PATH:$PATH_TO_ADD"
+done
+
+# PyEnv
+eval "$(pyenv init -)"
+eval "$(pyenv virtualenv-init -)"
+
+# Jenv
+eval "$(jenv init -)"
+
+
+
+
+# # Helper function to get foreground and background colors
+# # NOTE: Unused because it slows down the prompt considerably
+# function __get_color() {
+#     local place="${1}"
+#     local color="${2}"
+#
+#     if [ "${place}" == "fore" ]; then
+#         local val="38"
+#     else
+#         local val="48"
+#     fi
+#
+#     echo '\[\e['"${val}"';5;'"${color}"'m\]'
+# }
 
 # Renders the working directory, highlighting the current Git directory (if any)
 # $1 - Exit code of the last command
@@ -57,6 +84,7 @@ function __get_color() {
 # $3 - Color to use when the last command failed
 # $4 - Color to use for the root Git directory if the last command was successful
 # $5 - Color to use for the root Git directory if the last command failed
+# retval - String that can be added to the prompt
 function __render_working_dir() {
     local last_exit_code="${1}"
     local success_color="${2}"
@@ -99,7 +127,113 @@ function __render_working_dir() {
         return_str+="${PWD}"
     fi
 
-    echo "${return_str//${HOME}/~}"
+    # For speed, instead of echo'ing this for subshell capture later, we'll just set a variable
+    retval="${return_str//${HOME}/~}"
+}
+
+# Generates a string displaying Git information that can be added to the prompt 
+# retval - String to add to prompt
+function __render_git_prompt() {
+
+    # Prompt colors
+    # TODO Move control of these colors back to .bashrc
+    local RESET_COLOR='\[\e[0m\]'
+    local RESET_BOLD='\[\e[21m\]'
+    # BOLD="\[$(tput bold)\]"
+    local YELLOW_FORE='\[\e[38;5;226m\]'
+    # DARKISH_GREY_BACK='\[\e[48;5;236m\]'
+    local VERY_DARK_GREY_BACK='\[\e[48;5;235m\]'
+    local GREEN_FORE='\[\e[38;5;28m\]'
+    # GREEN_FORE='\[\e[38;5;2m\]'
+    local RED_FORE='\[\e[38;5;124m\]'
+    local ELECTRIC_PURPLE_FORE='\[\e[38;5;129m\]'
+
+    local branch_color="${YELLOW_FORE}"
+    local local_color="${ELECTRIC_PURPLE_FORE}"
+    local ahead_color="${GREEN_FORE}"
+    local behind_color="${RED_FORE}"
+
+    local git_status
+
+    # Interesting note: we can't define the 'local' here or the retcode gets set to the 'local' command's, which is always 0
+    git_status="$( LC_ALL=C git status --porcelain --branch 2>/dev/null )"
+    retcode="${?}"
+
+    # If we couldn't get Git status, exit now
+    if [ ${retcode} -ne 0 ]; then 
+        retval=""
+        return 0
+    fi
+
+    # Split the branch line of the status into "local branch" and "remote"
+    local raw_branch_line="$(echo "${git_status}" | head -n 1)"
+    local branch_line="${raw_branch_line/\.\.\./^}"
+    IFS="^" read -ra branch_fields <<< "${branch_line/\#\# }"
+    local branch="${branch_fields[0]}"
+
+    # "remote" here means how many commits ahead/behind the branch is in relation to a remote repo
+    local remote=""
+
+    # # TODO I'm not actually interested in tracking this right now, but maybe one day...
+    # # "upstream" here means the name of the branch on the remote tracking our branch
+    # upstream=""
+
+    local num_ahead=""
+    local num_behind=""
+
+    # We haven't added any remotes yet
+    if [[ "$branch" == *"Initial commit on"* ]]; then
+        IFS=" " read -ra fields <<< "$branch"
+        branch="${fields[3]}"
+        remote="_NO_REMOTE_TRACKING_"
+    # Case of a tag or a commit hash checked out
+    elif [[ "$branch" == *"no branch"* ]]; then
+        local tag=$( git describe --tags --exact-match 2>/dev/null )
+        if [[ -n "$tag" ]]; then
+            branch="$tag"
+        else
+            branch="$( git rev-parse --short HEAD )"
+        fi
+    # All other cases (i.e. we can diff against a remote to find ahead/behind)
+    else
+        # We have a remote, but haven't pushed the branch we're on (no upstream)
+        if [[ "${#branch_fields[@]}" -eq 1 ]]; then
+            remote="_NO_REMOTE_TRACKING_"
+        # We're on a normal branch that can be compared against the remote tracking branch
+        else
+            IFS="[,]" read -ra remote_fields <<< "${branch_fields[1]}"
+            # upstream="${remote_fields[0]}"
+
+            # Calculate ahead/behind-ness
+            for remote_field in "${remote_fields[@]}"; do
+                if [[ "$remote_field" == *ahead* ]]; then
+                    num_ahead=${remote_field:6}
+                fi
+                if [[ "$remote_field" == *behind* ]]; then
+                    num_behind=${remote_field:7}
+                    num_behind="${num_behind# }"
+                fi
+            done
+        fi
+    fi
+
+    # returnstr="${RESET_COLOR}${BRIGHT_YELLOW}(${branch}${RESET_COLOR}"
+    local returnstr=" ${branch_color}(${branch}"
+    if [ "${remote}" == "_NO_REMOTE_TRACKING_" ]; then
+        returnstr+="${local_color} L"
+    else
+        if [ -n "${num_ahead}" ]; then
+            # returnstr+="${BOLD}${ahead_color}+${num_ahead}${RESET_BOLD}"
+            returnstr+="${ahead_color}+${num_ahead}"
+        fi
+        if [ -n "${num_behind}" ]; then
+            returnstr+="${BOLD}${behind_color}-${num_behind}${RESET_BOLD}"
+        fi
+    fi
+    returnstr+="${branch_color})"
+
+    # For speed, instead of echo'ing this for subshell capture later, we'll just set a variable
+    retval="${returnstr}"
 }
 
 # On changing directory, ls and git fetch in background if git directory
@@ -141,26 +275,29 @@ function __prompt_command() {
     #     dir_color+="$(__get_color fore "${red}")"
     # fi
 
+    local background_color="\[\e[48;5;${very_dark_grey}m\]"
     local success_dir_color="\[\e[38;5;${white}m\]"
     local failure_dir_color="\[\e[38;5;${red}m\]"
     local success_gitdir_color="\[\e[38;5;${grey_blue}m\]"
     local failure_gitdir_color="\[\e[38;5;${brightish_red}m\]"
 
     # Setup prompt background
-    PS1="${RESET_COLOR}$(__get_color back "${very_dark_grey}")"
+    PS1="${RESET_COLOR}${background_color}"
 
     # Add timestamp
     PS1+="${timestamp_color} $(date +%H:%M:%S) "
 
     # Add working dir
-    # PS1+="${dir_color}\w ${RESET_COLOR}"
     PS1+="${BOLD}"
-    PS1+="$(__render_working_dir "${LAST_EXIT_CODE}" "${success_dir_color}" "${failure_dir_color}" "${success_gitdir_color}" "${failure_gitdir_color}") "
+    __render_working_dir "${LAST_EXIT_CODE}" "${success_dir_color}" "${failure_dir_color}" "${success_gitdir_color}" "${failure_gitdir_color}"
+    PS1+="${retval}"
 
     # Add Git branch info
-    PS1+="$(bash ~/.bash_utils/git-prompt-addition.sh)"
+    __render_git_prompt
+    PS1+="${retval}"
 
     # Clear prompt background & color command text
+    PS1+=" "
     PS1+="${RESET_COLOR} ${command_color}"
 
     if [ "${__new_wd:=$PWD}" != "${PWD}" ]; then
@@ -175,29 +312,27 @@ PROMPT_COMMAND=__prompt_command
 # http://unix.stackexchange.com/questions/198723/change-color-of-input-text-not-output
 trap 'echo -ne "\e[0m"' DEBUG
 
-export EDITOR="vim"
 
-# Make completion better
-bind "set completion-ignore-case on"
-bind "set show-all-if-ambiguous on"
 
-export PYENV_ROOT="$HOME/.pyenv"
 
-# Set all additions to PATH
-PATH_ADDITIONS=()
-PATH_ADDITIONS+=("$HOME/.rvm/bin")    # RVM to PATH for scripting
-PATH_ADDITIONS+=("$PYENV_ROOT/bin:$PATH")
-for PATH_TO_ADD in "${PATH_ADDITIONS[@]}"; do
-    PATH="$PATH:$PATH_TO_ADD"
-done
 
-eval "$(pyenv init -)"
-eval "$(pyenv virtualenv-init -)"
+# Add Bash completion
+if [ -f $(brew --prefix)/etc/bash_completion ]; then
+    source $(brew --prefix)/etc/bash_completion
+fi
 
 # Source RVM scripts
 if [[ -s "$HOME/.rvm/scripts/rvm" ]] ; then
     source ~/.rvm/scripts/rvm
 fi
+
+
+
+
+
+# NOTE: All these custom scripts should be sourced AFTER everything else, so they can depend on things
+# e.g. bash_aliases depends on bash_completion
+# There may be a better way to do these sorts of Bash "dependencies"
 
 # Custom bash additions
 if [ -f ~/.bash_additions ]; then
@@ -217,11 +352,4 @@ fi
 # Machine-specific additions
 if [ -f ~/.bash_local ]; then
     source ~/.bash_local
-fi
-
-# enable programmable completion features (you don't need to enable
-# this, if it's already enabled in /etc/bash.bashrc and /etc/profile
-# sources /etc/bash.bashrc).
-if [ -f /etc/bash_completion ] && ! shopt -oq posix; then
-    source /etc/bash_completion
 fi
