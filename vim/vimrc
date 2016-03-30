@@ -37,7 +37,8 @@ Plugin 'leafgarland/typescript-vim'
 " Plugin 'tomtom/tlib_vim'
 " Plugin 'MarcWeber/vim-addon-mw-utils'
 Plugin 'kchmck/vim-coffee-script'
-Plugin 'Lokaltog/vim-easymotion'
+" Plugin 'Lokaltog/vim-easymotion'
+Plugin 'easymotion/vim-easymotion'
 Plugin 'pangloss/vim-javascript'
 Plugin 'elzr/vim-json'
 Plugin 'groenewege/vim-less'
@@ -196,7 +197,7 @@ let g:UltiSnipsJumpBackwardTrigger="<c-k>"
 " If you want :UltiSnipsEdit to split your window.
 let g:UltiSnipsEditSplit="vertical"
 " -------------------------------------
-"
+
 " ------ Gitlog --------------------
 " nnoremap <Leader>gl :GitLog --graph --abbrev-commit --decorate --date=relative
 " --format=format:'%C(bold blue)%h%C(reset) - %C(bold green)(%ar)%C(reset)
@@ -204,6 +205,10 @@ let g:UltiSnipsEditSplit="vertical"
 " --all<CR>
 nnoremap <Leader>gl :GitLog --abbrev-commit --decorate --date=relative<CR>
 " -------------------------------------
+
+" -------- Easymotion --------------------
+map <Space> <Plug>(easymotion-prefix)
+" ----------------------------------------
 
 " Allow editing Mac crontab with Vim
 " Source: http://superuser.com/questions/359580/error-adding-cronjobs-in-mac-os-x-lion
@@ -455,10 +460,9 @@ noremap <S-K> <C-B>zz
 nnoremap <Leader>p :set invpaste paste?<CR>
 
 " Screen-centering mappings
-" TODO Maybe space should/could actually be a second type of leader character...
-nnoremap <Space> zz
 nnoremap n nzz
 nnoremap N Nzz
+" TODO Center after jumping to a mark
 
 "------------------------------------------------------------
 " Easy JSON prettifier
