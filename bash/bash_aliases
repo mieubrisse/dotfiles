@@ -243,6 +243,11 @@ alias gb="git branch"
 alias gco="git checkout"
 alias ga="git add"
 
+# We hijack Git's autocomplete here so we get autocompletion on our custom aliases
+# This relies on the bash-completion Homebrew package
+__git_complete gco _git_checkout
+__git_complete gb _git_branch
+
 # TODO It's getting to the point where I need a better system for dealing with fuzzy find/ls results..
 alias gaff="use_command_filter_results 'git add' fuzzy_find"
 alias gafl="use_command_filter_results 'git add' fuzzy_ls"
