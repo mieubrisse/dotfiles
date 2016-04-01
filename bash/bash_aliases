@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# Better diff (Mac only)
+alias   diff="colordiff --ignore-space-change -u"
+
 # Datetime
 alias today='date +%F'
 alias now='date +%F_%H-%M-%S'
@@ -360,7 +363,7 @@ function gradle_search() {
                 echo "$GRADLE_DIR"/gradlew "${@:2}"
                 "$GRADLE_DIR"/gradlew "${@:2}"
             else
-                ./gradlew "$@"
+                ./gradlew --daemon "$@"
                 cd "$ORIG_DIR"
             fi
             return 0

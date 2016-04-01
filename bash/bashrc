@@ -1,3 +1,30 @@
+export EDITOR="vim"
+
+# Make bash and all readline programs operate in vi mode
+set -o vi
+
+# check the window size after each command and, if necessary,
+# update the values of LINES and COLUMNS.
+shopt -s checkwinsize
+
+# If set, the pattern "**" used in a pathname expansion context will
+# match all files and zero or more directories and subdirectories.
+#shopt -s globstar
+
+# make less more friendly for non-text input files, see lesspipe(1)
+[ -x /usr/bin/lesspipe ] && eval "$(SHELL=/bin/sh lesspipe)"
+
+# Shell Options
+shopt -s cdspell # Automatically fix 'cd' spelling mistakes
+shopt -s autocd # Using 'cd' is so passe
+
+# Make completion better
+bind "set completion-ignore-case on"
+bind "set show-all-if-ambiguous on"
+
+# ---- History -------------------------------------------------------------------------
+shopt -s cmdhist # Combine multi-line entries into one history line
+
 # don't put duplicate lines or lines starting with space in the history.
 # See bash(1) for more options
 HISTCONTROL=ignoreboth:erasedups
@@ -17,51 +44,40 @@ HISTTIMEFORMAT='%F %T '
 
 # Don't log calls to the boring commands
 HISTIGNORE='ls:bg:fg:history'
+# ---- /History -------------------------------------------------------------------------
 
-# check the window size after each command and, if necessary,
-# update the values of LINES and COLUMNS.
-shopt -s checkwinsize
 
-# If set, the pattern "**" used in a pathname expansion context will
-# match all files and zero or more directories and subdirectories.
-#shopt -s globstar
 
-# make less more friendly for non-text input files, see lesspipe(1)
-[ -x /usr/bin/lesspipe ] && eval "$(SHELL=/bin/sh lesspipe)"
-
-# Make bash and all readline programs operate in vi mode
-set -o vi
-
-# Shell Options
-shopt -s cdspell # Automatically fix 'cd' spelling mistakes
-shopt -s autocd # Using 'cd' is so passe
-shopt -s cmdhist # Combine multi-line entries into one history line
-
-export EDITOR="vim"
-
-# Make completion better
-bind "set completion-ignore-case on"
-bind "set show-all-if-ambiguous on"
-
-export PYENV_ROOT="$HOME/.pyenv"
-
-# Set all additions to PATH
+# Define an array that config blocks can append to if they want something on the path
 PATH_ADDITIONS=()
-PATH_ADDITIONS+=("$HOME/.rvm/bin")    # RVM to PATH for scripting
-PATH_ADDITIONS+=("$PYENV_ROOT/bin:$PATH")
-for PATH_TO_ADD in "${PATH_ADDITIONS[@]}"; do
-    PATH="$PATH:$PATH_TO_ADD"
-done
 
-# PyEnv
+# ---- PyEnv -------------------------------------------------------------------------
+export PYENV_ROOT="$HOME/.pyenv"
 eval "$(pyenv init -)"
 eval "$(pyenv virtualenv-init -)"
+PATH_ADDITIONS+=("$PYENV_ROOT/bin:$PATH")
 
-# Jenv
+
+# ---- Jenv --------------------------------------------------------------------------
 eval "$(jenv init -)"
 
+# Annoyingly, jenv doesn't set JAVA_HOME automatically so we have to do it manually
+function __jenv_set_java_home() {
+    export JAVA_HOME="$HOME/.jenv/versions/$(jenv version | awk '{ print $1}')"
+}
+__jenv_set_java_home
 
 
+
+# ---- RVM --------------------------------------------------------------------------
+if [[ -s "$HOME/.rvm/scripts/rvm" ]] ; then
+    source ~/.rvm/scripts/rvm
+    PATH_ADDITIONS+=("$HOME/.rvm/bin")    # RVM to PATH for scripting
+fi
+
+
+
+# ----------- Bash Prompt -----------------------------------------------------------
 
 # # Helper function to get foreground and background colors
 # # NOTE: Unused because it slows down the prompt considerably
@@ -303,6 +319,8 @@ function __prompt_command() {
     if [ "${__new_wd:=$PWD}" != "${PWD}" ]; then
         ls
         [ -d ".git" ] && command -v git >/dev/null 2>&1 && ( git fetch --prune >/dev/null 2>&1 >/dev/null & )
+
+        __jenv_set_java_home
     fi
     __new_wd=$PWD
 }
@@ -321,12 +339,12 @@ if [ -f $(brew --prefix)/etc/bash_completion ]; then
     source $(brew --prefix)/etc/bash_completion
 fi
 
-# Source RVM scripts
-if [[ -s "$HOME/.rvm/scripts/rvm" ]] ; then
-    source ~/.rvm/scripts/rvm
-fi
 
 
+# Now, add all the additions that the above code specified
+for PATH_TO_ADD in "${PATH_ADDITIONS[@]}"; do
+    PATH="$PATH:$PATH_TO_ADD"
+done
 
 
 
