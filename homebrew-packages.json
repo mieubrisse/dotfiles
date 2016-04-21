@@ -145,6 +145,12 @@
             "versions": [
                 "7.4.1589"
             ]
+        }, 
+        "wget": {
+            "options": [], 
+            "versions": [
+                "1.17.1"
+            ]
         }
     }, 
     "casks": [], 
