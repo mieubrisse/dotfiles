@@ -286,12 +286,12 @@ set showmatch
 " TODO Turning Vim file views off for now, because they cause a lot of tricksy behavior
 " Restore folds when file is reloaded
 " http://vim.wikia.com/wiki/Make_views_automatic
-" set viewdir=~/.vim-views
-" augroup views
-"     autocmd!
-"     autocmd BufWinLeave *.* mkview!
-"     autocmd BufWinEnter *.* silent loadview
-" augroup END
+set viewdir=~/.vim-views
+augroup views
+    autocmd!
+    autocmd BufWinLeave *.* mkview!
+    autocmd BufWinEnter *.* silent loadview
+augroup END
 
 " Set spellcheck for certain files
 augroup spellcheck
@@ -612,7 +612,7 @@ nnoremap <Leader>gl :Shell git log --graph --abbrev-commit --decorate --date=rel
 " http://stackoverflow.com/questions/1533565/how-to-get-visually-selected-text-in-vimscript
 " TODO This doesn't work :{
 " function! AppendLines()
-"     let lines=split(@") 
+"     let lines=split(@", '\n') 
 "     normal :s/$/\=remove(lines,0)/
 "     1
 " endfunction

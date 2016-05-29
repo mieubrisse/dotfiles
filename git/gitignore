@@ -1,5 +1,8 @@
+# IntelliJ
+.idea
+
 # Jenv
-.java_version
+.java-version
 
 # Pyenv
 .python-version

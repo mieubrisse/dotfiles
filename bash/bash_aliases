@@ -344,8 +344,12 @@ function easy_chrome() {
     meeting_notes_dirpath="${HOME}/Documents/${project,,}/meeting-notes"
     (
         cd "${meeting_notes_dirpath}"
-        fuzzy_ls "${@}" | filter | readarray -t matching_files
+
+        # Interestingly, piping to 'readarray' doesn't work, but this does
+        readarray -t matching_files < <(fuzzy_ls "${@}" | filter)
+        echo "Length: ${#matching_files[@]}"
         if ! [ ${#matching_files[@]} -eq 0 ]; then
+            echo "Doing a thing: ${matching_files[@]}"
             chrome "${matching_files[@]}"
         fi
     )
@@ -525,7 +529,14 @@ function _gitflow() {
             return 1
         fi
 
-        version="${!#}"
+        # # TODO If we're on a release/ branch, autodetect the version to finish
+        # # No version was specified, so try to detect it from the release branch we're on
+        # if [ -z "${3}" ]; then
+        #     if o
+        # else
+            version="${!#}"
+        # fi
+
         git-flow "${@}" &&
             read -p "We just merged ${version}; which version is next? " next_version &&
             git checkout "${develop_branch}" &&
