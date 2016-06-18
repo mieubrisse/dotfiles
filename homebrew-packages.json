@@ -42,6 +42,12 @@
                 "0.6.3"
             ]
         }, 
+        "elasticsearch": {
+            "options": [], 
+            "versions": [
+                "2.3.2"
+            ]
+        }, 
         "emacs": {
             "options": [], 
             "versions": [
@@ -175,6 +181,7 @@
     "taps": [
         "caskroom/cask", 
         "homebrew/core", 
+        "homebrew/services", 
         "ravenac95/sudolikeaboss"
     ]
 }
