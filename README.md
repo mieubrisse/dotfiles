@@ -1,13 +1,20 @@
 # Mieubrisse's Dotfiles Repo
 
-## Commad Line Stuff
+## Installation
+
+1. Clone this repo with `git clone --recursive` (it has submodules)
+2. Run `init.py` (which should be idempotent)
+
+## Features
+
+### Commad Line Stuff
 * "clip FILE" copies the file to the system clipboard (Mac only)
 * "cd NUM.." goes up NUM directories, a la "cd 2.."
 * Piping input to "filter" will let the user selectively filter which lines are passed forward. Supports ranges and disjoint sequences, so entering "4,7,1-3" will pass forward (in order) lines 4, 7, 1, 2, and 3
 * "ff INPUT" is a shortening of "find -iname '\*INPUT\*'"
 * "rgr INPUT" is a shortening of "grep -ir 'INPUT' \*"
 
-## Git Stuff
+### Git Stuff
 * ga = add
 * gcmm _MESSAGE_ = commit with MESSAGE
 * gg _MESSAGE_ = add and commit all modified files (will not add untracked files)
@@ -24,7 +31,7 @@
 * gdc = diff files staged for commit
 * Branch names should autocomplete
 
-## Vim Stuff
+### Vim Stuff
 * J and K will page down and up respectively
 * Pressing + with text highlighted in visual mode will copy it to the system clipboard
 * +% will copy the entire file to the system clipboard

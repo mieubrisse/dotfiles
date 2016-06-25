@@ -17,7 +17,9 @@
             "~/.gitconfig": "./git/gitconfig", 
             "~/.vim": "./vim",
             "~/.bash_utils": "./bash/utils",
-            "~/.editrc": "./bash/editrc"
+            "~/.editrc": "./bash/editrc",
+            "~/.bash_completion": "./bash/bash_completion",
+            "~/.bash-completions": "./bash/bash-completions"
         },
         "copy": {
             "~/.vim_undo": "./vim/vim_undo"

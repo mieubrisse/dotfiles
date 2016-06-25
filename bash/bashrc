@@ -68,7 +68,6 @@ function __jenv_set_java_home() {
 __jenv_set_java_home
 
 
-
 # ---- RVM --------------------------------------------------------------------------
 if [[ -s "$HOME/.rvm/scripts/rvm" ]] ; then
     source ~/.rvm/scripts/rvm
@@ -334,12 +333,10 @@ trap 'echo -ne "\e[0m"' DEBUG
 
 
 
-# Add Bash completion
+# Add Bash completion, which sources ~/.bash_completion as well
 if [ -f $(brew --prefix)/etc/bash_completion ]; then
     source $(brew --prefix)/etc/bash_completion
 fi
-
-
 
 # Now, add all the additions that the above code specified
 for PATH_TO_ADD in "${PATH_ADDITIONS[@]}"; do

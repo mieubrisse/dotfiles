@@ -1,0 +1,8 @@
+gitflow_completion_filepath="$HOME/.bash-completions/git-flow-completion/git-flow-completion.bash"
+
+if ! [ -f "${gitflow_completion_filepath}" ]; then
+    echo "Warning: No gitflow completion found at ${gitflow_completion_filepath}; make sure to clone the repo to the necessary spot (https://github.com/petervanderdoes/git-flow-completion)" >&2
+else
+    echo "Sourcing ${gitflow_completion_filepath}"
+    source "${gitflow_completion_filepath}"
+fi
