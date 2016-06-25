@@ -1,5 +1,8 @@
 # IntelliJ
 .idea
+*.iws
+*.iml
+*.ipr
 
 # Jenv
 .java-version
