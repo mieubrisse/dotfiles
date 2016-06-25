@@ -2,8 +2,11 @@
 
 ## Installation
 
+TODO: Deploy everything on this machine with Ansible instead
+
 1. Clone this repo with `git clone --recursive` (it has submodules)
 2. Run `init.py` (which should be idempotent)
+
 
 ## Features
 
