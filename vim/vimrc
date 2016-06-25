@@ -284,14 +284,14 @@ set showmatch
 " Usability options {{{1
 
 " TODO Turning Vim file views off for now, because they cause a lot of tricksy behavior
-" Restore folds when file is reloaded
-" http://vim.wikia.com/wiki/Make_views_automatic
-set viewdir=~/.vim-views
-augroup views
-    autocmd!
-    autocmd BufWinLeave *.* mkview!
-    autocmd BufWinEnter *.* silent loadview
-augroup END
+" " Restore folds when file is reloaded
+" " http://vim.wikia.com/wiki/Make_views_automatic
+" set viewdir=~/.vim-views
+" augroup views
+"     autocmd!
+"     autocmd BufWinLeave *.* mkview!
+"     autocmd BufWinEnter *.* silent loadview
+" augroup END
 
 " Set spellcheck for certain files
 augroup spellcheck
