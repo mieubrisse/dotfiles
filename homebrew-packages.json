@@ -72,6 +72,12 @@
                 "0.4.1"
             ]
         }, 
+        "git-flow-avh": {
+            "options": [], 
+            "versions": [
+                "1.9.1"
+            ]
+        }, 
         "gnupg": {
             "options": [], 
             "versions": [
