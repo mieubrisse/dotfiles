@@ -90,6 +90,12 @@
                 "2.12"
             ]
         }, 
+        "groovy": {
+            "options": [], 
+            "versions": [
+                "2.4.6"
+            ]
+        }, 
         "htop-osx": {
             "options": [], 
             "versions": [
