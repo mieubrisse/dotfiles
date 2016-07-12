@@ -72,10 +72,10 @@
                 "0.4.1"
             ]
         }, 
-        "git-flow-avh": {
+        "gnu-getopt": {
             "options": [], 
             "versions": [
-                "1.9.1"
+                "1.1.6"
             ]
         }, 
         "gnupg": {
