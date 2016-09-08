@@ -617,3 +617,6 @@ nnoremap <Leader>gl :Shell git log --graph --abbrev-commit --decorate --date=rel
 "     1
 " endfunction
 " command! AppendLines call AppendLines()
+
+" PARs are just ZIPs
+au BufReadCmd *.par call zip#Browse(expand("<amatch>"))
