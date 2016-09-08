@@ -308,8 +308,8 @@ set cursorline
 " Use case sensitive search, except when searching
 set noignorecase
 set incsearch
-nnoremap / /\c<Left><Left>
-nnoremap ? ?\c<Left><Left>
+" nnoremap / /\c<Left><Left>
+" nnoremap ? ?\c<Left><Left>
 
 
 " Allow backspacing over autoindent, line breaks and start of insert action
