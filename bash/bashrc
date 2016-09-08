@@ -3,6 +3,9 @@ export EDITOR="vim"
 # Make bash and all readline programs operate in vi mode
 set -o vi
 
+# Tab-expand shell variables
+shopt -s direxpand
+
 # check the window size after each command and, if necessary,
 # update the values of LINES and COLUMNS.
 shopt -s checkwinsize

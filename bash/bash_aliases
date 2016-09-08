@@ -117,7 +117,7 @@ alias ff="fuzzy_find"
 alias fl="fuzzy_ls"
 
 # Overwrite cd to jump up multiple levels with 'cd <# dir>..' syntax
-cd() {
+function cd() {
     # If string isn't long enough, use builtin cd anyways
     if [[ ${#1} -lt 3 ]]; then
         builtin cd "$@"
@@ -162,8 +162,8 @@ function use_command_filter_results() {
     $1 "$(${2} "${@:3}" | filter)"
 }
 
-alias vff="use_command_filter_results vim fuzzy_find"
-alias vfl="use_command_filter_results vim fuzzy_ls"
+alias vff="use_command_filter_results 'vim -O' fuzzy_find"
+alias vfl="use_command_filter_results 'vim -O' fuzzy_ls"
 
 # Easily copy the contents of one or more file
 function clip() {
@@ -347,9 +347,7 @@ function easy_chrome() {
 
         # Interestingly, piping to 'readarray' doesn't work, but this does
         readarray -t matching_files < <(fuzzy_ls "${@}" | filter)
-        echo "Length: ${#matching_files[@]}"
         if ! [ ${#matching_files[@]} -eq 0 ]; then
-            echo "Doing a thing: ${matching_files[@]}"
             chrome "${matching_files[@]}"
         fi
     )
@@ -390,6 +388,14 @@ grep '^Host' "${HOME}/.ssh/config" | grep -v '[*]' | awk '{print $2}' | while re
     alias "${ssh_host}"="ssh '${ssh_host}'"
 done
 
+# Helper function to bump the patch version of the semver-style input by one
+# $1 - Version triple (e.g. 4.0.2)
+# STDOUT - Input with patch version bumped by one
+function _bump_patch_version() {
+    IFS='.' read -ra version_fragments <<< "${1}"
+    echo "${version_fragments[0]}.${version_fragments[1]}.$((version_fragments[2] + 1))"
+}
+
 # Helper function to get a Gitflow param
 # $1 - Partially-qualified param name, e.g. 'branch.master' or 'prefix.release'
 # STDOUT - Config parameter
@@ -407,6 +413,7 @@ function _get_gitflow_param() {
 # Helper method to ensure that the develop and master branches are up-to-date with their remotes, and
 #  returns a nonzero exit code if this is not the case
 function _ensure_branch_sync() {
+    local project_root_dirpath="$(git rev-parse --show-toplevel)"
     echo "Checking that master & develop are in sync with remotes..."
     git fetch
 
@@ -537,10 +544,10 @@ function _gitflow() {
             version="${!#}"
         # fi
 
-        git-flow "${@}" &&
-            read -p "We just merged ${version}; which version is next? " next_version &&
+
+        git-flow release finish -m "${version}" "${version}" &&
             git checkout "${develop_branch}" &&
-            git tag "${next_version}-dev"
+            git tag "$( _bump_patch_version "${version}" )-dev"
     elif [ "${1}" == "release" ] && [ "${2}" == "unfinish" ]; then
         _gitflow_release_unfinish
     else
@@ -551,3 +558,6 @@ function _gitflow() {
 alias gfl="_gitflow"
 
 alias virtualenv="pyenv virtualenv"
+
+# Make following a file much easier
+alias lsf="less +F"
