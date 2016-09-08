@@ -11,14 +11,14 @@
 # ====================================================================================================================
 
 
-# Helper function to bump the patch version of the semver-style input by one
-# $1 - Version triple (e.g. 4.0.2)
-# STDOUT - Input with patch version bumped by one
-function _bump_patch_version() {
+# Helper function to bump the patch version of dot-delimited version input by one
+# $1 - Version to bump
+# STDOUT - Input with least-significant version bumped (e.g. 1.2 => 1.3, 1.4.0 => 1.4.1)
+function _bump_version() {
     IFS='.' read -ra version_fragments <<< "${1}"
-
-    # TODO Maybe it's a problem that we're assuming three-digit versions?
-    echo "${version_fragments[0]}.${version_fragments[1]}.$((version_fragments[2] + 1))"
+    version_fragments[-1]=$((version_fragments[-1] + 1))
+    local return_str="$(printf ".%s" "${version_fragments[@]}")"
+    echo "${return_str:1}"
 }
 
 # Helper function to get a Gitflow param
@@ -126,10 +126,9 @@ function _gitflow_release_finish() {
         version="${3}"
     fi
 
-
     git-flow release finish -m "${version}" "${version}" &&
         git checkout "${develop_branch}" &&
-        git tag "$( _bump_patch_version "${version}" )-dev"
+        git tag "$( _bump_version "${version}" )-dev"
 }
 
 # Helper function for handling the `gitflow release push` subcommand
