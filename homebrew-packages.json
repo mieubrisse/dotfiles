@@ -140,6 +140,12 @@
                 "5.9.0"
             ]
         }, 
+        "postgresql": {
+            "options": [], 
+            "versions": [
+                "9.5.2"
+            ]
+        }, 
         "pyenv-virtualenv": {
             "options": [], 
             "versions": [
