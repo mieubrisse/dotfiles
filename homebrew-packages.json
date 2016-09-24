@@ -140,6 +140,12 @@
                 "5.9.0"
             ]
         }, 
+        "nvm": {
+            "options": [], 
+            "versions": [
+                "0.31.0"
+            ]
+        }, 
         "postgresql": {
             "options": [], 
             "versions": [
