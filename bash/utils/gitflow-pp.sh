@@ -206,7 +206,8 @@ function _gitflow_release_unfinish() {
 # Main function
 function _gitflow() {
     # Make sure we're initialized... maybe a bad idea?
-    git-flow init -d &> /dev/null || return 1
+    # TODO Only initialize if we're not initialized already, and print errors if there are any
+    git-flow init -d || return 1
 
     # If we're starting a release, make sure to push an empty commit and add the vX.X.X-rc tag
     if [ "${1}" == "release" ] && [ "${2}" == "start" ]; then
