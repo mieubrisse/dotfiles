@@ -11,12 +11,19 @@
 # ====================================================================================================================
 
 
+# Helper function for printing errors to STDOUT
+function _print_error() {
+    local msg="${1}"
+    echo "Error: ${msg}" >&2
+}
+
 # Helper function to bump the patch version of dot-delimited version input by one
 # $1 - Version to bump
 # STDOUT - Input with least-significant version bumped (e.g. 1.2 => 1.3, 1.4.0 => 1.4.1)
 function _bump_version() {
     IFS='.' read -ra version_fragments <<< "${1}"
-    version_fragments[-1]=$((version_fragments[-1] + 1))
+    version_fragments_last_idx="$((${#version_fragments[@]} - 1))"
+    version_fragments[${version_fragments_last_idx}]=$((version_fragments[version_fragments_last_idx] + 1))
     local return_str="$(printf ".%s" "${version_fragments[@]}")"
     echo "${return_str:1}"
 }
@@ -119,16 +126,21 @@ function _gitflow_release_finish() {
             version="${current_branch##${release_prefix}}"
             echo "No version provided; using version detected from release branch: ${version}"
         else
-            echo "Error: Couldn't autodetect version from current branch; specify a version instead" >&2
+            print_error "Couldn't autodetect version from current branch; specify a version instead"
             return 1
         fi
     else
         version="${3}"
     fi
 
-    git-flow release finish -m "${version}" "${version}" &&
-        git checkout "${develop_branch}" &&
-        git tag "$( _bump_version "${version}" )-dev"
+    git-flow release finish -m "${version}" "${version}" || { print_error "git-flow release failed" && return 2; }
+    git checkout "${develop_branch}" || { print_error "Couldn't check out develop branch" && return 3; }
+    local bumped_version="$( _bump_version "${version}" )"
+    if [ -z "${bumped_version}" ]; then
+        print_error "Couldn't increment the maintenance version of semver '${version}'"
+        return 4
+    fi
+    git tag "${bumped_version}-dev"
 }
 
 # Helper function for handling the `gitflow release push` subcommand
