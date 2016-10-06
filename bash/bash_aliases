@@ -123,15 +123,19 @@ function cd() {
         builtin cd "$@"
     else
         # Check if string is in '<number>..' form
-        REPEAT_TIMES="${1:0:(${#1} - 2)}"
-        if [[ "${1:(-2)}" == ".." ]] && [[ "${#1}" -gt 2 ]] && [[ $REPEAT_TIMES =~ ^-?[0-9]+$ ]] && [[ $REPEAT_TIMES -ne 0 ]]; then
+        if [[ "${1:(-2)}" == ".." ]] && [[ -n "${1%..}" ]] && [[ "${1%..}" =~ ^[0-9]+$ ]]; then
+            REPEAT_TIMES="${1%..}"
+            if [ "${REPEAT_TIMES}" -le 0 ]; then
+                echo "Cannot do ${REPEAT_TIMES} cd's"
+                return 1
+            fi
+
             CD_STR=""
             while read; do
                 CD_STR="../$CD_STR"
             done < <(seq 1 "${REPEAT_TIMES}")
             cd "$CD_STR"
         else
-            
             builtin cd "$@"
         fi
     fi
