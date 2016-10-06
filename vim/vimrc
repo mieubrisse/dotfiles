@@ -39,7 +39,8 @@ Plugin 'leafgarland/typescript-vim'
 Plugin 'kchmck/vim-coffee-script'
 " Plugin 'Lokaltog/vim-easymotion'
 Plugin 'easymotion/vim-easymotion'
-Plugin 'pangloss/vim-javascript'
+" Plugin 'pangloss/vim-javascript'
+Plugin 'sheerun/vim-polyglot'
 Plugin 'elzr/vim-json'
 Plugin 'groenewege/vim-less'
 Plugin 'kshenoy/vim-signature'
@@ -374,11 +375,11 @@ autocmd FileType *.py setlocal foldmethod=indent   " Automatically fold based on
 "
 " Indentation settings according to personal preference.
 
-" Indentation settings for using 2 spaces instead of tabs.
 " Do not change 'tabstop' from its default value of 8 with this setup.
 set shiftwidth=4
 set softtabstop=4
 set expandtab
+autocmd Filetype javascript* setlocal ts=4 sw=4 sts=0 noexpandtab
 
 " Indentation settings for using hard tabs for indent. Display tabs as
 " two characters wide.
