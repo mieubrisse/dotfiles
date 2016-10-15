@@ -71,18 +71,8 @@ function __jenv_set_java_home() {
 __jenv_set_java_home
 
 # ---- NVM --------------------------------------------------------------------------
-# I've never actually used this
-# export NVM_DIR="$HOME/.nvm"
-# . "$(brew --prefix nvm)/nvm.sh"
-
-# ---- RVM --------------------------------------------------------------------------
-# Disabling because I never use Ruby
-# if [[ -s "$HOME/.rvm/scripts/rvm" ]] ; then
-#     source ~/.rvm/scripts/rvm
-#     PATH_ADDITIONS+=("$HOME/.rvm/bin")    # RVM to PATH for scripting
-# fi
-
-
+export NVM_DIR="$HOME/.nvm"
+. "$(brew --prefix nvm)/nvm.sh"
 
 # ----------- Bash Prompt -----------------------------------------------------------
 
