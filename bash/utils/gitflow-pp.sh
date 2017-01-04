@@ -14,7 +14,7 @@
 # Helper function for printing errors to STDOUT
 function _print_error() {
     local msg="${1}"
-    print_error "${msg}"
+    _print_error "${msg}"
 }
 
 # Helper function to bump the patch version of dot-delimited version input by one
@@ -37,7 +37,7 @@ function _get_gitflow_param() {
     git config --get "${config_param}"
     retcode=${?}
     if [ ${retcode} -ne 0 ]; then
-        print_error "Could not retrieve Gitflow param '${config_param}'... is Gitflow initialized?"
+        _print_error "Could not retrieve Gitflow param '${config_param}'... is Gitflow initialized?"
     fi
     return ${retcode}
 }
@@ -64,7 +64,7 @@ function _ensure_branch_sync() {
     fi
 
     if ! git fetch; then
-        print_error "`git fetch` failed"
+        _print_error "`git fetch` failed"
         return 1
     fi
     date +%s > "${sync_timestamp_filepath}"
@@ -78,7 +78,7 @@ function _ensure_branch_sync() {
 # $@ - All the arguments to Gitflow
 function _gitflow_release_start() {
     if ! _ensure_branch_sync; then
-        print_error "master and/or develop branch are out of sync with their remotes"
+        _print_error "master and/or develop branch are out of sync with their remotes"
         return 1
     fi
 
@@ -92,7 +92,7 @@ function _gitflow_release_start() {
         minus_version_tag="${newest_develop_tag##${version_tag}}"
         version="${minus_version_tag%%-dev}"
         if [ -z "${version}" ]; then
-            print_error "Couldn't autodetect version from latest develop branch; specify a version instead"
+            _print_error "Couldn't autodetect version from latest develop branch; specify a version instead"
             return 1
         fi
         read -p "What version should we release with? (${version}): " corrected_version 
@@ -110,7 +110,7 @@ function _gitflow_release_start() {
 # $@ - All arguments the user passed to the Gitflow command
 function _gitflow_release_finish() {
     if ! _ensure_branch_sync; then
-        print_error "master and/or develop branch are out of sync with their remotes"
+        _print_error "master and/or develop branch are out of sync with their remotes"
         return 1
     fi
 
@@ -126,18 +126,18 @@ function _gitflow_release_finish() {
             version="${current_branch##${release_prefix}}"
             echo "No version provided; using version detected from release branch: ${version}"
         else
-            print_error "Couldn't autodetect version from current branch; specify a version instead"
+            _print_error "Couldn't autodetect version from current branch; specify a version instead"
             return 1
         fi
     else
         version="${3}"
     fi
 
-    git-flow release finish -m "${version}" "${version}" || { print_error "git-flow release failed" && return 2; }
-    git checkout "${develop_branch}" || { print_error "Couldn't check out develop branch" && return 3; }
+    git-flow release finish -m "${version}" "${version}" || { _print_error "git-flow release failed" && return 2; }
+    git checkout "${develop_branch}" || { _print_error "Couldn't check out develop branch" && return 3; }
     local bumped_version="$( _bump_version "${version}" )"
     if [ -z "${bumped_version}" ]; then
-        print_error "Couldn't increment the maintenance version of semver '${version}'"
+        _print_error "Couldn't increment the maintenance version of semver '${version}'"
         return 4
     fi
     git tag "${bumped_version}-dev"
@@ -169,7 +169,7 @@ function _gitflow_release_unfinish() {
 
     newest_master_tag="$(git describe --tags --abbrev=0 "${master_branch}")"
     if [ -z "${newest_master_tag}" ]; then
-        print_error "No version to unrelease"
+        _print_error "No version to unrelease"
         return 3
     fi
 
