@@ -56,13 +56,19 @@ PATH_ADDITIONS=()
 
 # ---- PyEnv -------------------------------------------------------------------------
 export PYENV_ROOT="$HOME/.pyenv"
-eval "$(pyenv init -)"
+
+# Do rehash in background to speed up startup
+eval "$(pyenv init - --no-rehash)"
+(pyenv rehash &) 2> /dev/null
+
 eval "$(pyenv virtualenv-init -)"
 PATH_ADDITIONS+=("$PYENV_ROOT/bin:$PATH")
 
 
 # ---- Jenv --------------------------------------------------------------------------
-eval "$(jenv init -)"
+# Do rehash in background to speed up startup
+eval "$(jenv init - --no-rehash)"
+(jenv rehash &) 2> /dev/null
 
 # Annoyingly, jenv doesn't set JAVA_HOME automatically so we have to do it manually
 function __jenv_set_java_home() {
@@ -71,8 +77,8 @@ function __jenv_set_java_home() {
 __jenv_set_java_home
 
 # ---- NVM --------------------------------------------------------------------------
-export NVM_DIR="$HOME/.nvm"
-. "$(brew --prefix nvm)/nvm.sh"
+# export NVM_DIR="$HOME/.nvm"
+# . "$(brew --prefix nvm)/nvm.sh"
 
 # ----------- Bash Prompt -----------------------------------------------------------
 
