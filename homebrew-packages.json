@@ -36,6 +36,12 @@
                 "1.0.16"
             ]
         }, 
+        "coreutils": {
+            "options": [], 
+            "versions": [
+                "8.25"
+            ]
+        }, 
         "diff-so-fancy": {
             "options": [], 
             "versions": [
