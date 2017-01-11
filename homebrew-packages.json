@@ -138,6 +138,12 @@
                 "0.7.1"
             ]
         }, 
+        "nmap": {
+            "options": [], 
+            "versions": [
+                "7.12"
+            ]
+        }, 
         "node": {
             "options": [
                 "--without-npm"
