@@ -195,6 +195,12 @@
                 "7.2p2"
             ]
         }, 
+        "tmux": {
+            "options": [], 
+            "versions": [
+                "2.1"
+            ]
+        }, 
         "unixodbc": {
             "options": [], 
             "versions": [
