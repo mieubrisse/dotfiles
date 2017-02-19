@@ -19,7 +19,8 @@
             "~/.bash_utils": "./bash/utils",
             "~/.editrc": "./bash/editrc",
             "~/.bash_completion": "./bash/bash_completion",
-            "~/.bash-completions": "./bash/bash-completions"
+            "~/.bash-completions": "./bash/bash-completions",
+            "~/.tmux.conf": "./tmux/tmux.conf"
         },
         "copy": {
             "~/.vim_undo": "./vim/vim_undo"
