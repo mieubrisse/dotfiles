@@ -398,3 +398,5 @@ alias virtualenv="pyenv virtualenv"
 
 # Make following a file much easier
 alias lsf="less +F"
+
+alias multi-ssh="~/.bash_utils/tmux-multi-ssh.sh"
