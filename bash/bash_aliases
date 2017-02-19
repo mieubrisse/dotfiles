@@ -103,8 +103,8 @@ function smallest {
 # TODO Idea:
 # Fuzzy_find and fuzzy_ls can take an additional argument of the directory to search!
 
-# Make find not suck
-alias cif="find . -iname" # Case-insensitive find
+# Make find not suck, and exclude some sensible defaults (which I hope don't come back to bite me one day...)
+alias cif="find . ! -name '*.class' -and -iname" # Case-insensitive find
 function fuzzy_find() { 
     ARGS="${@}"
     cif "*${ARGS// /*}*"
