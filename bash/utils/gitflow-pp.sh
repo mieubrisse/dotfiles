@@ -44,33 +44,49 @@ function _get_gitflow_param() {
 # Helper method to ensure that the develop and master branches are up-to-date with their remotes, and
 #  returns a nonzero exit code if the fetch failed or if this is not the case
 function _ensure_branch_sync() {
-    echo "Checking that master & develop are in sync with remotes..."
-
     local develop_branch="$(_get_gitflow_param "branch.develop")" || return 1
     local master_branch="$(_get_gitflow_param "branch.master")" || return 1
+
+    echo "Checking that '${master_branch}' and '${develop_branch}' are in sync with remotes..."
 
     local project_root_dirpath="$(git rev-parse --show-toplevel)"
     local sync_timestamp_filepath="${project_root_dirpath}/.git/gitflow-sync"
     
     # Don't check if branches are in sync if we've just done it recently
+    local do_sync="true"
     if [ -f "${sync_timestamp_filepath}" ]; then
         local last_synced_timestamp="$(cat "${sync_timestamp_filepath}")"
         local now="$(date +%s)"
         if [ $(( now - last_synced_timestamp )) -lt 180 ]; then
-            echo "Sync was done recently; skipping"
-            return 0
+            echo "'git fetch' was done recently; skipping"
+            do_sync="false"
         fi
     fi
 
-    if ! git fetch; then
-        _print_error "`git fetch` failed"
-        return 1
-    fi
-    date +%s > "${sync_timestamp_filepath}"
+    if [ "${do_sync}" = "true" ]; then
+        if ! git fetch; then
+            _print_error "`git fetch` failed"
+            return 1
+        fi
 
-    # Check against the remotes
-    [ -z "$(git log "${develop_branch}..origin/${develop_branch}" --oneline)" ] || return 2
-    [ -z "$(git log "${master_branch}..origin/${master_branch}" --oneline)" ] || return 3
+        date +%s > "${sync_timestamp_filepath}"
+    fi
+
+    # Check the remote branches are in sync
+    local develop_branch_diff=""
+    local master_branch_diff=""
+    if ! develop_branch_diff="$(git log "${develop_branch}..origin/${develop_branch}" --oneline)"; then
+        _print_error "Error occurred when checking differences between ${develop_branch} and origin/${develop_branch}"
+        return 2
+    fi
+    [ -z "${develop_branch_diff}" ] || return 3
+    if ! master_branch_diff="$(git log "${master_branch}..origin/${master_branch}" --oneline)"; then
+        _print_error "Error occurred when checking differences between ${master_branch} and origin/${master_branch}"
+        return 4
+    fi
+    [ -z "${master_branch_diff}" ] || return 5
+
+    echo "Verified '${master_branch}' and '${develop_branch}' are in sync with remotes!"
 }
 
 # Helper method for handling all `gitflow release start` subcommands
@@ -92,7 +108,7 @@ function _gitflow_release_start() {
         if ! [ -z "${newest_develop_tag}" ]; then
             minus_version_tag="${newest_develop_tag##${version_tag}}"
             suggested_release_version="${minus_version_tag%%-dev}"
-            if [ -z "${version}" ]; then
+            if [ -z "${suggested_release_version}" ]; then
                 echo "Couldn't autodetect version from ${develop_branch}; version will need to be entered manually"
             fi
         else
