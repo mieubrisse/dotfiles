@@ -10,11 +10,10 @@
 #
 # ====================================================================================================================
 
-
 # Helper function for printing errors to STDOUT
 function _print_error() {
     local msg="${1}"
-    _print_error "${msg}"
+    echo "${msg}" >&2
 }
 
 # Helper function to bump the patch version of dot-delimited version input by one
@@ -78,39 +77,56 @@ function _ensure_branch_sync() {
 # $@ - All the arguments to Gitflow
 function _gitflow_release_start() {
     if ! _ensure_branch_sync; then
-        _print_error "master and/or develop branch are out of sync with their remotes"
+        _print_error "Cannot start a release; branches are out of sync with remote!"
         return 1
     fi
 
     local develop_branch="$(_get_gitflow_param "branch.develop")" || return 1
     local version_tag="$(_get_gitflow_param "prefix.versiontag")" || return 1
 
-    # Try and autodetect the version if a user doesn't specify one
-    local version=""
+    # If the user doesn't specify a version, do some niceties to try and autodetect it or let them specify
+    local suggested_release_version=""
+    local actual_version=""
     if [ ${#} -eq 2 ]; then
         newest_develop_tag="$(git describe --tags --match='*-dev' --abbrev=0 "${develop_branch}")"
-        minus_version_tag="${newest_develop_tag##${version_tag}}"
-        version="${minus_version_tag%%-dev}"
-        if [ -z "${version}" ]; then
-            _print_error "Couldn't autodetect version from latest develop branch; specify a version instead"
-            return 1
+        if ! [ -z "${newest_develop_tag}" ]; then
+            minus_version_tag="${newest_develop_tag##${version_tag}}"
+            suggested_release_version="${minus_version_tag%%-dev}"
+            if [ -z "${version}" ]; then
+                echo "Couldn't autodetect version from ${develop_branch}; version will need to be entered manually"
+            fi
+        else
+            echo "Couldn't find X.Y.Z-dev tag on ${develop_branch}"
         fi
-        read -p "What version should we release with? (${version}): " corrected_version 
-        version="${corrected_version:-${version}}"
-        command+=" ${version}"
+
+        if ! [ -z "${suggested_release_version}" ]; then
+            read -p "What version should we release with? (${suggested_release_version}): " actual_version
+            if [ -z "${actual_version}" ]; then
+                actual_version="${suggested_release_version}"
+            fi
+        else
+            while [ -z "${actual_version}" ]; do
+                read -p "What version should we release with?: " actual_version
+                if [ -z "${actual_version}" ]; then
+                    echo "Release version cannot be empty"
+                fi
+            done
+        fi
+
+        command+=" ${actual_version}"
     else 
-        version="${!#}"
+        actual_version="${!#}"
     fi
-    git-flow release start "${version}" && 
-        git commit --allow-empty -m "Starting release/${version}" && 
-        git tag "${version}-rc"
+    git-flow release start "${actual_version}" && 
+        git commit --allow-empty -m "Starting release/${actual_version}" && 
+        git tag "${actual_version}-rc"
 }
 
 # Helper function for handling all `gitflow release finish` subcommands
 # $@ - All arguments the user passed to the Gitflow command
 function _gitflow_release_finish() {
     if ! _ensure_branch_sync; then
-        _print_error "master and/or develop branch are out of sync with their remotes"
+        _print_error "Cannot finish release; branches are out of sync with remote!"
         return 1
     fi
 
@@ -118,26 +134,42 @@ function _gitflow_release_finish() {
     local master_branch="$(_get_gitflow_param "branch.master")" || return 1
     local release_prefix="$(_get_gitflow_param "prefix.release")" || return 1
 
-    # If we're on a release/ branch, autodetect the version to finish
-    local version=""
+    # If we're on a release/ branch, try to autodetect the version to finish
+    local suggested_release_version=""
+    local actual_version=""
     if [ -z "${3}" ]; then
         local current_branch="$(git rev-parse --abbrev-ref HEAD)"
         if [[ "${current_branch}" == ${release_prefix}* ]]; then
-            version="${current_branch##${release_prefix}}"
-            echo "No version provided; using version detected from release branch: ${version}"
+            suggested_release_version="${current_branch##${release_prefix}}"
+            if [ -z "${suggested_release_version}" ]; then
+                echo "Couldn't autodetect version from current branch; version will need to be entered manually"
+            fi
         else
-            _print_error "Couldn't autodetect version from current branch; specify a version instead"
-            return 1
+            echo "Current branch is not a release branch; version will need to be entered manually"
+        fi
+
+        if ! [ -z "${suggested_release_version}" ]; then
+            read -p "What version should we release with? (${suggested_release_version}): " actual_version
+            if [ -z "${actual_version}" ]; then
+                actual_version="${suggested_release_version}"
+            fi
+        else
+            while [ -z "${actual_version}" ]; do
+                read -p "What version should we release with?: " actual_version
+                if [ -z "${actual_version}" ]; then
+                    echo "Release version cannot be empty"
+                fi
+            done
         fi
     else
-        version="${3}"
+        actual_version="${3}"
     fi
 
-    git-flow release finish -m "${version}" "${version}" || { _print_error "git-flow release failed" && return 2; }
+    git-flow release finish -m "${actual_version}" "${actual_version}" || { _print_error "git-flow release failed" && return 2; }
     git checkout "${develop_branch}" || { _print_error "Couldn't check out develop branch" && return 3; }
-    local bumped_version="$( _bump_version "${version}" )"
+    local bumped_version="$( _bump_version "${actual_version}" )"
     if [ -z "${bumped_version}" ]; then
-        _print_error "Couldn't increment the maintenance version of semver '${version}'"
+        _print_error "Couldn't increment the maintenance version of semver '${actual_version}'"
         return 4
     fi
     git tag "${bumped_version}-dev"
