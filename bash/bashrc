@@ -1,3 +1,7 @@
+# Used for debugging slow .bashrc load times.. 
+echo "Started loading .bashrc..."
+_bashrc_start_time="$(gdate +%s%3N)"
+
 export EDITOR="vim"
 
 # Make bash and all readline programs operate in vi mode
@@ -63,7 +67,6 @@ eval "$(pyenv init - --no-rehash)"
 
 eval "$(pyenv virtualenv-init -)"
 PATH_ADDITIONS+=("$PYENV_ROOT/bin:$PATH")
-
 
 # ---- Jenv --------------------------------------------------------------------------
 # Do rehash in background to speed up startup
@@ -372,3 +375,5 @@ fi
 if [ -f ~/.bash_local ]; then
     source ~/.bash_local
 fi
+
+echo "Millis to load .bashrc: $(($(gdate +%s%3N) - _bashrc_start_time))"

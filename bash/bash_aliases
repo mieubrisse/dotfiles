@@ -237,6 +237,9 @@ function announce() {
 }
 
 # --- Git Commands ------------------------
+# Alias Hub before all else
+alias git="hub"
+
 # Viewing changes
 alias gs="git status -sb"
 alias gsh="git show"
@@ -399,4 +402,4 @@ alias virtualenv="pyenv virtualenv"
 # Make following a file much easier
 alias lsf="less +F"
 
-alias multi-ssh="~/.bash_utils/tmux-multi-ssh.sh"
+alias multi-ssh="bash ~/.bash_utils/tmux-multi-ssh.sh"
