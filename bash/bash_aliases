@@ -162,8 +162,8 @@ alias fff="_pipe_to_filter fuzzy_find"
 # $2 - Command to generate results for filtering
 # $3+ - Arguments passed to command for generating results to filter
 function use_command_filter_results() {
-    # Workd-splitting is intentional here
-    $1 "$(${2} "${@:3}" | filter)"
+    # Unquoted word-splitting is intentional here
+    $1 $(${2} "${@:3}" | filter)
 }
 
 alias vff="use_command_filter_results 'vim -O' fuzzy_find"

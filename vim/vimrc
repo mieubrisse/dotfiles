@@ -503,15 +503,15 @@ command! PrettifyXML call DoPrettifyXML()
 nnoremap <Leader>b :b#<CR>
 
 " Better split navigation
-nnoremap <C-y> <C-w>h
-nnoremap <C-i> <C-w>k
-nnoremap <C-u> <C-w>j
-nnoremap <C-o> <C-w>l
-nnoremap <Left> <C-w>h
-nnoremap <Right> <C-w>l
-nnoremap <Down> <C-w>j
-nnoremap <Up> <C-w>k
-nnoremap <Leader>x <C-w>q
+" nnoremap <C-y> <C-w>h
+" nnoremap <C-i> <C-w>k
+" nnoremap <C-u> <C-w>j
+" nnoremap <C-o> <C-w>l
+" nnoremap <Left> <C-w>h
+" nnoremap <Right> <C-w>l
+" nnoremap <Down> <C-w>j
+" nnoremap <Up> <C-w>k
+" nnoremap <Leader>x <C-w>q
 
 " Better tab navigation
 nnoremap <Leader>tt :tabnew<CR>
