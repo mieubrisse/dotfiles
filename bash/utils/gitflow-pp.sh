@@ -3,10 +3,21 @@
 # ====================================================================================================================
 #
 # Gitflow++ - A saner wrapper around Gitflow that:
+# 
+#  - ensures local master & develop branches are up-to-date with remote before releasing
 #  - auto-creates an empty commit after '_gitflow release start X.Y.Z' and tags it with X.Y.Z-rc
 #  - auto-creates the X.Y.(Z+1)-dev tag after `_gitflow release finish X.Y.Z`
 #  - allows you to undo the last '_gitflow release finish' with '_gitflow release unfinish'
 #  - provides '_gitflow push' for pushing tags and master/develop branch to remote (in that order, for Jenkins)
+# 
+# 
+# To run through a normal release flow:
+# 
+#  1. Run `_gitflow release start` (a version will be suggested if you have an X.Y.Z-dev tag on your develop branch)
+#  2. Make any necessary changes on your release branch
+#  3. Run `_gitflow release finish` (a version will be suggested if you're on the release branch)
+#  4. Verify that your git log looks sane (i.e. all merges happened as expected)
+#  5. Run `_gitflow push` to push all branches and tags up to the remote
 #
 # ====================================================================================================================
 
