@@ -1,309 +1,268 @@
 {
     "brews": {
+        "automake": {
+            "options": [],
+            "versions": [
+                "1.15"
+            ]
+        },
         "bash": {
-            "options": [], 
+            "options": [],
             "versions": [
                 "4.3.42"
             ]
-        }, 
+        },
         "bash-completion": {
-            "options": [], 
+            "options": [],
             "versions": [
                 "1.3"
             ]
-        }, 
+        },
         "cask": {
-            "options": [], 
+            "options": [],
             "versions": [
                 "0.7.4"
             ]
-        }, 
+        },
         "chromedriver": {
-            "options": [], 
+            "options": [],
             "versions": [
                 "2.21"
             ]
-        }, 
+        },
         "cmake": {
-            "options": [], 
+            "options": [],
             "versions": [
                 "3.5.0"
             ]
-        }, 
+        },
         "colordiff": {
-            "options": [], 
+            "options": [],
             "versions": [
                 "1.0.16"
             ]
-        }, 
+        },
         "coreutils": {
-            "options": [], 
+            "options": [],
             "versions": [
                 "8.25"
             ]
-        }, 
+        },
         "diff-so-fancy": {
-            "options": [], 
+            "options": [],
             "versions": [
                 "0.6.3"
             ]
-        }, 
+        },
         "elasticsearch": {
-            "options": [], 
+            "options": [],
             "versions": [
                 "2.3.2"
             ]
-        }, 
-        "emacs": {
-            "options": [], 
-            "versions": [
-                "24.5"
-            ]
-        }, 
+        },
         "gcc": {
-            "options": [], 
+            "options": [],
             "versions": [
                 "5.3.0"
             ]
-        }, 
+        },
         "git": {
-            "options": [], 
+            "options": [],
             "versions": [
-                "2.7.4", 
+                "2.7.4",
                 "2.8.2"
             ]
-        }, 
+        },
         "git-flow": {
-            "options": [], 
+            "options": [],
             "versions": [
                 "0.4.1"
             ]
-        }, 
+        },
         "gnu-getopt": {
-            "options": [], 
+            "options": [],
             "versions": [
                 "1.1.6"
             ]
-        }, 
+        },
         "gnupg": {
-            "options": [], 
+            "options": [],
             "versions": [
                 "1.4.20"
             ]
-        }, 
+        },
         "gradle": {
-            "options": [], 
+            "options": [],
             "versions": [
                 "2.12"
             ]
-        }, 
+        },
         "groovy": {
-            "options": [], 
+            "options": [],
             "versions": [
                 "2.4.6"
             ]
-        }, 
+        },
         "gti": {
-            "options": [], 
+            "options": [],
             "versions": [
                 "1.6.1"
             ]
-        }, 
+        },
         "htop": {
-            "options": [], 
+            "options": [],
             "versions": [
                 "0.8.2.8"
             ]
-        }, 
+        },
         "hub": {
-            "options": [], 
+            "options": [],
             "versions": [
                 "2.2.9"
             ]
-        }, 
+        },
         "jenv": {
-            "options": [], 
+            "options": [],
             "versions": [
                 "0.4.4"
             ]
-        }, 
+        },
         "jq": {
-            "options": [], 
+            "options": [],
             "versions": [
                 "1.5"
             ]
-        }, 
+        },
         "libyaml": {
-            "options": [], 
+            "options": [],
             "versions": [
                 "0.1.6_1"
             ]
-        }, 
+        },
         "netcat": {
-            "options": [], 
+            "options": [],
             "versions": [
                 "0.7.1"
             ]
-        }, 
+        },
         "nmap": {
-            "options": [], 
+            "options": [],
             "versions": [
                 "7.12"
             ]
-        }, 
+        },
         "node": {
-            "options": [], 
+            "options": [],
             "versions": [
                 "5.9.0"
             ]
-        }, 
+        },
         "nvm": {
-            "options": [], 
+            "options": [],
             "versions": [
                 "0.31.0"
             ]
-        }, 
+        },
         "postgresql": {
-            "options": [], 
+            "options": [],
             "versions": [
                 "9.5.2"
             ]
-        }, 
+        },
         "pyenv-virtualenv": {
-            "options": [], 
+            "options": [],
             "versions": [
                 "20160202"
             ]
-        }, 
+        },
         "qt": {
-            "options": [], 
+            "options": [],
             "versions": [
                 "4.8.7_2"
             ]
-        }, 
+        },
         "rabbitmq": {
-            "options": [], 
+            "options": [],
             "versions": [
                 "3.6.1"
             ]
-        }, 
+        },
         "ravenac95/sudolikeaboss/sudolikeaboss": {
-            "options": [], 
+            "options": [],
             "versions": [
                 "0.2.0"
             ]
-        }, 
+        },
         "ssh-copy-id": {
-            "options": [], 
+            "options": [],
             "versions": [
                 "7.2p2"
             ]
-        }, 
+        },
         "tmux": {
-            "options": [], 
+            "options": [],
             "versions": [
                 "2.1"
             ]
-        }, 
+        },
         "unixodbc": {
-            "options": [], 
+            "options": [],
             "versions": [
                 "2.3.2_1"
             ]
-        }, 
+        },
         "vim": {
-            "options": [], 
+            "options": [],
             "versions": [
                 "7.4.1589"
             ]
-        }, 
+        },
         "wget": {
-            "options": [], 
+            "options": [],
             "versions": [
                 "1.17.1"
             ]
-        }, 
+        },
         "xz": {
-            "options": [], 
+            "options": [],
             "versions": [
                 "5.2.2"
             ]
         }
-    }, 
-    "casks": [], 
+    },
+    "casks": [
+        "1password",
+        "alfred",
+        "anki",
+        "battle-net",
+        "box-sync",
+        "calibre",
+        "disk-inventory-x",
+        "firefox",
+        "flux",
+        "github-desktop",
+        "google-drive",
+        "hipchat",
+        "intellij-idea",
+        "java",
+        "karabiner-elements",
+        "kindle",
+        "private-eye",
+        "skype",
+        "slack",
+        "soapui",
+        "spectacle",
+        "spotify",
+        "steam",
+        "teamviewer",
+        "telegram",
+        "vlc",
+        "wireshark"
+    ],
     "taps": [
-        "==> Auto-updated Homebrew!", 
-        "Updated 2 taps (caskroom/cask, homebrew/core).", 
-        "==> New Formulae", 
-        "bchunk", 
-        "dps8m", 
-        "e2tools", 
-        "heartbeat", 
-        "kaitai-struct-compiler", 
-        "simg2img", 
-        "==> Updated Formulae", 
-        "abcmidi", 
-        "asciidoc", 
-        "bazel", 
-        "bit", 
-        "cmake", 
-        "convox", 
-        "cppad", 
-        "debianutils", 
-        "dssim", 
-        "erlang", 
-        "exploitdb", 
-        "faas-cli", 
-        "firebase-cli", 
-        "gegl", 
-        "getdns", 
-        "geth", 
-        "gofabric8", 
-        "grafana", 
-        "grakn", 
-        "gsmartcontrol", 
-        "i2p", 
-        "imagemagick", 
-        "imagemagick@6", 
-        "inspircd", 
-        "itstool", 
-        "kerl", 
-        "libgsf", 
-        "libmaxminddb", 
-        "libpqxx", 
-        "libuv", 
-        "mdds", 
-        "mikutter", 
-        "mupdf", 
-        "mupdf-tools", 
-        "mypy", 
-        "nativefier", 
-        "node-build", 
-        "ompl", 
-        "ortp", 
-        "pandoc", 
-        "poco", 
-        "poppler", 
-        "prometheus", 
-        "resty", 
-        "scalaenv", 
-        "scalastyle", 
-        "scm-manager", 
-        "sjk", 
-        "sourcekitten", 
-        "swiftformat", 
-        "swiftlint", 
-        "terragrunt", 
-        "tintin", 
-        "vapoursynth", 
-        "wireguard-tools", 
-        "yara", 
-        "==> Renamed Formulae", 
-        "newsbeuter -> newsboat", 
-        "", 
-        "caskroom/cask", 
-        "homebrew/core", 
-        "homebrew/services", 
+        "caskroom/cask",
+        "homebrew/core",
+        "homebrew/services",
         "ravenac95/sudolikeaboss"
     ]
 }
