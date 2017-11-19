@@ -1,11 +1,5 @@
 {
     "brews": {
-        "automake": {
-            "options": [],
-            "versions": [
-                "1.15"
-            ]
-        },
         "bash": {
             "options": [],
             "versions": [
@@ -24,18 +18,6 @@
                 "0.7.4"
             ]
         },
-        "chromedriver": {
-            "options": [],
-            "versions": [
-                "2.21"
-            ]
-        },
-        "cmake": {
-            "options": [],
-            "versions": [
-                "3.5.0"
-            ]
-        },
         "colordiff": {
             "options": [],
             "versions": [
@@ -52,12 +34,6 @@
             "options": [],
             "versions": [
                 "0.6.3"
-            ]
-        },
-        "elasticsearch": {
-            "options": [],
-            "versions": [
-                "2.3.2"
             ]
         },
         "gcc": {
@@ -103,24 +79,6 @@
                 "2.4.6"
             ]
         },
-        "gti": {
-            "options": [],
-            "versions": [
-                "1.6.1"
-            ]
-        },
-        "htop": {
-            "options": [],
-            "versions": [
-                "0.8.2.8"
-            ]
-        },
-        "hub": {
-            "options": [],
-            "versions": [
-                "2.2.9"
-            ]
-        },
         "jenv": {
             "options": [],
             "versions": [
@@ -133,10 +91,10 @@
                 "1.5"
             ]
         },
-        "libyaml": {
+        "libtool": {
             "options": [],
             "versions": [
-                "0.1.6_1"
+                "2.4.6"
             ]
         },
         "netcat": {
@@ -163,22 +121,10 @@
                 "0.31.0"
             ]
         },
-        "postgresql": {
-            "options": [],
-            "versions": [
-                "9.5.2"
-            ]
-        },
         "pyenv-virtualenv": {
             "options": [],
             "versions": [
                 "20160202"
-            ]
-        },
-        "qt": {
-            "options": [],
-            "versions": [
-                "4.8.7_2"
             ]
         },
         "rabbitmq": {
@@ -205,12 +151,6 @@
                 "2.1"
             ]
         },
-        "unixodbc": {
-            "options": [],
-            "versions": [
-                "2.3.2_1"
-            ]
-        },
         "vim": {
             "options": [],
             "versions": [
@@ -222,40 +162,24 @@
             "versions": [
                 "1.17.1"
             ]
-        },
-        "xz": {
-            "options": [],
-            "versions": [
-                "5.2.2"
-            ]
         }
     },
     "casks": [
         "1password",
         "alfred",
-        "anki",
-        "battle-net",
-        "box-sync",
         "calibre",
         "disk-inventory-x",
         "firefox",
         "flux",
-        "github-desktop",
         "google-drive",
-        "hipchat",
         "intellij-idea",
         "java",
         "karabiner-elements",
-        "kindle",
         "private-eye",
         "skype",
         "slack",
-        "soapui",
         "spectacle",
         "spotify",
-        "steam",
-        "teamviewer",
-        "telegram",
         "vlc",
         "wireshark"
     ],
