@@ -16,7 +16,6 @@ _GIT_COMMIT_MESSAGE_ARGVAR = "git_commit_message"
 _UTF_8_DECODER = "utf-8"
 
 _BREW_CMD = "brew"
-_CASK_BREWNAME = "caskroom/cask/brew-cask"
 _DEFAULT_GIT_COMMIT_MSG = "Automated Homebrew backup"
 
 def _parse_args(argv):
