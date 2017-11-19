@@ -13,6 +13,7 @@ import json
 _OUTPUT_FILEPATH_ARGVAR = "output_filepath"
 _DO_GIT_COMMIT_ARGVAR = "do_git_commit"
 _GIT_COMMIT_MESSAGE_ARGVAR = "git_commit_message"
+_UTF_8_DECODER = "utf-8"
 
 _BREW_CMD = "brew"
 _CASK_BREWNAME = "caskroom/cask/brew-cask"
@@ -33,14 +34,14 @@ def _print_error(msg):
     sys.stderr.write('Error: ' + msg + '\n')
 
 def _get_brews():
-    package_version_lines = subprocess.check_output([_BREW_CMD, "list", "--versions"]).splitlines()
+    package_version_lines = subprocess.check_output([_BREW_CMD, "list", "--versions"]).decode(_UTF_8_DECODER).splitlines()
     split_lines = (line.split() for line in package_version_lines )
     package_versions = { items[0]: items[1:] for items in split_lines }
 
-    user_installed_packages = subprocess.check_output([_BREW_CMD, "leaves"]).splitlines()
+    user_installed_packages = subprocess.check_output([_BREW_CMD, "leaves"]).decode(_UTF_8_DECODER).splitlines()
     return_obj = {}
     for package in user_installed_packages:
-        package_info = subprocess.check_output([_BREW_CMD, "info", package])
+        package_info = subprocess.check_output([_BREW_CMD, "info", package]).decode(_UTF_8_DECODER)
         matches = re.search('Built from source with:(.*)$', package_info, re.MULTILINE)
         package_options = matches.group(1).split() if matches else []
         return_obj[package] = { 
@@ -68,10 +69,8 @@ def main(argv):
     return_obj = {}
     brews = _get_brews()
     return_obj["brews"] = brews
-    return_obj["taps"] = subprocess.check_output([_BREW_CMD, "tap"]).splitlines()
-
-    casks_list = subprocess.check_output([_BREW_CMD, "cask", "list"]).splitlines() if _CASK_BREWNAME in brews else []
-    return_obj["casks"] = casks_list
+    return_obj["taps"] = subprocess.check_output([_BREW_CMD, "tap"]).decode(_UTF_8_DECODER).splitlines()
+    return_obj["casks"] = subprocess.check_output([_BREW_CMD, "cask", "list"]).decode(_UTF_8_DECODER).splitlines()
 
     with open(output_filepath, 'w') as output_fp:
         json.dump(return_obj, output_fp, indent=4, sort_keys=True)

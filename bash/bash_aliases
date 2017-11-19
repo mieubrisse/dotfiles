@@ -237,9 +237,6 @@ function announce() {
 }
 
 # --- Git Commands ------------------------
-# Alias Hub before all else
-alias git="hub"
-
 # Viewing changes
 alias gs="git status -sb"
 alias gsh="git show"

@@ -74,6 +74,9 @@ def main(argv):
     if subprocess.call(["command", "-v", _BREW_CMD, ], stdout=open(os.devnull, 'w'), stderr=subprocess.STDOUT) != 0:
         _print_error("No homebrew found")
         return 1
+    
+    # Update Homebrew beforehand so we don't get its output later
+    subprocess.check_call([_BREW_CMD, "update"])
 
     return_obj = {}
     brews = _get_brews()
