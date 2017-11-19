@@ -91,12 +91,6 @@
                 "1.5"
             ]
         },
-        "libtool": {
-            "options": [],
-            "versions": [
-                "2.4.6"
-            ]
-        },
         "netcat": {
             "options": [],
             "versions": [
@@ -131,12 +125,6 @@
             "options": [],
             "versions": [
                 "3.6.1"
-            ]
-        },
-        "ravenac95/sudolikeaboss/sudolikeaboss": {
-            "options": [],
-            "versions": [
-                "0.2.0"
             ]
         },
         "ssh-copy-id": {
@@ -186,7 +174,6 @@
     "taps": [
         "caskroom/cask",
         "homebrew/core",
-        "homebrew/services",
-        "ravenac95/sudolikeaboss"
+        "homebrew/services"
     ]
 }
