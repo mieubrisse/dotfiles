@@ -7,9 +7,6 @@ export EDITOR="vim"
 # Make bash and all readline programs operate in vi mode
 set -o vi
 
-# Tab-expand shell variables
-shopt -s direxpand
-
 # check the window size after each command and, if necessary,
 # update the values of LINES and COLUMNS.
 shopt -s checkwinsize
@@ -23,7 +20,6 @@ shopt -s checkwinsize
 
 # Shell Options
 shopt -s cdspell # Automatically fix 'cd' spelling mistakes
-shopt -s autocd # Using 'cd' is so passe
 
 # Make completion better
 bind "set completion-ignore-case on"
@@ -334,16 +330,12 @@ PROMPT_COMMAND=__prompt_command
 
 # This is a hacky and awesome thing that allows me to change my command color text but not the output. See:
 # http://unix.stackexchange.com/questions/198723/change-color-of-input-text-not-output
-trap 'echo -ne "\e[0m"' DEBUG
-
-
+trap "echo -ne \"$(tput sgr0)\"" DEBUG
 
 
 
 # Add Bash completion, which sources ~/.bash_completion as well
-if [ -f $(brew --prefix)/etc/bash_completion ]; then
-    source $(brew --prefix)/etc/bash_completion
-fi
+[ -f /usr/local/etc/bash_completion ] && source /usr/local/etc/bash_completion
 
 # Now, add all the additions that the above code specified
 for PATH_TO_ADD in "${PATH_ADDITIONS[@]}"; do
