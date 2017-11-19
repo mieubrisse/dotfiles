@@ -8,12 +8,6 @@ import shutil
 
 # Script to effortlessly deploy the dotfile repo into the user's system using the config.json file
 
-
-# Add symlinks
-def process_brews(brews_obj):
-    # Stubbed out for now
-    print "Nothing here!"
-
 def yes_no_prompt(prompt):
     """Give user prompt and wait for a 'y' or 'n' input"""
     print prompt
