@@ -6,6 +6,12 @@
 set -euo pipefail
 script_dirpath="$(cd "$(dirname "${0}")" && pwd)"
 
+# Create various needed directories
+ipython_dirpath="${HOME}/.ipython/profile_default"
+mkdir -p "${ipython_dirpath}"
+keybindings_dirpath="${HOME}/Library/KeyBindings"
+mkdir -p "${keybindings_dirpath}"
+
 # Big array of symlinks to create in the form (source,link to create)
 symlink_arr=(
 	"${script_dirpath}/bash/bash_aliases,${HOME}/.bash_aliases"
@@ -20,7 +26,10 @@ symlink_arr=(
 	"${script_dirpath}/bash/bash-completions,${HOME}/.bash-completions"
 	"${script_dirpath}/tmux/tmux.conf,${HOME}/.tmux.conf"
 	"${HOME}/.bashrc,${HOME}/.bash_profile"
-	"${HOME}/vim/vimrc,${HOME}/.vimrc"
+	"${HOME}/.vim/vimrc,${HOME}/.vimrc"
+        "${script_dirpath}/ipython/ipython_config.py,${ipython_dirpath}/ipython_config.py"
+        "${script_dirpath}/intellij/ideavimrc,${HOME}/.ideavimrc"
+        "${script_dirpath}/keybindings/DefaultKeyBinding.dict,${keybindings_dirpath}/DefaultKeyBinding.dict"
 )
 
 for link_def in "${symlink_arr[@]}"; do
@@ -28,11 +37,6 @@ for link_def in "${symlink_arr[@]}"; do
 	link_filepath="$(echo "${link_def}" | cut -d',' -f2)"
 	ln -sfn "${source_filepath}" "${link_filepath}"
 done
-
-# Set up iPython niceties
-ipython_dirpath="${HOME}/.ipython/profile_default"
-mkdir -p "${ipython_dirpath}"
-ln -s "${script_dirpath}/ipython/ipython_config.py" "${ipython_dirpath}/ipython_config.py"
 
 # Save less keybindings
 lesskey "${script_dirpath}/less/lesskey"
