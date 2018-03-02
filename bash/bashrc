@@ -279,14 +279,26 @@ function __prompt_command() {
     local dark_red=88
     # local green=76
     local algae_green=76
+    local orange=214
     local brightish_red=160
     local grey_blue=110
+    local sky_blue=117
     # local off_white=256
     local white=255
 
     # local timestamp_color="$(__get_color fore ${light_grey})"
     local timestamp_color="\[\e[38;5;${light_grey}m\]"
-    local command_color="${BOLD}\[\e[38;5;${algae_green}m\]"
+
+    # Change the color of the command text based on which machine I'm working on - personal or work
+    if [ "${MACHINE_CONTEXT}" == "WORK" ]; then
+        local command_color="${BOLD}\[\e[38;5;${algae_green}m\]"
+    elif [ "${MACHINE_CONTEXT}" == "PERSONAL" ]; then
+        local command_color="${BOLD}\[\e[38;5;${orange}m\]"
+    else
+        local command_color="${BOLD}\[\e[38;5;${sky_blue}m\]"
+    fi
+
+
 
     # local dir_color="${BOLD}$(__get_color back "${very_dark_grey}")"
     # if [ ${LAST_EXIT_CODE} -ne 0 ]; then

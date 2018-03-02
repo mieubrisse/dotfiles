@@ -71,6 +71,11 @@ call vundle#end()            " required
 filetype plugin indent on
 " ---------------------
 
+" ----------- Vim Polyglot --------------------------
+" Disable markdown polyglot indenting, because it's weird
+let g:polyglot_disabled = ['markdown']
+" ----------- Vim Polyglot --------------------------
+
 " ------ Ansible YAML --------
 " Vim's built-in YAML doesn't handle indentation well, so we need to use the only
 " YAML plugin that actually does it right
