@@ -358,11 +358,6 @@ if [ -f ~/.bash_aliases ]; then
     source ~/.bash_aliases
 fi
 
-# Mac-specific additions
-if [ -f ~/.bash_mac ]; then
-    source ~/.bash_mac
-fi
-
 # Machine-specific additions
 if [ -f ~/.bash_local ]; then
     source ~/.bash_local

@@ -185,6 +185,7 @@ let g:jellybeans_background_color_256 = "000000"
 " ------ netrw --------------------
 " Set line numbers in netrw file explorer
 let g:netrw_bufsettings = 'noma nomod nu nobl nowrap ro'
+let g:netrw_liststyle=3
 nnoremap <Leader>ne :Ex<CR>
 nnoremap <Leader>nv :Vex!<CR>
 nnoremap <Leader>ns :Sex<CR>
