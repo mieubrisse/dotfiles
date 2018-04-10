@@ -369,8 +369,8 @@ autocmd FileType *.py setlocal foldmethod=indent   " Automatically fold based on
 set shiftwidth=4
 set softtabstop=4
 set expandtab
-autocmd Filetype javascript* setlocal ts=4 sw=4 sts=0 noexpandtab
-autocmd Filetype yaml setlocal ts=2 sw=2 sts=0 noexpandtab
+autocmd Filetype javascript* setlocal ts=4 sw=4 sts=0
+autocmd Filetype yaml setlocal ts=2 sw=2 sts=0
 
 " Indentation settings for using hard tabs for indent. Display tabs as
 " two characters wide.

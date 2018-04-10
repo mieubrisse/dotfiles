@@ -334,7 +334,8 @@ function __prompt_command() {
         ls
         [ -d ".git" ] && command -v git >/dev/null 2>&1 && ( git fetch --prune >/dev/null 2>&1 >/dev/null & )
 
-        __jenv_set_java_home
+        # Commenting out because this randomly became ultra-slow
+        # __jenv_set_java_home
     fi
     __new_wd=$PWD
 }
