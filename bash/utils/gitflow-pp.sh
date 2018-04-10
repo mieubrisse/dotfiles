@@ -192,7 +192,7 @@ function _gitflow_release_finish() {
         actual_version="${3}"
     fi
 
-    git-flow release finish -m "${actual_version}" "${actual_version}" || { _print_error "git-flow release failed" && return 2; }
+    GIT_MERGE_AUTOEDIT=no git-flow release finish -m "${actual_version}" "${actual_version}" || { _print_error "git-flow release failed" && return 2; }
     git checkout "${develop_branch}" || { _print_error "Couldn't check out develop branch" && return 3; }
     local bumped_version="$( _bump_version "${actual_version}" )"
     if [ -z "${bumped_version}" ]; then
