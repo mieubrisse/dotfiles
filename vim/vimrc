@@ -599,16 +599,12 @@ endfunction
 
 nnoremap <Leader>gl :Shell git log --graph --abbrev-commit --decorate --date=relative --format=format:'\%h - (\%ar) \%s [\%an]\%d' --all<CR>
 
-" Adds the contents that were just deleted to the end of the given lines
-" Source:
-" http://stackoverflow.com/questions/1533565/how-to-get-visually-selected-text-in-vimscript
-" TODO This doesn't work :{
-" function! AppendLines()
-"     let lines=split(@", '\n') 
-"     normal :s/$/\=remove(lines,0)/
-"     1
-" endfunction
-" command! AppendLines call AppendLines()
-
 " PARs are just ZIPs
 au BufReadCmd *.par call zip#Browse(expand("<amatch>"))
+
+" ================== Reminders (not actually code) =========================
+" Merge two blocks of lines: https://stackoverflow.com/questions/10760326/merge-multiple-lines-two-blocks-in-vim
+" 1) Select first block of lines you want to merge and yank them to a register
+" 2) Select second block of lines
+" 3) :let l=split(@THEREGISTER) 
+" 4) :'<,'>s/SOMESELECTOR/\=remove(l,0)/
