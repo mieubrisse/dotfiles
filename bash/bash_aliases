@@ -399,4 +399,23 @@ alias virtualenv="pyenv virtualenv"
 # Make following a file much easier
 alias lsf="less +F"
 
-alias multi-ssh="bash ~/.bash_utils/tmux-multi-ssh.sh"
+# Call this script and pass a text file with a list of servers. You will ssh to the servers as the current user.
+# Once connected use Ctrl + a to enter commands
+# de/syncronize panes = Ctrl + a + s
+# Change panes = Ctrl + a + arrow-keys
+# Zoom into pane = Ctrl + a + z
+function parallel-tmux() {
+    tmux new-session -s $(date +%F_%H-%M-%S) -d
+    count=-1
+    for i in $(cat $1); do
+      let count=${count}+1
+      if [ $count -eq 0 ]; then
+        tmux new-window "ssh $i"
+      else
+        tmux split-window -h "ssh $i"
+        tmux select-layout tiled
+      fi
+    done
+    tmux set-window-option synchronize-panes on
+    tmux attach
+}
