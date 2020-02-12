@@ -75,10 +75,6 @@ function __jenv_set_java_home() {
 }
 __jenv_set_java_home
 
-# ---- NVM --------------------------------------------------------------------------
-# export NVM_DIR="$HOME/.nvm"
-# . "$(brew --prefix nvm)/nvm.sh"
-
 # ----------- Bash Prompt -----------------------------------------------------------
 
 # # Helper function to get foreground and background colors

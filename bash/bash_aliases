@@ -1,5 +1,3 @@
-#!/bin/bash
-
 # Better diff (Mac only)
 alias   diff="colordiff --ignore-space-change -u"
 
@@ -300,7 +298,6 @@ alias ipy="ipython"
 
 alias chrome="open -a 'Google Chrome'"
 
-alias e="vim "
 alias sp="vim -o"
 alias vsp="vim -O"
 
@@ -325,7 +322,7 @@ function meeting() {
 }
 
 # Convenience method for starting a new set of meeting notes for a project
-# NOTE: This relies on having the 
+# NOTE: This relies on the meeting_notes_template_filepath variable being set
 function easy_meeting() {
     if [ -z "${meeting_notes_template_filepath}" ]; then
         echo "meeting_notes_template_filepath variable is unset; make sure it gets set in ~/.bash_local" >&2
@@ -333,7 +330,6 @@ function easy_meeting() {
     fi
 
     project="${1}"
-    shift 1
     meeting_notes_dirpath="${HOME}/Documents/${project,,}/meeting-notes"
     if ! [ -d "${meeting_notes_dirpath}" ]; then
         mkdir "${meeting_notes_dirpath}"
@@ -405,7 +401,7 @@ alias lsf="less +F"
 # Change panes = Ctrl + a + arrow-keys
 # Zoom into pane = Ctrl + a + z
 function parallel-tmux() {
-    tmux new-session -s $(date +%F_%H-%M-%S) -d
+    tmux new-session -s $(date +"%F_%H-%M-%S") -d
     count=-1
     for i in $(cat $1); do
       let count=${count}+1
@@ -419,3 +415,8 @@ function parallel-tmux() {
     tmux set-window-option synchronize-panes on
     tmux attach
 }
+
+# Some easy navigation commands
+alias home="cd $HOME"
+alias my-output="cd '$HOME/Google Drive/my-output'"
+alias documents="cd '$HOME/Google Drive/documents'"
