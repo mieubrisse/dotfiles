@@ -419,6 +419,6 @@ function parallel-tmux() {
 # Some easy navigation commands
 alias home="cd $HOME"
 alias gref="cd '${HOME}/Google Drive/general-reference'"
-alias prj="cd '${HOME}/Google Drive/project-support'"
+alias psup="cd '${HOME}/Google Drive/project-support'"
 alias someday="cd '${HOME}/Google Drive/someday-maybe'"
 alias documents="cd '$HOME/Google Drive/documents'"
