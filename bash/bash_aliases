@@ -416,9 +416,13 @@ function parallel-tmux() {
     tmux attach
 }
 
-# Some easy navigation commands
+# Some easy navigation commands (with locations)
+alias gdrive="cd ${HOME}/gdrive"
 alias home="cd $HOME"
-alias gref="cd '${HOME}/Google Drive/general-reference'"
-alias psup="cd '${HOME}/Google Drive/project-support'"
-alias someday="cd '${HOME}/Google Drive/someday-maybe'"
-alias documents="cd '$HOME/Google Drive/documents'"
+export general_reference="${HOME}/gdrive/general-reference"
+alias gref="cd '${general_reference}'"
+export project_support="${HOME}/gdrive/project-support"
+alias psup="cd '${project_support}'"
+export project_support="${HOME}/gdrive/project-support"
+alias someday="cd '${project_support}'"
+alias documents="cd '$HOME/gdrive/documents'"
