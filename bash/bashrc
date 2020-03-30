@@ -343,7 +343,7 @@ trap "echo -ne \"$(tput sgr0)\"" DEBUG
 
 
 
-# Add Bash completion, which sources ~/.bash_completion as well
+# Add Homebrew Bash completion, which sources ~/.bash_completion as well
 [[ -r "/usr/local/etc/profile.d/bash_completion.sh" ]] && . "/usr/local/etc/profile.d/bash_completion.sh"
 
 # Now, add all the additions that the above code specified
