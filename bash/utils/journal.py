@@ -106,6 +106,7 @@ parser = argparse.ArgumentParser()
 parser.add_argument("-s", "--sort", default=TIMESTAMP_SORT, choices=ENTRY_SORTING_FUNCS.keys())
 parser.add_argument("-r", "--reverse", default=False, action='store_true')
 subparsers = parser.add_subparsers(dest='command')
+subparsers.required = True
 
 LIST_COMMAND = "ls"
 FIND_COMMAND = "find"
