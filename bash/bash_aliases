@@ -248,10 +248,11 @@ alias gb="git branch"
 alias gco="git checkout"
 alias ga="git add"
 
+# TODO TODO TODO Commented this out on 2020-04-13 because bash-completion is broken right now! See https://github.com/Homebrew/legacy-homebrew/issues/35872
 # We hijack Git's autocomplete here so we get autocompletion on our custom aliases
 # This relies on the bash-completion Homebrew package
-__git_complete gco _git_checkout
-__git_complete gb _git_branch
+# __git_complete gco _git_checkout
+# __git_complete gb _git_branch
 
 # TODO It's getting to the point where I need a better system for dealing with fuzzy find/ls results..
 alias gaff="use_command_filter_results 'git add' fuzzy_find"
