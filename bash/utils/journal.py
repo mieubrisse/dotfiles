@@ -4,7 +4,7 @@ from collections import defaultdict
 import argparse
 
 # TODO change to parameterization
-JOURNAL_LOC = "/Users/zerix/gdrive/journal"
+JOURNAL_LOC = os.path.expanduser("~/gdrive/journal")
 
 # Classes ====================================================================================================
 
@@ -41,7 +41,7 @@ class EntryAndMetadata:
         return self.filename
 
     def __str__(self):
-        tag_str = "   \033[35m%s" % " ".join(self.tags) if len(self.tags) > 0 else ""
+        tag_str = "   \033[35m%s" % " ".join(sorted(self.tags)) if len(self.tags) > 0 else ""
         return "\033[33m%s   \033[37m%s%s" % (self.creation_timestamp, self.pseudo_name, tag_str)
 
 
