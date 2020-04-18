@@ -16,6 +16,7 @@ call vundle#begin('~/.vundle')
 " Brief help
 " :PluginList       - lists configured plugins
 " :PluginInstall    - installs plugins; append `!` to update or just :PluginUpdate
+" :PluginUpdate     - updates all plugins, uninstalling unused ones
 " :PluginSearch foo - searches for foo; append `!` to refresh local cache
 " :PluginClean      - confirms removal of unused plugins; append `!` to auto-approve removal
 " Plugin 'Valloric/YouCompleteMe'
@@ -24,11 +25,13 @@ Plugin 'vim-scripts/groovy.vim'
 Plugin 'tfnico/vim-gradle'
 Plugin 'kien/ctrlp.vim'
 " Plugin 'scrooloose/nerdtree'
-Plugin 'scrooloose/syntastic'
 Plugin 'tomtom/tcomment_vim'
 Plugin 'davidhalter/jedi-vim'
-Plugin 'ervandew/supertab'
 Plugin 'leafgarland/typescript-vim'
+
+" Both of these are required for plasticboy's Markdown syntax
+Plugin 'godlygeek/tabular'
+Plugin 'plasticboy/vim-markdown'
 
 " All the Vim YAML plugins are miserable...
 " Plugin 'avakhov/vim-yaml'
@@ -37,14 +40,12 @@ Plugin 'leafgarland/typescript-vim'
 " Plugin 'tomtom/tlib_vim'
 " Plugin 'MarcWeber/vim-addon-mw-utils'
 Plugin 'kchmck/vim-coffee-script'
-" Plugin 'Lokaltog/vim-easymotion'
 Plugin 'easymotion/vim-easymotion'
 " Plugin 'pangloss/vim-javascript'
 Plugin 'sheerun/vim-polyglot'
 Plugin 'elzr/vim-json'
 Plugin 'groenewege/vim-less'
 Plugin 'kshenoy/vim-signature'
-Plugin 'tpope/vim-markdown'
 " Plugin 'derekwyatt/vim-scala'
 " Plugin 'garbas/vim-snipmate'
 Plugin 'SirVer/ultisnips'
@@ -459,7 +460,7 @@ nnoremap N Nzz
 "------------------------------------------------------------
 " Easy JSON prettifier
 if !exists(":PrettifyJson")
-    :command PrettifyJson %!python -m json.tool
+    :command PrettifyJson %!python3 -m json.tool
 endif
 
 function! DoPrettifyXML()
@@ -542,7 +543,6 @@ nnoremap <Leader>e :e
 " Easy mapping for writing and quitting files
 nnoremap <Leader>w :w<CR>
 nnoremap <Leader>W :wa<CR>
-noremap <C-d> :q<CR>
 noremap <Leader>q :q<CR>
 noremap <Leader>Q :qa<CR>
 nnoremap <Leader>x :wq<CR>
@@ -550,27 +550,20 @@ nnoremap <Leader>X :wa<CR>:qa<CR>
 
 nnoremap <Leader>E :set autoread \| checktime<CR>
 
-" NOTE: I probably don't really want to get used to these
-" Operators for easy operation on parantheses and quotes
-" onoremap p i(
-" onoremap q i"
+" -------------------- Markdown Editing Commands --------------------
+" Very useful shortcut to make a Markdown headers out of given line
+nnoremap <Leader>h= "hyy"hpVr=
+nnoremap <Leader>h- "hyy"hpVr-
+nnoremap <Leader>h# :s/^/### /<CR>
 
-" Python conveniences
-" TODO This doesn't work (<leader>p does something but I don't know what)
-vnoremap <Leader>pa :s/_\(\w\+)_ARGVAR/& = "\L\1"/g<CR>
-
-" Helpdoc navigation
-nnoremap <buffer> <CR> <C-]>
-nnoremap <buffer> <BS> <C-T>
-" nnoremap <buffer> o /'\l\{2,\}'<CR>
-" nnoremap <buffer> O ?'\l\{2,\}'<CR>
-" nnoremap <buffer> s /\|\zs\S\+\ze\|<CR>
-" nnoremap <buffer> S ?\|\zs\S\+\ze\|<CR>
-
-" TODO I would like to get this working one day, because Jedi's refactor isn't
-" great
-" Best refactoring I can do
-" nnoremap <Leader>r "xyiw:%s/<C-r>x//g<Left><Left>
+" Easy tab indenting & unindenting
+vnoremap <C-o> >
+nnoremap <C-o> >>
+inoremap <C-o> <C-T>
+vnoremap <C-i> <
+nnoremap <C-i> <<
+inoremap <C-i> <C-D>
+" ---------------------------------------------------------------------
 
 " This is maybe more valuable as something else
 nnoremap <Leader>? :help 
