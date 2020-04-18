@@ -2,20 +2,11 @@ import urwid
 import re
 from collections import defaultdict
 
-"""
-if body_focused:
-    if leader_char is valid command leader char:
-        focus the footer
-    else:
-        pass keypress through
-if footer_focused:
-    if enter is pressed:
-        execute cmd
-    if leader_char is live-reloading leader char and current string + keypress matches the command:
-        execute cmd
-    pass through
-"""
 PADDING_COLS = 2
+
+PALETTE = [
+    ('date', '', '', '', '#FEEC3E', '')
+]
 
 class EagerlyProcessedCommand:
     def __init__(self, command_func, eager_processing_regex_str):
@@ -109,14 +100,27 @@ class SearchBox(urwid.Edit):
         return super().keypress(size, key)
 
 class MainFrame(urwid.Frame):
-    def __init__(self, body, footer):
-        super().__init__(body, footer=footer)
-        # NOTE: this might be slow, matching against everything - I might need to redo this
+    def __init__(self):
+        # TODO change this
+        button_list = [VimBindingsCheckBox([(u'date', u" DATE"), u'   FILENAME']) for item in range(1, 51)]
 
+        # Storing these for easier references later
+        self.list_pane = listbox = VimBindingsListBox(button_list)
+        self.comms_box = urwid.Text("")
+        self.command_box = urwid.Edit()
+        bottom_pane = urwid.Pile([self.command_box, self.comms_box])
+        super().__init__(self.list_pane, footer=bottom_pane)
+
+        # The command router, which gets first dibs on keypresses done in the list
+        # If the leader matches a known leader char, the user gets sent to the command input box
         self.command_router = CommandRouter().add_cmd(
             ["g"] + [str(i) for i in range(1,10)],
             self._process_jump_command,
             eager_processing_regex_str="(gg|[1-9][0-9]*G)"
+        ).add_cmd(
+            ["d"],
+            self._process_delete_command,
+            eager_processing_regex_str="dd"
         )
 
     def keypress(self, size, key):
@@ -134,6 +138,9 @@ class MainFrame(urwid.Frame):
         return result
 
     def _process_body_keypress(self, key):
+        """
+        Router for handling keypresses when the user's focus is the list view
+        """
         if self.command_router.is_valid_command_leader_char(key):
             self._focus_footer(key)
             return None
@@ -149,11 +156,16 @@ class MainFrame(urwid.Frame):
         return key
 
     def _process_footer_keypress(self, key):
+        """
+        Router for handling keypresses when the user's focus is the footer (i.e. the command input box)
+        """
         if key == 'esc':
             self._quit_command_and_focus_body()
             return None
 
-        command_text = self.contents['footer'][0].get_edit_text()
+        command_text = self.command_box.get_edit_text()
+
+        # If the user presses ENTER, no matter what, try to run their command
         if key == 'enter':
             # TODO processs the input!!
             processors = self.command_router.get_matching_processors(command_text)
@@ -167,10 +179,12 @@ class MainFrame(urwid.Frame):
             self._quit_command_and_focus_body()
             return None
 
+        # Nice, Vim-like "quit command box if backspace is pressed too far"
         if key == 'backspace' and len(command_text) == 1:
             self._quit_command_and_focus_body()
             return None
 
+        # Handle our "eager-processing" commands, who will be run as soon as the patter matches
         if self.command_router.is_eager_processing_leader_char(command_text[0]):
             command_to_be = command_text + key
             processors = self.command_router.get_matching_processors(command_to_be)
@@ -182,15 +196,20 @@ class MainFrame(urwid.Frame):
         return key
 
     def _focus_footer(self, initiating_char):
-        self.contents['footer'][0].insert_text(initiating_char)
+        self.command_box.insert_text(initiating_char)
+        # This only works because we have just a single input element in the footer Pile!
+        # If we had more input-able elements, we'd have to specify which of them should be focused
         self.focus_position = 'footer'
 
     def _quit_command_and_focus_body(self):
-        self.contents['footer'][0].set_edit_text("")
+        self.command_box.set_edit_text("")
         self.focus_position = 'body'
 
+    # ======================== Command Callbacks ========================================================
     def _process_jump_command(self, command_str):
-        body_listbox = self.contents['body'][0]
+        """
+        Callback that will be run if the user runs a command which jumps the cursor to a different line
+        """
         output_index = None
         if command_str == "gg":
             output_index = 0
@@ -203,20 +222,36 @@ class MainFrame(urwid.Frame):
                 raise ValueError("Invalid command string '%s' for jump command" % command_str)
         if output_index is None:
             raise ValueError("Invalid command string '%s' for jump command" % command_str)
-        body_listbox.set_focus(output_index)
+        self.list_pane.set_focus(output_index)
+
+    def _process_delete_command(self, command_str):
+        """
+        Callback to run if the user requests to delete an entry
+        """
+        # TODO actually get entry name
+        file = "test-file"
+
+        # TODO popup dialog box to confirm
+
+
+
+    def _process_search_command(self, command_str):
+        """
+        Callback to run if the user runs a command to filter the list
+        """
 
 def handle_unhandled_input(key):
     if key == 'q':
         raise urwid.ExitMainLoop()
 
 def main():
-    button_list = [VimBindingsCheckBox(str(item)) for item in range(1, 51)]
-    listbox = VimBindingsListBox(button_list)
-    search_box = urwid.Edit()
-    frame = MainFrame(listbox, search_box)
-    urwid.MainLoop(
+    frame = MainFrame()
+    loop = urwid.MainLoop(
         frame,
-        unhandled_input=handle_unhandled_input
-    ).run()
+        palette=PALETTE,
+        unhandled_input=handle_unhandled_input,
+    )
+    loop.screen.set_terminal_properties(colors=256)
+    loop.run()
 
 main()
