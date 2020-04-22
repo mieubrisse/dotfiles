@@ -20,7 +20,10 @@ call vundle#begin('~/.vundle')
 " :PluginSearch foo - searches for foo; append `!` to refresh local cache
 " :PluginClean      - confirms removal of unused plugins; append `!` to auto-approve removal
 " Plugin 'Valloric/YouCompleteMe'
+
+" Seems like jellybeans has gone out of development
 Plugin 'nanotech/jellybeans.vim'
+
 Plugin 'vim-scripts/groovy.vim'
 Plugin 'tfnico/vim-gradle'
 Plugin 'kien/ctrlp.vim'
@@ -76,6 +79,12 @@ filetype plugin indent on
 " Disable markdown polyglot indenting, because it's weird
 let g:polyglot_disabled = ['markdown']
 " ----------- Vim Polyglot --------------------------
+
+" ------------ Plasticboy Markdown Plugin -------------------
+" This isn't quite as smooth as I'd like; get rid of it
+let g:vim_markdown_auto_insert_bullets = 0
+let g:vim_markdown_new_list_item_indent = 0
+" -------------------------------------------------------------
 
 " ------ Ansible YAML --------
 " Vim's built-in YAML doesn't handle indentation well, so we need to use the only
@@ -138,11 +147,6 @@ command! GDiffCached :Git! diff --cached
 nnoremap <Leader>gdc :GDiffCached<cr>
 " ------------------------
 
-" ------ SuperTab -------
-" Use Vim's omnicomplete for SuperTab
-let g:SuperTabDefaultCompletionType = "<C-x><C-o>"
-" -----------------------
-
 " ---------- Gitgutter ----------
 nnoremap <Leader>ha :GitGutterStageHunk<CR>
 " -------------------------------
@@ -183,7 +187,7 @@ endif
 let g:ctrlp_user_command = ['.git/', my_ctrlp_user_command]
 " --------------------
 
-" ------ Jellybeans Color Scheme ------
+" ------ Color Scheme ------
 colorscheme jellybeans
 let g:jellybeans_background_color_256 = "000000"
 " --------------------
@@ -556,13 +560,13 @@ nnoremap <Leader>h= "hyy"hpVr=
 nnoremap <Leader>h- "hyy"hpVr-
 nnoremap <Leader>h# :s/^/### /<CR>
 
-" Easy tab indenting & unindenting
-vnoremap <C-o> >
-nnoremap <C-o> >>
-inoremap <C-o> <C-T>
-vnoremap <C-i> <
-nnoremap <C-i> <<
-inoremap <C-i> <C-D>
+" Easy indentation
+vnoremap <C-u> <
+vnoremap <C-i> >
+nnoremap <C-u> <<
+nnoremap <C-i> >>
+inoremap <C-u> <C-d>
+inoremap <C-i> <C-t>
 " ---------------------------------------------------------------------
 
 " This is maybe more valuable as something else
