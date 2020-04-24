@@ -1,1 +1,6 @@
-source ~/.vimrc
+" source ~/.vimrc
+
+" For some absolutely insane reason, IdeaVim isn't respecting that my mappings
+" are only for normal mode and is disabling keys in insert mode
+inoremap <S-J> J
+inoremap <S-K> K
