@@ -78,6 +78,12 @@ class EntryStore:
     def get_by_name(self, keyword):
         return [ entry for entry in self._entries if keyword in entry.pseudo_name]
 
+class Command:
+    def __init__(self, aliases, func, help_str):
+        self.aliases = set(aliases)
+        self.func = func
+        self.help_str = help_str
+
 # Helper Functions ====================================================================================================
 def is_valid_journal_entry(journal_dirpath, filename):
     result = os.path.isfile(os.path.join(journal_dirpath, filename))
@@ -107,11 +113,11 @@ def render_entries(entries, entry_sort_type, sort_reverse):
 
 # ================ Commands =========================
 def help():
-    # TODO Dynamically generate this
-    helpstr = """
-    ?, help       Print this message
-    tags          Print tags"""
-    print(helpstr)
+    print("")
+    for cmd in COMMANDS:
+        aliases_str = ", ".join(sorted(cmd.aliases))
+        padded_aliases = aliases_str.ljust(25, " ")
+        print("  %s%s" % (padded_aliases, cmd.help_str))
     return None
 
 def print_tags(entry_store):
@@ -120,7 +126,7 @@ def print_tags(entry_store):
         print(" - %s" % tag)
     return None
 
-def list_entries(entry_store, user_input):
+def list_entries(entry_store, args):
     results = entry_store.get_all()
     if len(results) == 0:
         print("No entries")
@@ -141,26 +147,44 @@ def search_by_name(entry_store, user_input):
 def quit():
     return []
 
-COMMAND_MAP = {
-    "?": lambda store, args: help(),
-    "help": lambda store, args: help(),
-    "tags": lambda store, args: print_tags(store),
-    "q": lambda store, args: quit(),
-    "quit": lambda store, args: quit(),
-    "exit": lambda store, args: quit(),
-    "list": lambda store, args: list_entries(store),
-    "ls": lambda store, args: list_entries(store),
-}
+COMMANDS = [
+    Command(
+        ["?","help"], 
+        lambda store, args: help(),
+        "Prints command help"
+    ),
+    Command(
+        ["tags"],
+        lambda store, args: print_tags(),
+        "Prints tags in use in the journal"
+    ),
+    Command(
+        ["ls","list"],
+        lambda store, args: list_entries(store, args),
+        "Lists all entries in the journal"
+    ),
+    Command(
+        ["q","quit","exit"],
+        lambda store, args: quit(),
+        "Quits the journal CLI"
+    ),
+]
+CMD_ALIAS_TO_FUNC = {}
+for cmd in COMMANDS:
+    for alias in cmd.aliases:
+        CMD_ALIAS_TO_FUNC[alias] = cmd.func
 
-def handle_command(entry_store, user_input):
+def handle_args(entry_store, args):
     """
     Handles the given user input string
     """
-    command_func = COMMAND_MAP.get(user_input.lower(), None)
+    command = args[0]
+    remaining_args = args[1:]
+    command_func = CMD_ALIAS_TO_FUNC.get(command.lower(), None)
     if command_func is None:
-        print("Unknown command '%s'" % user_input)
+        print("Unknown command '%s'" % command)
         return None
-    return command_func(entry_store, user_input)
+    return command_func(entry_store, remaining_args)
 
 def main():
     # TODO read a config file to get tag colors
@@ -175,7 +199,7 @@ def main():
         split_input = cleaned_input.split()
 
         # If end_args is not None, then we're going to break and run the command
-        end_args = handle_command(entry_store, split_input)
+        end_args = handle_args(entry_store, split_input)
 
     if len(end_args) != 0:
         subprocess.run(end_args)
