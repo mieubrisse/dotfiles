@@ -42,8 +42,8 @@ Plugin 'plasticboy/vim-markdown'
 
 " Plugin 'tomtom/tlib_vim'
 " Plugin 'MarcWeber/vim-addon-mw-utils'
-Plugin 'kchmck/vim-coffee-script'
-Plugin 'easymotion/vim-easymotion'
+" Plugin 'kchmck/vim-coffee-script'
+" Plugin 'easymotion/vim-easymotion'
 " Plugin 'pangloss/vim-javascript'
 Plugin 'sheerun/vim-polyglot'
 Plugin 'elzr/vim-json'
@@ -51,18 +51,18 @@ Plugin 'groenewege/vim-less'
 Plugin 'kshenoy/vim-signature'
 " Plugin 'derekwyatt/vim-scala'
 " Plugin 'garbas/vim-snipmate'
-Plugin 'SirVer/ultisnips'
-Plugin 'honza/vim-snippets'
+" Plugin 'SirVer/ultisnips'
+" Plugin 'honza/vim-snippets'
 " Plugin 'tristen/vim-sparkup'
 Plugin 'tpope/vim-surround'
 Plugin 'sukima/xmledit'
 Plugin 'airblade/vim-gitgutter'
-Plugin 'mustache/vim-mustache-handlebars'
-Plugin 'fatih/vim-go'
+" Plugin 'mustache/vim-mustache-handlebars'
+" Plugin 'fatih/vim-go'
 Plugin 'vim-airline/vim-airline'
-Plugin 'tpope/vim-fugitive'
-Plugin 'gregsexton/gitv'
-Plugin 'kablamo/vim-git-log'
+" Plugin 'tpope/vim-fugitive'
+" Plugin 'gregsexton/gitv'
+" Plugin 'kablamo/vim-git-log'
 
 
 " All of your Plugins must be added before the following line
@@ -104,17 +104,9 @@ let g:jedi#popup_select_first = 1
 " This turns off the annoying 'insert the autocomplete match if there's only one'
 " behavior
 if v:version >= 705 || (v:version == 704 && has('patch775'))
-    set completeopt=menuone,longest,preview,noinsert
+   set completeopt=menuone,longest,preview,noinsert
 endif
 " -----------------------
-
-" ------ Syntastic -------
-let g:syntastic_always_populate_loc_list = 1
-let g:syntastic_auto_loc_list = 1
-let g:syntastic_check_on_open = 1
-let g:syntastic_check_on_wq = 0
-let g:syntastic_loc_list_height=3
-" ------------------------
 
 " ------ Airline -------
 let g:airline_left_sep=''
@@ -122,105 +114,16 @@ let g:airline_right_sep=''
 
 " I really only care about percentage through file, so only show me that
 let g:airline_section_z = airline#section#create(['%3p%%'])
-
-" ------------------------
-
-" ------ Fugitive -------
-nnoremap <Leader>gs :Gstatus<CR>
-nnoremap <Leader>ga :Git add %:p<CR><CR>
-nnoremap <Leader>gcm :Gcommit -v -q<CR>
-" Dunno what this one does so leaving it out for now
-" nnoremap <Leader>gt :Gcommit -v -q %:p<CR>
-nnoremap <Leader>gdd :Gdiff<CR>
-nnoremap <Leader>ge :Gedit<CR>
-nnoremap <Leader>gr :Gread<CR>
-nnoremap <Leader>gw :Gwrite<CR><CR>
-" nnoremap <Leader>gl :silent! Glog<CR>:bot copen<CR>
-nnoremap <Leader>gp :Ggrep<Space>
-nnoremap <Leader>gm :Gmove<Space>
-nnoremap <Leader>gb :Git branch<Space>
-nnoremap <Leader>go :Git checkout<Space>
-nnoremap <Leader>gps :Dispatch! git push<CR>
-nnoremap <Leader>gpl :Dispatch! git pull<CR>
-
-command! GDiffCached :Git! diff --cached
-nnoremap <Leader>gdc :GDiffCached<cr>
 " ------------------------
 
 " ---------- Gitgutter ----------
 nnoremap <Leader>ha :GitGutterStageHunk<CR>
 " -------------------------------
 
-" ------ NERDTree -------
-" Close NERDTree when opening a file
-let NERDTreeQuitOnOpen = 1
-" -----------------------
-
-" ------ Ctrl P ------
-let g:ctrlp_working_path_mode = 'ra'
-let g:ctrlp_max_depth = 20
-let g:ctrlp_follow_symlinks = 1
-
-" We want cross-session caching for those big projects
-let g:ctrlp_clear_cache_on_exit = 0
-
-" NOTE: The above may not yet work properly 100%; I'm not sure
-" Better, faster file-finding
-let ctrlp_filter_greps = "".
-    \ "egrep -iv '\\.(" .
-    \ "jar|class|swp|swo|log|so|o|pyc|jpe?g|png|gif|mo|po" .
-    \ ")$' | " .
-    \ "egrep -v '^(\\./)?(" .
-    \ "deploy/|lib/|classes/|libs/|deploy/vendor/|.git/|.hg/|.svn/|.*migrations/" .
-    \ ")'"
- 
-" let my_ctrlp_git_command = "" .
-"     \ "cd %s && git ls-files | " .
-"     \ ctrlp_filter_greps
- 
-if has("unix")
-    let my_ctrlp_user_command = "" .
-    \ "find %s '(' -type f -or -type l ')' -maxdepth 15 -not -path '*/\\.*/*' | " .
-    \ ctrlp_filter_greps
-endif
- 
-let g:ctrlp_user_command = ['.git/', my_ctrlp_user_command]
-" --------------------
-
 " ------ Color Scheme ------
 colorscheme jellybeans
 let g:jellybeans_background_color_256 = "000000"
 " --------------------
-
-" ------ netrw --------------------
-" Set line numbers in netrw file explorer
-let g:netrw_bufsettings = 'noma nomod nu nobl nowrap ro'
-let g:netrw_liststyle=3
-nnoremap <Leader>ne :Ex<CR>
-nnoremap <Leader>nv :Vex!<CR>
-nnoremap <Leader>ns :Sex<CR>
-" ---------------------------------
-
-" ------ UltiSnips --------------------
-let g:UltiSnipsExpandTrigger="<Leader><Tab>"
-let g:UltiSnipsJumpForwardTrigger="<c-j>"
-let g:UltiSnipsJumpBackwardTrigger="<c-k>"
-
-" If you want :UltiSnipsEdit to split your window.
-let g:UltiSnipsEditSplit="vertical"
-" -------------------------------------
-
-" ------ Gitlog --------------------
-" nnoremap <Leader>gl :GitLog --graph --abbrev-commit --decorate --date=relative
-" --format=format:'%C(bold blue)%h%C(reset) - %C(bold green)(%ar)%C(reset)
-" %C(white)%s%C(reset) %C(bold black)[%an]%C(reset)%C(bold yellow)%d%C(reset)'
-" --all<CR>
-nnoremap <Leader>gl :GitLog --abbrev-commit --decorate --date=relative<CR>
-" -------------------------------------
-
-" -------- Easymotion --------------------
-map <Space> <Plug>(easymotion-prefix)
-" ----------------------------------------
 
 " Allow editing Mac crontab with Vim
 " Source: http://superuser.com/questions/359580/error-adding-cronjobs-in-mac-os-x-lion
@@ -498,34 +401,8 @@ function! DoPrettifyXML()
 endfunction
 command! PrettifyXML call DoPrettifyXML()
 
-" This gives us a CAPSLOCK that turns itself off during insert mode, but it
-" can't be used during Ex commands so it's not very useful...
-" Insert and command-line mode Caps Lock.
-" " Lock search keymap to be the same as insert mode.
-" set imsearch=-1
-"
-" " Load the keymap that acts like capslock.
-" set keymap=insert-capslock
-"
-" inoremap <C-u> <C-^>
-" " Turn it off by default.
-" set iminsert=0
-" " Kill the capslock when leaving insert mode.
-" autocmd InsertLeave * set iminsert=0
-
 " Better buffer nav
 nnoremap <Leader>b :b#<CR>
-
-" Better split navigation
-" nnoremap <C-y> <C-w>h
-" nnoremap <C-i> <C-w>k
-" nnoremap <C-u> <C-w>j
-" nnoremap <C-o> <C-w>l
-" nnoremap <Left> <C-w>h
-" nnoremap <Right> <C-w>l
-" nnoremap <Down> <C-w>j
-" nnoremap <Up> <C-w>k
-" nnoremap <Leader>x <C-w>q
 
 " Better tab navigation
 nnoremap <Leader>tt :tabnew<CR>
@@ -538,7 +415,6 @@ nnoremap <Leader>tx :tabclose<CR>
 " Easy way to echo a line for Bash debugging
 nnoremap <Leader>db V:s/"/\\"/g<CR>^iecho "<ESC>$a"<ESC>
 
-" TODO Figure out how to make Syntastic shut up about the trailing spaces
 " Easy opening of splits
 nnoremap <Leader>v :vsp 
 nnoremap <Leader>s :sp 
@@ -562,13 +438,14 @@ nnoremap <Leader>h= "hyy"hpVr=
 nnoremap <Leader>h- "hyy"hpVr-
 nnoremap <Leader>h# :s/^/### /<CR>
 
+" TODO none of this seems to work due to https://vimhelp.org/vim_faq.txt.html#faq-20.5
 " Easy indentation
-vnoremap <C-u> <
-vnoremap <C-i> >
-nnoremap <C-u> <<
-nnoremap <C-i> >>
-inoremap <C-u> <C-d>
-inoremap <C-i> <C-t>
+" vnoremap <C-e> <
+" vnoremap <C-o> >
+" nnoremap <C-e> <<
+" nnoremap <C-o> >>
+" inoremap <C-e> <C-d>
+" inoremap <C-o> <C-t>
 " ---------------------------------------------------------------------
 
 " This is maybe more valuable as something else
