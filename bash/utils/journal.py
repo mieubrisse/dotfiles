@@ -1,10 +1,19 @@
 import os
 import datetime
 from collections import defaultdict
-import argparse
+import subprocess
+import re
 
 # TODO change to parameterization
 JOURNAL_LOC = os.path.expanduser("~/gdrive/journal")
+
+# Files with this pattern won't be loaded to the entry store
+BLACKLISTED_PATTERNS = [
+    r".*\.swp$",
+    r"^.git$",
+]
+COMPILED_BLACKLISTED_PATTERNS = [re.compile(pattern) for pattern in BLACKLISTED_PATTERNS]
+
 
 # Classes ====================================================================================================
 
@@ -60,6 +69,9 @@ class EntryStore:
     def get_all(self):
         return self._entries
 
+    def get_tags(self):
+        return self._tag_lookup.keys()
+
     def get_by_tag(self, tag):
         return self._tag_lookup.get(tag, set())
 
@@ -67,8 +79,14 @@ class EntryStore:
         return [ entry for entry in self._entries if keyword in entry.pseudo_name]
 
 # Helper Functions ====================================================================================================
-def load_entries():
-    journal_filenames = [filename for filename in os.listdir(JOURNAL_LOC) if os.path.isfile(os.path.join(JOURNAL_LOC, filename))]
+def is_valid_journal_entry(journal_dirpath, filename):
+    result = os.path.isfile(os.path.join(journal_dirpath, filename))
+    for pattern in COMPILED_BLACKLISTED_PATTERNS:
+        return result and not pattern.match(filename)
+    return result
+
+def load_entries(journal_dirpath):
+    journal_filenames = [filename for filename in os.listdir(journal_dirpath) if is_valid_journal_entry(journal_dirpath, filename)]
     entries = [ EntryAndMetadata(filename) for filename in journal_filenames]
     return EntryStore(entries)
 
@@ -87,43 +105,80 @@ def render_entries(entries, entry_sort_type, sort_reverse):
     for entry in sorted_entries:
         print(entry)
 
-# Commands ====================================================================================================
+# ================ Commands =========================
+def help():
+    # TODO Dynamically generate this
+    helpstr = """
+    ?, help       Print this message
+    tags          Print tags"""
+    print(helpstr)
+    return None
 
-def list_entries(args):
-    entry_store = load_entries()
-    render_entries(entry_store.get_all(), args.sort, args.reverse)
+def print_tags(entry_store):
+    tags = sorted(entry_store.get_tags())
+    for tag in tags:
+        print(" - %s" % tag)
+    return None
 
-def find_entries(args):
-    entry_store = load_entries()
-    if args.tag:
-        entries = entry_store.get_by_tag(args.tag)
-    if args.name:
-        entries = entry_store.get_by_name(args.name)
-    render_entries(entries, args.sort, args.reverse)
+def list_entries(entry_store, user_input):
+    results = entry_store.get_all()
+    if len(results) == 0:
+        print("No entries")
+        return None
+    # TODO allow user to customize sort
+    render_entries(results, ENTRY_NAME_SORT, False)
+    return None
 
-# Arg Parsing ====================================================================================================
-parser = argparse.ArgumentParser()
-parser.add_argument("-s", "--sort", default=TIMESTAMP_SORT, choices=ENTRY_SORTING_FUNCS.keys())
-parser.add_argument("-r", "--reverse", default=False, action='store_true')
-subparsers = parser.add_subparsers(dest='command')
-subparsers.required = True
+def search_by_name(entry_store, user_input):
+    results = entry_store.get_by_name(user_input)
+    if len(results) == 0:
+        print("No results")
+        return None
+    # TODO allow user to customize sort
+    render_entries(results, ENTRY_NAME_SORT, False)
+    return None
 
-LIST_COMMAND = "ls"
-FIND_COMMAND = "find"
+def quit():
+    return []
+
 COMMAND_MAP = {
-    LIST_COMMAND: list_entries,
-    FIND_COMMAND: find_entries,
+    "?": lambda store, args: help(),
+    "help": lambda store, args: help(),
+    "tags": lambda store, args: print_tags(store),
+    "q": lambda store, args: quit(),
+    "quit": lambda store, args: quit(),
+    "exit": lambda store, args: quit(),
+    "list": lambda store, args: list_entries(store),
+    "ls": lambda store, args: list_entries(store),
 }
 
-# ls command
-ls_parser = subparsers.add_parser(LIST_COMMAND, help="Listing journal entries")
+def handle_command(entry_store, user_input):
+    """
+    Handles the given user input string
+    """
+    command_func = COMMAND_MAP.get(user_input.lower(), None)
+    if command_func is None:
+        print("Unknown command '%s'" % user_input)
+        return None
+    return command_func(entry_store, user_input)
 
-# find command
-find_parser = subparsers.add_parser(FIND_COMMAND, help="Finding journal entries based off criteria")
-search_type_group = find_parser.add_mutually_exclusive_group(required=True)
-search_type_group.add_argument("-t", "--tag")
-search_type_group.add_argument("-n", "--name")
+def main():
+    # TODO read a config file to get tag colors
+    entry_store = load_entries(JOURNAL_LOC)
 
-args = parser.parse_args()
+    end_args = None
+    while end_args is None:
+        user_input = input("\n>> ")
+        cleaned_input = user_input.strip()
+        if len(cleaned_input) == 0:
+            continue
+        split_input = cleaned_input.split()
 
-COMMAND_MAP[args.command](args)
+        # If end_args is not None, then we're going to break and run the command
+        end_args = handle_command(entry_store, split_input)
+
+    if len(end_args) != 0:
+        subprocess.run(end_args)
+
+main()
+
