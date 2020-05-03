@@ -3,6 +3,7 @@ import datetime
 from collections import defaultdict
 import subprocess
 import re
+import argparse
 
 # TODO change to parameterization
 JOURNAL_LOC = os.path.expanduser("~/gdrive/journal")
@@ -51,7 +52,7 @@ class EntryAndMetadata:
 
     def __str__(self):
         tag_str = "   \033[35m%s" % " ".join(sorted(self.tags)) if len(self.tags) > 0 else ""
-        return "\033[33m%s   \033[37m%s%s" % (self.creation_timestamp, self.pseudo_name, tag_str)
+        return "\033[33m%s   \033[37m%s%s\033[39;49m" % (self.creation_timestamp, self.pseudo_name, tag_str)
 
 
 class EntryStore:
@@ -96,7 +97,7 @@ def load_entries(journal_dirpath):
     entries = [ EntryAndMetadata(filename) for filename in journal_filenames]
     return EntryStore(entries)
 
-TIMESTAMP_SORT = "DATE"
+TIMESTAMP_SORT = "TIME"
 ENTRY_NAME_SORT = "NAME"
 ENTRY_SORTING_FUNCS = {
     TIMESTAMP_SORT: lambda entry_and_metadata: entry_and_metadata.creation_timestamp,
@@ -127,15 +128,37 @@ def print_tags(entry_store):
     return None
 
 def list_entries(entry_store, args):
+    sort_type = ENTRY_NAME_SORT
+    sort_reverse = False
+
+    # Allow user to customize sort type
+    if len(args) == 2 and args[0] == "sort":
+        desired_sort = args[1]
+        if desired_sort == "name":
+            sort_type == ENTRY_NAME_SORT
+            sort_reverse = False
+        elif desired_sort == "rname":
+            sort_type = ENTRY_NAME_SORT
+            sort_reverse = True
+        elif desired_sort == "time":
+            sort_type = TIMESTAMP_SORT
+            sort_reverse = False
+        elif desired_sort == "rtime":
+            sort_type = TIMESTAMP_SORT
+            sort_reverse = True
+        else:
+            print("Unrecognized sort type '%s'" % sort_type)
+            return None
+
     results = entry_store.get_all()
     if len(results) == 0:
         print("No entries")
         return None
-    # TODO allow user to customize sort
-    render_entries(results, ENTRY_NAME_SORT, False)
+
+    render_entries(results, sort_type, sort_reverse)
     return None
 
-def search_by_name(entry_store, user_input):
+def search_by_name(entry_store, args):
     results = entry_store.get_by_name(user_input)
     if len(results) == 0:
         print("No results")
@@ -149,7 +172,7 @@ def quit():
 
 COMMANDS = [
     Command(
-        ["?","help"], 
+        ["?","help"],
         lambda store, args: help(),
         "Prints command help"
     ),
