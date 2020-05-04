@@ -73,35 +73,6 @@ def search_by_name(entry_store, args):
 def quit():
     return []
 
-"""
-COMMANDS = [
-    Command(
-        ["?","help"],
-        lambda store, args: help(),
-        "Prints command help"
-    ),
-    Command(
-        ["tags"],
-        lambda store, args: print_tags(),
-        "Prints tags in use in the journal"
-    ),
-    Command(
-        ["ls","list"],
-        lambda store, args: list_entries(store, args),
-        "Lists all entries in the journal"
-    ),
-    Command(
-        ["q","quit","exit"],
-        lambda store, args: quit(),
-        "Quits the journal CLI"
-    ),
-]
-CMD_ALIAS_TO_FUNC = {}
-for cmd in COMMANDS:
-    for alias in cmd.aliases:
-        CMD_ALIAS_TO_FUNC[alias] = cmd.func
-"""
-
 
 
 def main():
@@ -110,11 +81,24 @@ def main():
 
     command_parser = commands.CommandParser().register_command(
         commands.ListCommand(entry_store)
+    ).register_command(
+        commands.PrintTagsCommand(entry_store)
+    ).register_command(
+        commands.FindCommand(entry_store)
+    ).register_command(
+        commands.QuitCommand()
     )
 
     end_args = None
     while end_args is None:
-        user_input = input("\n>> ")
+        try:
+            user_input = input("\n>> ")
+        except EOFError:
+            end_args = []
+            break
+        except KeyboardInterrupt:
+            end_args = []
+            break
 
         cleaned_input = user_input.strip()
         if len(cleaned_input) == 0:
