@@ -31,8 +31,11 @@ class EntryAndMetadata:
                 pass
         self.tags = tags_str.split(",") if len(tags_str) > 0 else []
 
-    def __repr__(self):
+    def get_id(self):
         return self.filename
+
+    def __repr__(self):
+        return self.get_id()
 
     def __str__(self):
         tag_str = "   \033[35m%s" % " ".join(sorted(self.tags)) if len(self.tags) > 0 else ""
@@ -56,6 +59,9 @@ class EntryStore:
 
     def get_tags(self):
         return self._tag_lookup.keys()
+
+    def get_by_id(self, entry_id):
+        return self._entries.get(entry_id, None)
 
     def get_by_tag(self, tag):
         return self._tag_lookup.get(tag, set())

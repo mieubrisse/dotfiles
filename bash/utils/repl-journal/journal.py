@@ -18,7 +18,6 @@ COMPILED_BLACKLISTED_PATTERNS = [re.compile(pattern) for pattern in BLACKLISTED_
 
 # Classes ====================================================================================================
 
-
 # Helper Functions ====================================================================================================
 def is_valid_journal_entry(journal_dirpath, filename):
     result = os.path.isfile(os.path.join(journal_dirpath, filename))
@@ -79,12 +78,15 @@ def main():
     # TODO read a config file to get tag colors
     entry_store = load_entries(JOURNAL_LOC)
 
-    command_parser = commands.CommandParser().register_command(
+    output_record = commands.CommandOutputRecord()
+    command_parser = commands.CommandParser(output_record).register_command(
         commands.ListCommand(entry_store)
     ).register_command(
         commands.PrintTagsCommand(entry_store)
     ).register_command(
         commands.FindCommand(entry_store)
+    ).register_command(
+        commands.VimCommand(output_record)
     ).register_command(
         commands.QuitCommand()
     )
@@ -106,7 +108,8 @@ def main():
         split_input = cleaned_input.split()
 
         # If end_args is not None, then we're going to break and run the command
-        end_args = command_parser.handle_input(split_input)
+        cmd_output = command_parser.handle_input(split_input)
+        end_args = cmd_output.get_end_args()
 
     if len(end_args) != 0:
         subprocess.run(end_args)

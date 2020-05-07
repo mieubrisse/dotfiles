@@ -1,6 +1,52 @@
 import abc
 import argparse
-from enum import Enum
+from enum import Enum, auto
+
+class CommandOutputRecord:
+    """
+    Supplier-type class containing the CommandOutput of the last-ran command
+    """
+    def __init__(self):
+        self._last_output = None
+
+    def get_last_output(self):
+        return self._last_output
+
+    def set_last_output(self, output):
+        self._last_output = output
+
+class CommandResultType(Enum):
+    TAG = auto()
+    JOURNAL_ENTRY = auto()
+
+class CommandOutput:
+    """
+    Object which each command must return containing various metadata about how the CLI should proceed
+    """
+    def __init__(self, result_list, result_type, end_args):
+        """
+        Args:
+            result_list: List of results that the command returned, which can be used as references for the
+                input into future commands. None and empty array have the same significance here - no results
+                were returned, so the user cannot use this command's output for future references.
+            result_type: Type of result contained inside the result_list (if any), which dictates what the
+                user can do with the results in future commands.
+            end_args: If None, indicates that the CLI should continue after this command; if empty array,
+                it means the CLI should exit without doing anything, and if this is anything other than empty
+                array then this command will be executed as the CLI exits.
+        """
+        self._result_list = list(result_list) if result_list is not None else []
+        self._result_type = result_type
+        self._end_args = end_args
+
+    def get_result_list(self):
+        return self._result_list
+
+    def get_result_type(self):
+        return self._result_type
+
+    def get_end_args(self):
+        return self._end_args
 
 class AbstractCommand(abc.ABC):
     def __init__(self, cmd_str, help_str):
@@ -14,12 +60,10 @@ class AbstractCommand(abc.ABC):
         Called when the user calls this function
 
         Args:
-        args: user arguments to this command, if any
+            args: user arguments to this command, if any
 
         Returns:
-        None to indicate that the journal CLI should keep running, or an array
-            of args to run after the journal CLI exits if this command is to exit
-            the CLI.
+            An instance of CommandOutput encapsulating the results of running the user's command
         """
         if not self._parser_configured:
             self.configure_parser(self._parser)
@@ -27,14 +71,14 @@ class AbstractCommand(abc.ABC):
         try:
             parsed_args = vars(self._parser.parse_args(args))
         except SystemExit:
-            return None
+            return CommandOutput(None, None, None)
         return self.run_specific_logic(parsed_args)
 
 
     def get_cmd_str(self):
         """
         Returns:
-        The string identifying this command
+            The string identifying this command
         """
         return self._cmd_str
 
@@ -47,7 +91,7 @@ class AbstractCommand(abc.ABC):
         Abstract method for registering the appropriate args on the parser
 
         Args:
-        parser: argparse parser that should have add_argument calls made on it
+            parser: argparse parser that should have add_argument calls made on it
         """
         return
 
@@ -57,14 +101,24 @@ class AbstractCommand(abc.ABC):
         Runs command-specific logic
 
         Args:
-        parsed_args: results of parsing using the configured parser
+            parsed_args: results of parsing using the configured parser
 
         Returns:
-        If this command should end the CLI, return a list of args to exit the
-            journal CLI with (empty list to run nothing); if the CLI should keep
-            running, returns None
+            If this command should end the CLI, return a list of args to exit the
+                journal CLI with (empty list to run nothing); if the CLI should keep
+                running, returns None
         """
         return
+
+class QuitCommand(AbstractCommand):
+    def __init__(self):
+        super().__init__("quit", "Quit the CLI")
+
+    def configure_parser(self, parser):
+        pass
+
+    def run_specific_logic(self, parsed_args):
+        return CommandOutput(None, None, [])
 
 class AbstractEntryListingCommand(AbstractCommand):
     """
@@ -105,19 +159,21 @@ class AbstractEntryListingCommand(AbstractCommand):
         entries = self.get_entries(parsed_args)
         sort_type = parsed_args[AbstractEntryListingCommand._SORT_TYPE_ARG]
         sort_reverse = parsed_args[AbstractEntryListingCommand._REVERSE_ARG]
+        sort_func = AbstractEntryListingCommand._ENTRY_SORTING_FUNCS[sort_type]
+        sorted_entries = sorted(
+            entries,
+            key=sort_func,
+            reverse=sort_reverse
+        )
 
-        if len(entries) == 0:
+        if len(sorted_entries) == 0:
             print("  No results")
         else:
-            sort_func = AbstractEntryListingCommand._ENTRY_SORTING_FUNCS[sort_type]
-            sorted_entries = sorted(
-                entries,
-                key=sort_func,
-                reverse=sort_reverse
-            )
             for entry in sorted_entries:
                 print(entry)
-        return None
+
+        entry_ids = [entry.get_id() for entry in sorted_entries]
+        return CommandOutput(entry_ids, CommandResultType.JOURNAL_ENTRY, None)
 
     @abc.abstractmethod
     def configure_listing_parser(self, parser):
@@ -194,21 +250,113 @@ class PrintTagsCommand(AbstractCommand):
         tags = sorted(self._entry_store.get_tags())
         for tag in tags:
             print(" - %s" % tag)
-        return None
+        return CommandOutput(tags, CommandResultType.TAG, None)
 
-class QuitCommand(AbstractCommand):
-    def __init__(self):
-        super().__init__("quit", "Quit the CLI")
+
+class AbstractResultConsumingCommand(AbstractCommand):
+    """
+    Abstract base class for commands that consume the output of previous commands
+    """
+
+    # Character used to indicate that previous results should be used
+    REFERENCE_LEADER = "@"
+
+    _INPUT_ARG = "input"
+
+    def __init__(self, cmd_str, help_str, cmd_output_record):
+        super().__init__(cmd_str, help_str)
+        self._cmd_output_record = cmd_output_record
 
     def configure_parser(self, parser):
-        pass
+        parser.add_argument(AbstractResultConsumingCommand._INPUT_ARG, nargs="+")
+        self.configure_result_consuming_parser(parser)
 
     def run_specific_logic(self, parsed_args):
-        return []
+        input_items = parsed_args[AbstractResultConsumingCommand._INPUT_ARG]
+        transformed_items = list(input_items)
+
+        # Validate we're consuming the appropriate result type
+        expected_output_type = self.get_consumed_result_type()
+        for idx, item in enumerate(input_items):
+            if not item.startswith(AbstractResultConsumingCommand.REFERENCE_LEADER):
+                continue
+
+            last_cmd_output = self._cmd_output_record.get_last_output()
+            if last_cmd_output is None:
+                print("Reference error with '%s': No previous command results to use!" % item)
+                return CommandOutput(None, None, None)
+
+            output_results = last_cmd_output.get_result_list()
+            if len(output_results) == 0:
+                print("Reference error with '%s': Previous command did not return any results and so cannot be referenced" % item)
+                return CommandOutput(None, None, None)
+
+            output_type = last_cmd_output.get_result_type()
+            if output_type != expected_output_type:
+                print("Reference error with '%s': Expected result type '%s' but previous command's result type was '%s'" % (item, expected_output_type, output_type))
+                return CommandOutput(None, None, None)
+
+            reference_idx_str = item.lstrip(AbstractResultConsumingCommand.REFERENCE_LEADER)
+            try:
+                reference_idx = int(reference_idx_str)
+            except ValueError:
+                print("Reference error with '%s': Must be an integer list index" % item)
+                return CommandOutput(None, None, None)
+            if not (reference_idx >= 0 and reference_idex < len(output_results)):
+                print("Reference error with '%s': Index is out-of-bounds of prevoius result list" % item)
+                return CommandOutput(None, None, None)
+            transformed_items[idx] = output_results[reference_idx]
+
+        return self.process_transformed_input(transformed_items)
+
+    @abc.abstractmethod
+    def get_consumed_result_type(self):
+        """
+        The type of result that this command consumes
+        """
+        return
+
+    @abc.abstractmethod
+    def configure_result_consuming_parser(self):
+        """
+        Extra command-specific parser configuration
+        """
+        return
+
+    @abc.abstractmethod
+    def process_transformed_input(self, transformed_input):
+        """
+        Run logic on the user's input, with references already transformed
+        """
+        return
+
+class VimCommand(AbstractResultConsumingCommand):
+    """
+    Command to open journal entries in Vim
+    """
+
+    def __init__(self, cmd_output_record):
+        super().__init__("vim", "Opens journal entries in Vim, using 'vsp' if more than one entry is given", cmd_output_record)
+
+    def configure_result_consuming_parser(self, parser):
+        pass
+
+    def get_consumed_result_type(self):
+        return CommandResultType.JOURNAL_ENTRY
+
+    def process_transformed_input(self, transformed_input):
+        for item in transformed_input:
+            print("Would open %s" % item)
+        return CommandOutput(None, None, None)
 
 class CommandParser():
-    def __init__(self):
+    """
+    Lookup class to take in a user's input and call the appropriate registered command
+    """
+
+    def __init__(self, cmd_output_record):
         self._alias_to_cmd = {}
+        self._cmd_output_record = cmd_output_record
 
     def register_command(self, cmd):
         alias = cmd.get_cmd_str().strip().lower()
@@ -220,7 +368,7 @@ class CommandParser():
     def handle_input(self, user_input):
         """
         Args:
-        user_input: array of user input
+            user_input: array of user input
         """
         command_str = user_input[0].lower()
         if command_str == "help":
@@ -229,10 +377,13 @@ class CommandParser():
 
         remaining_input = user_input[1:]
         command = self._alias_to_cmd.get(command_str, None)
-        if command is None:
+        if command is not None:
+            cmd_output = command.execute(remaining_input)
+        else:
             print("Unknown command '%s'" % command_str)
-            return None
-        return command.execute(remaining_input)
+            cmd_output = CommandOutput(None, None, None)
+        self._cmd_output_record.set_last_output(cmd_output)
+        return cmd_output
 
     def _print_help(self):
         """
