@@ -169,8 +169,8 @@ class AbstractEntryListingCommand(AbstractCommand):
         if len(sorted_entries) == 0:
             print("  No results")
         else:
-            for entry in sorted_entries:
-                print(entry)
+            for idx, entry in enumerate(sorted_entries):
+                print("%s\t%s" % (idx, entry))
 
         entry_ids = [entry.get_id() for entry in sorted_entries]
         return CommandOutput(entry_ids, CommandResultType.JOURNAL_ENTRY, None)
@@ -345,6 +345,7 @@ class VimCommand(AbstractResultConsumingCommand):
         return CommandResultType.JOURNAL_ENTRY
 
     def process_transformed_input(self, transformed_input):
+        end_args = 
         for item in transformed_input:
             print("Would open %s" % item)
         return CommandOutput(None, None, None)

@@ -13,70 +13,11 @@ BLACKLISTED_PATTERNS = [
     r".*\.swp$",
     r"^.git$",
 ]
-COMPILED_BLACKLISTED_PATTERNS = [re.compile(pattern) for pattern in BLACKLISTED_PATTERNS]
-
-
-# Classes ====================================================================================================
-
-# Helper Functions ====================================================================================================
-def is_valid_journal_entry(journal_dirpath, filename):
-    result = os.path.isfile(os.path.join(journal_dirpath, filename))
-    for pattern in COMPILED_BLACKLISTED_PATTERNS:
-        return result and not pattern.match(filename)
-    return result
-
-def load_entries(journal_dirpath):
-    journal_filenames = [filename for filename in os.listdir(journal_dirpath) if is_valid_journal_entry(journal_dirpath, filename)]
-    entries = [ model.EntryAndMetadata(filename) for filename in journal_filenames]
-    return model.EntryStore(entries)
-
-TIMESTAMP_SORT = "TIME"
-ENTRY_NAME_SORT = "NAME"
-ENTRY_SORTING_FUNCS = {
-    TIMESTAMP_SORT: lambda entry_and_metadata: entry_and_metadata.creation_timestamp,
-    ENTRY_NAME_SORT: lambda entry_and_metadata: entry_and_metadata.pseudo_name,
-}
-def render_entries(entries, entry_sort_type, sort_reverse):
-    if len(entries) == 0:
-        print("              \033[90m<No results>")
-        return
-
-    sorted_entries = sorted(entries, key=ENTRY_SORTING_FUNCS[entry_sort_type], reverse=sort_reverse)
-    for entry in sorted_entries:
-        print(entry)
-
-# ================ Commands =========================
-def help():
-    print("")
-    for cmd in COMMANDS:
-        aliases_str = ", ".join(sorted(cmd.aliases))
-        padded_aliases = aliases_str.ljust(25, " ")
-        print("  %s%s" % (padded_aliases, cmd.help_str))
-    return None
-
-def print_tags(entry_store):
-    tags = sorted(entry_store.get_tags())
-    for tag in tags:
-        print(" - %s" % tag)
-    return None
-
-def search_by_name(entry_store, args):
-    results = entry_store.get_by_name(user_input)
-    if len(results) == 0:
-        print("No results")
-        return None
-    # TODO allow user to customize sort
-    render_entries(results, ENTRY_NAME_SORT, False)
-    return None
-
-def quit():
-    return []
-
 
 
 def main():
     # TODO read a config file to get tag colors
-    entry_store = load_entries(JOURNAL_LOC)
+    entry_store = model.EntryStore(JOURNAL_LOC, BLACKLISTED_PATTERNS)
 
     output_record = commands.CommandOutputRecord()
     command_parser = commands.CommandParser(output_record).register_command(
