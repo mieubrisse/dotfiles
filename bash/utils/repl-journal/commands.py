@@ -130,8 +130,8 @@ class AbstractEntryListingCommand(AbstractCommand):
     _TIMESTAMP_SORT = "time"
     _ENTRY_NAME_SORT = "name"
     _ENTRY_SORTING_FUNCS = {
-        _TIMESTAMP_SORT: lambda entry_and_metadata: entry_and_metadata.creation_timestamp,
-        _ENTRY_NAME_SORT: lambda entry_and_metadata: entry_and_metadata.pseudo_name,
+        _TIMESTAMP_SORT: lambda entry: entry.get_creation_timestamp(),
+        _ENTRY_NAME_SORT: lambda entry: entry.get_name(),
     }
 
     def __init__(self, cmd_str, help_str):

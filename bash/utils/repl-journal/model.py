@@ -3,35 +3,50 @@ from collections import defaultdict
 import datetime
 
 # Keys for the dict of file + metadata we pass around
-class _EntryStoreRecord:
+class EntryStoreRecord:
     """
     Class to contain information about a journal entry - filename on disk, date of creation, tags, etc.
     """
 
+    _MISSING_DATE_FORMAT_DATE = datetime.datetime(1970, 1, 1, 0, 0, 0)    # Date we assume an entry was written if we can't parse the date
+    _FILENAME_DATE_FMTS = [
+        "%Y-%m-%d_%H-%M-%S",
+        "%Y-%m-%d"
+    ]
 
     def __init__(self, filename):
-        filename_minus_ext, extension = os.path.splitext(filename)
-
-        filename_fragments = filename_minus_ext.split("~")
-        self._pseudo_name = filename_fragments[0] + extension
-        created_timestamp_str = filename_fragments[1] if len(filename_fragments) >= 2 else ""
-        tags_str = filename_fragments[2] if len(filename_fragments) >= 3 else ""
-
         self._filename = filename
-        self._creation_timestamp = EntryAndMetadata.MISSING_DATE_FORMAT_DATE
-        for date_format in EntryAndMetadata.FILENAME_DATE_FMTS:
+        filename_minus_ext, extension = os.path.splitext(self._filename)
+        filename_fragments = filename_minus_ext.split("~")
+
+        self._pseudo_name = filename_fragments[0] + extension
+
+        created_timestamp_str = filename_fragments[1] if len(filename_fragments) >= 2 else ""
+        self._creation_timestamp = EntryStoreRecord._MISSING_DATE_FORMAT_DATE
+        for date_format in EntryStoreRecord._FILENAME_DATE_FMTS:
             try:
                 self._creation_timestamp = datetime.datetime.strptime(created_timestamp_str, date_format)
                 break
             except ValueError:
                 pass
+
+        tags_str = filename_fragments[2] if len(filename_fragments) >= 3 else ""
         self._tags = tags_str.split(",") if len(tags_str) > 0 else []
 
-    def get_id(self):
+    def get_filename(self):
         return self._filename
 
+    def get_pseudo_name(self):
+        return self._pseudo_name
+
+    def get_creation_timestamp(self):
+        return self._creation_timestamp
+
+    def get_tags(self):
+        return self._tags
+
     def __repr__(self):
-        return self.get_id()
+        return self.get_filename()
 
 # NOTE: this is the external representation, not how we store the data internal to the EntryStore
 class Entry:
@@ -53,7 +68,7 @@ class Entry:
         self._name = name
         self._tags = sorted(set(tags))
 
-    def get_entry_id(self):
+    def get_id(self):
         return self._entry_id
 
     def get_filepath(self):
@@ -80,7 +95,7 @@ class Entry:
 
 class EntryStore:
     """
-    Takes a list of EntryAndMetadata and processes it in an easily-queryable format
+    Takes a list of EntryStoreRecords and processes them into an easily-queryable format
     """
 
     _FILENAME_METADATA_SEPARATOR = "~"
@@ -108,71 +123,57 @@ class EntryStore:
                 self._compiled_blacklisted_patterns
             )
         ]
+        records_set = { model.EntryStoreRecord(filename) for filename in journal_filenames }
+        self._records = { record.get_filename(): record for record in records_set }
 
-        self._entries = set(journal_filenames)
-        self._tag_lookup = defaultdict(lambda: set())
-        for entry in self._entries:
-            for tag in entry.tags:
-                self._tag_lookup[tag].add(entry)
-
-
-
-        self._filename = filename
-
-        entries = [ model.EntryStoreRecord(filename) for filename in journal_filenames]
-
-        self._entries = set(entry_list)
-        self._tag_lookup = defaultdict(lambda: set())
-        for entry in self._entries:
-            for tag in entry.tags:
-                self._tag_lookup[tag].add(entry)
+        self._pseudo_name_index = {}
+        self._tag_index = defaultdict(lambda: set())
+        for record in self._records:
+            record_filename = record.get_filename()
+            self._pseudo_name_index[record.get_pseudo_name()] = filename
+            for tag in record.tags:
+                self._tag_lookup[tag].add(filename)
 
     def get_all(self):
-        return self._entries
+        return [self._record_to_entry(record) for record in self._records.values()]
 
     def get_tags(self):
-        return self._tag_lookup.keys()
+        return self._tag_index.keys()
 
-    def get_by_id(self, entry_id):
-        return self._entries.get(entry_id, None)
+    def get_by_ids(self, the_ids):
+        # NOTE: A nonexistent ID here will and should throw an error, because it means the user
+        #  is passing in IDs other than the ones we're giving back!
+        return [
+            self._record_to_entry(self._records.get(record_id)) for record_id in the_ids
+        ]
 
     def get_by_tag(self, tag):
-        return self._tag_lookup.get(tag, set())
+        return [
+            self._record_to_entry(self._records.get(record_id))
+            for record_id
+            in self._tag_index.get(tag, set())
+        ]
 
     def get_by_name(self, keyword):
-        return [ entry for entry in self._entries if keyword in entry.pseudo_name]
+        return [
+            self._record_to_entry(self._records.get(record_id))
+            for pseudo_name, record_id
+            in self._pseudo_name_index.items()
+            if keyword in pseudo_name
+        ]
 
-    """
-    def _to_api_entry(self, entry_record):
-        Helper function to convert the internal entries to external objects returned to the user
+    def _record_to_entry(self, record):
+        """
+        Helper function to convert from the internal entries representation to external objects returned to the user
+        """
+        filename = record.get_filename()
         return Entry(
-    """
-
-    def _get_metadata_from_filename(filename):
-        """
-        Splits a metadata-bearing filename into the pseudo filename (without metadata), creation timestamp, and tags
-
-        Returns:
-            Tuple containing (pseudo_name, creation_timestamp, tags)
-        """
-        filename_minus_ext, extension = os.path.splitext(filename)
-        filename_fragments = filename_minus_ext.split(EntryStore._FILENAME_METADATA_SEPARATOR)
-
-        pseudo_name = filename_fragments[0] + extension
-
-        created_timestamp_str = filename_fragments[1] if len(filename_fragments) >= 2 else ""
-        creation_timestamp = EntryStore._MISSING_DATE_FORMAT_DATE
-        for date_format in EntryStore._FILENAME_DATE_FMTS:
-            try:
-                self._creation_timestamp = datetime.datetime.strptime(created_timestamp_str, date_format)
-                break
-            except ValueError:
-                pass
-
-        tags_str = filename_fragments[2] if len(filename_fragments) >= 3 else ""
-        tags_list = tags_str.split(",") if len(tags_str) > 0 else []
-        return (pseudo_name, creation_timestamp, 
-
+            filename,
+            os.path.join(journal_dirpath, filename),
+            record.get_creation_timestamp(),
+            record.get_pseudo_name(),
+            record.get_tags()
+        )
 
     def _is_valid_journal_entry(journal_dirpath, filename, compiled_blacklisted_patterns):
         result = os.path.isfile(os.path.join(journal_dirpath, filename))
