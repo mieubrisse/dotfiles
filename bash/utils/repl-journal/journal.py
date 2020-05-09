@@ -28,6 +28,8 @@ def main():
     ).register_command(
         commands.VimCommand(output_record, entry_store)
     ).register_command(
+        commands.AddCommand(output_record, entry_store)
+    ).register_command(
         commands.QuitCommand()
     )
 

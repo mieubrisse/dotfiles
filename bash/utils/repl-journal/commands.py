@@ -1,6 +1,7 @@
 import abc
 import argparse
 from enum import Enum, auto
+import datetime
 
 class ReferenceableOutputRecord:
     """
@@ -263,7 +264,7 @@ class AbstractResultConsumingCommand(AbstractCommand):
     """
 
     # Character used to indicate that previous results should be used
-    REFERENCE_LEADER = "@"
+    _REFERENCE_LEADER = "@"
 
     _INPUT_ARG = "input"
 
@@ -272,8 +273,8 @@ class AbstractResultConsumingCommand(AbstractCommand):
         self._cmd_output_record = cmd_output_record
 
     def configure_parser(self, parser):
-        parser.add_argument(AbstractResultConsumingCommand._INPUT_ARG, nargs="+")
         self.configure_result_consuming_parser(parser)
+        parser.add_argument(AbstractResultConsumingCommand._INPUT_ARG, nargs="+")
 
     def run_specific_logic(self, parsed_args):
         input_items = parsed_args[AbstractResultConsumingCommand._INPUT_ARG]
@@ -282,7 +283,7 @@ class AbstractResultConsumingCommand(AbstractCommand):
         # Validate we're consuming the appropriate result type
         expected_output_type = self.get_consumed_result_type()
         for idx, item in enumerate(input_items):
-            if not item.startswith(AbstractResultConsumingCommand.REFERENCE_LEADER):
+            if not item.startswith(AbstractResultConsumingCommand._REFERENCE_LEADER):
                 continue
 
             last_cmd_output = self._cmd_output_record.get_last_referenceable_output()
@@ -311,7 +312,7 @@ class AbstractResultConsumingCommand(AbstractCommand):
                 return CommandOutput(None, None, None)
             transformed_items[idx] = output_results[reference_idx]
 
-        return self.process_transformed_input(transformed_items)
+        return self.process_transformed_input(transformed_items, parsed_args)
 
     @abc.abstractmethod
     def get_consumed_result_type(self):
@@ -327,8 +328,9 @@ class AbstractResultConsumingCommand(AbstractCommand):
         """
         return
 
+    # TODO Not sure if I'm super happy with passing both the transformed input and the raw args
     @abc.abstractmethod
-    def process_transformed_input(self, transformed_input):
+    def process_transformed_input(self, transformed_input, parsed_args):
         """
         Run logic on the user's input, with references already transformed
         """
@@ -349,7 +351,7 @@ class VimCommand(AbstractResultConsumingCommand):
     def get_consumed_result_type(self):
         return CommandResultType.JOURNAL_ENTRY
 
-    def process_transformed_input(self, transformed_input):
+    def process_transformed_input(self, transformed_input, parsed_args):
         filepaths = [entry.get_filepath() for entry in self._entry_store.get_by_ids(transformed_input)]
         if len(filepaths) == 0:
             raise ValueError("Asked for IDs that should exist but got nothing back - this is wrong!")
@@ -358,6 +360,59 @@ class VimCommand(AbstractResultConsumingCommand):
         elif len(filepaths) > 1:
             end_args = ['vim', '-O'] + filepaths
         return CommandOutput(None, None, end_args)
+
+class AddCommand(AbstractResultConsumingCommand):
+    """
+    Adds a new journal entry
+    """
+
+    _PSEUDO_FILENAME_ARG = "pseudo_filename"
+    _TIMESTAMP_STR_ARG = "timestamp"
+
+    _SUPPORTED_TIMESTAMP_FORMATS = [
+        "%Y-%m-%d %H:%M:%S",
+        "%Y-%m-%d_%H:%M:%S",
+    ]
+
+    def __init__(self, cmd_output_record, entry_store):
+        super().__init__("add", "Adds a new journal entry", cmd_output_record)
+        self._entry_store = entry_store
+
+    def configure_result_consuming_parser(self, parser):
+        parser.add_argument(
+            AddCommand._PSEUDO_FILENAME_ARG,
+            help="Name to give new journal entry"
+        )
+        parser.add_argument(
+            '-t',
+            dest=AddCommand._TIMESTAMP_STR_ARG,
+            help="Optional timestamp to give journal entry in YYYY-MM-DD HH:MM:SS format (default: current time)"
+        )
+
+    def get_consumed_result_type(self):
+        return CommandResultType.JOURNAL_ENTRY
+
+    def process_transformed_input(self, transformed_input, parsed_args):
+        pseudo_filename = parsed_args[AddCommand._PSEUDO_FILENAME_ARG]
+        timestamp_str = parsed_args[AddCommand._TIMESTAMP_STR_ARG]
+        if timestamp_str is None:
+            timestamp = datetime.datetime.now()
+        else:
+            timestamp = None
+            for timstamp_format in AddCommand._SUPPORTED_TIMESTAMP_FORMATS:
+                try:
+                    timestamp = datetime.datetime.strptime(timstamp_str, timestamp_format)
+                    break
+                except ValueError:
+                    pass
+            if timestamp is None:
+                print("Unrecognized timestamp format '%s'" % timestamp_str)
+                return CommandOutput(None, None, None)
+
+        # TODO Debugging
+        print("Would add %s at %s" % (pseudo_filename, timestamp))
+        return CommandOutput(None, None, None)
+
 
 class CommandParser():
     """
