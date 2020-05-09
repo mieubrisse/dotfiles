@@ -1,6 +1,5 @@
 import os
 import subprocess
-import re
 import argparse
 import model
 import commands
@@ -19,7 +18,7 @@ def main():
     # TODO read a config file to get tag colors
     entry_store = model.EntryStore(JOURNAL_LOC, BLACKLISTED_PATTERNS)
 
-    output_record = commands.CommandOutputRecord()
+    output_record = commands.ReferenceableOutputRecord()
     command_parser = commands.CommandParser(output_record).register_command(
         commands.ListCommand(entry_store)
     ).register_command(
@@ -27,7 +26,7 @@ def main():
     ).register_command(
         commands.FindCommand(entry_store)
     ).register_command(
-        commands.VimCommand(output_record)
+        commands.VimCommand(output_record, entry_store)
     ).register_command(
         commands.QuitCommand()
     )

@@ -1,6 +1,7 @@
 import os
 from collections import defaultdict
 import datetime
+import re
 
 # Keys for the dict of file + metadata we pass around
 class EntryStoreRecord:
@@ -91,8 +92,6 @@ class Entry:
             tag_str
         )
 
-    def 
-
 class EntryStore:
     """
     Takes a list of EntryStoreRecords and processes them into an easily-queryable format
@@ -123,16 +122,17 @@ class EntryStore:
                 self._compiled_blacklisted_patterns
             )
         ]
-        records_set = { model.EntryStoreRecord(filename) for filename in journal_filenames }
-        self._records = { record.get_filename(): record for record in records_set }
+        records_set = { EntryStoreRecord(filename) for filename in journal_filenames }
 
+        self._records = {}
         self._pseudo_name_index = {}
         self._tag_index = defaultdict(lambda: set())
-        for record in self._records:
+        for record in records_set:
             record_filename = record.get_filename()
-            self._pseudo_name_index[record.get_pseudo_name()] = filename
-            for tag in record.tags:
-                self._tag_lookup[tag].add(filename)
+            self._records[record_filename] = record
+            self._pseudo_name_index[record.get_pseudo_name()] = record_filename
+            for tag in record.get_tags():
+                self._tag_index[tag].add(record_filename)
 
     def get_all(self):
         return [self._record_to_entry(record) for record in self._records.values()]
@@ -169,7 +169,7 @@ class EntryStore:
         filename = record.get_filename()
         return Entry(
             filename,
-            os.path.join(journal_dirpath, filename),
+            os.path.join(self._journal_dirpath, filename),
             record.get_creation_timestamp(),
             record.get_pseudo_name(),
             record.get_tags()

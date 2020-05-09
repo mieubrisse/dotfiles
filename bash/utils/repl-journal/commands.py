@@ -2,17 +2,21 @@ import abc
 import argparse
 from enum import Enum, auto
 
-class CommandOutputRecord:
+class ReferenceableOutputRecord:
     """
-    Supplier-type class containing the CommandOutput of the last-ran command
+    Supplier-type class that supplies the last CommandOutput that actually returned referenceable results
     """
     def __init__(self):
         self._last_output = None
 
-    def get_last_output(self):
+    def get_last_referenceable_output(self):
         return self._last_output
 
-    def set_last_output(self, output):
+    def record_output(self, output):
+        result_list = output.get_result_list()
+        result_type = output.get_result_type()
+        if result_type is None or result_list is None or len(result_list) == 0:
+            return
         self._last_output = output
 
 class CommandResultType(Enum):
@@ -248,8 +252,8 @@ class PrintTagsCommand(AbstractCommand):
 
     def run_specific_logic(self, parsed_args):
         tags = sorted(self._entry_store.get_tags())
-        for tag in tags:
-            print(" - %s" % tag)
+        for idx, tag in enumerate(tags):
+            print("%s\t%s" % (idx, tag))
         return CommandOutput(tags, CommandResultType.TAG, None)
 
 
@@ -281,7 +285,7 @@ class AbstractResultConsumingCommand(AbstractCommand):
             if not item.startswith(AbstractResultConsumingCommand.REFERENCE_LEADER):
                 continue
 
-            last_cmd_output = self._cmd_output_record.get_last_output()
+            last_cmd_output = self._cmd_output_record.get_last_referenceable_output()
             if last_cmd_output is None:
                 print("Reference error with '%s': No previous command results to use!" % item)
                 return CommandOutput(None, None, None)
@@ -302,7 +306,7 @@ class AbstractResultConsumingCommand(AbstractCommand):
             except ValueError:
                 print("Reference error with '%s': Must be an integer list index" % item)
                 return CommandOutput(None, None, None)
-            if not (reference_idx >= 0 and reference_idex < len(output_results)):
+            if not (reference_idx >= 0 and reference_idx < len(output_results)):
                 print("Reference error with '%s': Index is out-of-bounds of prevoius result list" % item)
                 return CommandOutput(None, None, None)
             transformed_items[idx] = output_results[reference_idx]
@@ -335,8 +339,9 @@ class VimCommand(AbstractResultConsumingCommand):
     Command to open journal entries in Vim
     """
 
-    def __init__(self, cmd_output_record):
+    def __init__(self, cmd_output_record, entry_store):
         super().__init__("vim", "Opens journal entries in Vim, using 'vsp' if more than one entry is given", cmd_output_record)
+        self._entry_store = entry_store
 
     def configure_result_consuming_parser(self, parser):
         pass
@@ -345,10 +350,14 @@ class VimCommand(AbstractResultConsumingCommand):
         return CommandResultType.JOURNAL_ENTRY
 
     def process_transformed_input(self, transformed_input):
-        end_args = 
-        for item in transformed_input:
-            print("Would open %s" % item)
-        return CommandOutput(None, None, None)
+        filepaths = [entry.get_filepath() for entry in self._entry_store.get_by_ids(transformed_input)]
+        if len(filepaths) == 0:
+            raise ValueError("Asked for IDs that should exist but got nothing back - this is wrong!")
+        elif len(filepaths) == 1:
+            end_args = ['vim', filepaths[0]]
+        elif len(filepaths) > 1:
+            end_args = ['vim', '-O'] + filepaths
+        return CommandOutput(None, None, end_args)
 
 class CommandParser():
     """
@@ -383,7 +392,7 @@ class CommandParser():
         else:
             print("Unknown command '%s'" % command_str)
             cmd_output = CommandOutput(None, None, None)
-        self._cmd_output_record.set_last_output(cmd_output)
+        self._cmd_output_record.record_output(cmd_output)
         return cmd_output
 
     def _print_help(self):
