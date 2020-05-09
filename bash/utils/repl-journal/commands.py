@@ -301,7 +301,7 @@ class AbstractResultConsumingCommand(AbstractCommand):
                 print("Reference error with '%s': Expected result type '%s' but previous command's result type was '%s'" % (item, expected_output_type, output_type))
                 return CommandOutput(None, None, None)
 
-            reference_idx_str = item.lstrip(AbstractResultConsumingCommand.REFERENCE_LEADER)
+            reference_idx_str = item.lstrip(AbstractResultConsumingCommand._REFERENCE_LEADER)
             try:
                 reference_idx = int(reference_idx_str)
             except ValueError:
@@ -390,7 +390,7 @@ class AddCommand(AbstractResultConsumingCommand):
         )
 
     def get_consumed_result_type(self):
-        return CommandResultType.JOURNAL_ENTRY
+        return CommandResultType.TAG
 
     def process_transformed_input(self, transformed_input, parsed_args):
         pseudo_filename = parsed_args[AddCommand._PSEUDO_FILENAME_ARG]
@@ -409,9 +409,11 @@ class AddCommand(AbstractResultConsumingCommand):
                 print("Unrecognized timestamp format '%s'" % timestamp_str)
                 return CommandOutput(None, None, None)
 
-        # TODO Debugging
-        print("Would add %s at %s" % (pseudo_filename, timestamp))
-        return CommandOutput(None, None, None)
+        # TODO make this better!
+        tags = transformed_input
+
+        filepath = self._entry_store.get_new_entry_filepath(pseudo_filename, timestamp, tags)
+        return CommandOutput(None, None, ['vim', filepath])
 
 
 class CommandParser():

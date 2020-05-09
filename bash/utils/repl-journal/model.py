@@ -98,10 +98,12 @@ class EntryStore:
     """
 
     _FILENAME_METADATA_SEPARATOR = "~"
+    _TAG_SEPARATOR = ","
 
     _MISSING_DATE_FORMAT_DATE = datetime.datetime(1970, 1, 1, 0, 0, 0)    # Date we assume an entry was written if we can't parse the date
+    _PREFERRED_FILENAME_DATE_FMT = "%Y-%m-%d_%H-%M-%S"
     _FILENAME_DATE_FMTS = [
-        "%Y-%m-%d_%H-%M-%S",
+        _PREFERRED_FILENAME_DATE_FMT,
         "%Y-%m-%d"
     ]
 
@@ -161,6 +163,57 @@ class EntryStore:
             in self._pseudo_name_index.items()
             if keyword in pseudo_name
         ]
+
+    def get_new_entry_filepath(self, pseudo_name, creation_timestamp, tags):
+        """
+        Returns a path where a journal entry with the given parameters should go
+        """
+        pseudo_name_minus_ext, extension = os.path.splitext(pseudo_name)
+        name, extension = os.path.splitext(pseudo_name)
+        filename = EntryStore._format_filename_metadata(
+            pseudo_name_minus_ext,
+            extension,
+            creation_timestamp,
+            tags
+        )
+        return os.path.join(self._journal_dirpath, filename)
+
+    def _format_filename_metadata(pseudo_name_minus_ext, extension, creation_timestamp, tags):
+        """
+        Formats the metadata contained in the filename to a filename the CLI can parse
+        """
+        creation_timestamp_str = creation_timestamp.strftime(EntryStore._PREFERRED_FILENAME_DATE_FMT)
+        tags_str = EntryStore._TAG_SEPARATOR.join(sorted(set(tags)))
+        return EntryStore._FILENAME_METADATA_SEPARATOR.join([
+            pseudo_name_minus_ext,
+            creation_timestamp_str,
+            tags_str,
+        ]) + extension
+
+    def _parse_filename_metadata(filename):
+        """
+        Parses a journal entry filename into a tuple of the metadata contained in the filename
+
+        Returns:
+            Tuple of (pseudo filename w/o extension, extension, creation timestamp, tags list)
+        """
+        filename_minus_ext, extension = os.path.splitext(filename)
+        filename_fragments = filename_minus_ext.split(EntryStore._FILENAME_METADATA_SEPARATOR)
+
+        pseudo_filename_minus_ext = filename_fragments[0]
+
+        created_timestamp_str = filename_fragments[1] if len(filename_fragments) >= 2 else ""
+        creation_timestamp = EntryStoreRecord._MISSING_DATE_FORMAT_DATE
+        for date_format in EntryStoreRecord._FILENAME_DATE_FMTS:
+            try:
+                self._creation_timestamp = datetime.datetime.strptime(created_timestamp_str, date_format)
+                break
+            except ValueError:
+                pass
+
+        tags_str = filename_fragments[2] if len(filename_fragments) >= 3 else ""
+        tags = tags_str.split(EntryStore._TAG_SEPARATOR) if len(tags_str) > 0 else []
+        return (pseudo_filename_minus_ext, extension, creation_timestamp, tags)
 
     def _record_to_entry(self, record):
         """
