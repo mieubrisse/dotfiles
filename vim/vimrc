@@ -77,7 +77,8 @@ filetype plugin indent on
 
 " ----------- Vim Polyglot --------------------------
 " Disable markdown polyglot on markdown and csv, because it's weird
-let g:polyglot_disabled = ['markdown', 'csv']
+let g:polyglot_disabled = ['markdown']
+let g:csv_no_conceal = 1
 " ----------- Vim Polyglot --------------------------
 
 " ------------ Plasticboy Markdown Plugin -------------------
