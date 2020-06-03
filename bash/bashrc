@@ -76,7 +76,7 @@ function __jenv_set_java_home() {
 __jenv_set_java_home
 
 # ------------ Golang ---------------------------------------------------------------
-export GOPATH="${HOME}/.go"
+export GOPATH="${HOME}/go"
 PATH_ADDITIONS+=("/usr/local/opt/go@1.13/bin")
 
 # ----------- Bash Prompt -----------------------------------------------------------
