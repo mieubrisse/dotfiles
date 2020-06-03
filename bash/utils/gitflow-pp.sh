@@ -10,18 +10,18 @@
 #  - allows you to undo the last '_gitflow release finish' with '_gitflow release unfinish'
 #  - provides '_gitflow push' for pushing tags and master/develop branch to remote (in that order, for Jenkins)
 # 
-# Prerequisites:
+# Installation:
 #  1. Run `brew install git-flow`
+#  2. Clone this repo somewhere on your machine
+#  3. In your .bashrc, add `alias gfl="bash /path/to/this/gitflow-pp.sh"`
 # 
-# To run through a normal release flow:
+# To run through a normal release flow inside a repo:
 # 
 #  1. Run `_gitflow release start` (a version will be suggested if you have an X.Y.Z-dev tag on your develop branch)
-#  2. Make any necessary changes on your release branch
+#  2. Make any necessary changes on your release branch (e.g. updating your CHANGELOG.md)
 #  3. Run `_gitflow release finish` (a version will be suggested if you're on the release branch)
-#  4. Verify that your git log looks sane (i.e. all merges happened as expected)
+#  4. Verify that all merges happened as expected and your `git log --graph` looks sane
 #  5. Run `_gitflow push` to push all branches and tags up to the remote
-#
-# Suggestion: add `alias gfl="bash /path/to/this/gitflow-pp.sh"` to your .bashrc for much easier gitflow'ing
 #
 # ====================================================================================================================
 
