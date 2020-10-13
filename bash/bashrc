@@ -166,7 +166,8 @@ function __render_git_prompt() {
     local RED_FORE='\[\e[38;5;124m\]'
     local ELECTRIC_PURPLE_FORE='\[\e[38;5;129m\]'
 
-    local branch_color="${YELLOW_FORE}"
+    local no_changes_branch_color="${YELLOW_FORE}"
+    local uncommitted_changes_branch_color="${ELECTRIC_PURPLE_FORE}"
     local local_color="${ELECTRIC_PURPLE_FORE}"
     local ahead_color="${GREEN_FORE}"
     local behind_color="${RED_FORE}"
@@ -235,8 +236,13 @@ function __render_git_prompt() {
         fi
     fi
 
-    # returnstr="${RESET_COLOR}${BRIGHT_YELLOW}(${branch}${RESET_COLOR}"
-    local returnstr=" ${branch_color}(${branch}"
+    local returnstr=" ${no_changes_branch_color}("
+    if git diff --quiet && git diff --cached --quiet; then
+        returnstr+="${no_changes_branch_color}"
+    else
+        returnstr+="${uncommitted_changes_branch_color}"
+    fi
+    returnstr+="${branch}"
     if [ "${remote}" == "_NO_REMOTE_TRACKING_" ]; then
         returnstr+="${local_color} L"
     else
@@ -248,7 +254,7 @@ function __render_git_prompt() {
             returnstr+="${BOLD}${behind_color}-${num_behind}${RESET_BOLD}"
         fi
     fi
-    returnstr+="${branch_color})"
+    returnstr+="${no_changes_branch_color})"
 
     # For speed, instead of echo'ing this for subshell capture later, we'll just set a variable
     retval="${returnstr}"
