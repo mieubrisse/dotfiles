@@ -416,13 +416,21 @@ function parallel-tmux() {
     tmux attach
 }
 
-# Some easy navigation commands (with locations)
-alias gdrive="cd ${HOME}/gdrive"
+# Some easy navigation vars & commands
 alias home="cd $HOME"
-export general_reference="${HOME}/gdrive/general-reference"
-alias gref="cd '${general_reference}'"
-export project_support="${HOME}/gdrive/project-support"
-alias psup="cd '${project_support}'"
-export someday_maybe="${HOME}/gdrive/someday-maybe"
-alias someday="cd '${someday_maybe}'"
-alias self-improvement="cd '${general_reference}/self-improvement'"
+dotfiles_dirpath="${HOME}/app/dotfiles"
+alias dotfiles="cd '${dotfiles_dirpath}'"
+downloads_dirpath="${HOME}/Downloads"
+alias downloads="cd '${downloads_dirpath}'"
+gdrive_dirpath="${HOME}/gdrive"
+alias gdrive="cd '${gdrive_dirpath}'"
+gref_dirpath="${gdrive_dirpath}/general-reference"
+alias gref="cd '${gref_dirpath}'"
+receipts_dirpath="${gdrive_dirpath}/receipts-records-confirmations"
+alias receipts="cd '${receipts_dirpath}'"
+psup_dirpath="${receipts_dirpath}/project-support"
+alias psup="cd '${psup_dirpath}'"
+someday_dirpath="${gdrive_dirpath}/someday-maybe"
+alias someday="cd '${someday_dirpath}'"
+alias self_improvement="cd '${general_reference}/self-improvement'"
+
