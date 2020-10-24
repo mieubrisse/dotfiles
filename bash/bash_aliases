@@ -225,15 +225,6 @@ function sshl {
 # Command line JSON prettifier
 alias prettify-json="python -mjson.tool"
 
-# Announces a completed task
-# TODO Doesn't seem to work
-function announce() {
-    "$@"
-    [[ $? == 127 ]] && return 1	# Don't speak for command not found
-    VOICE_TXT=$(printf "%s" "${1}" | sed "s:.*/\(\.*\)::g")" command is done"	# Speak only command name
-    say -v "Vicki" "${VOICE_TXT}"
-}
-
 # --- Git Commands ------------------------
 # Viewing changes
 alias gs="git status -sb"
@@ -264,17 +255,6 @@ alias gg="git commit -am $1"
 alias grs="git reset"
 alias grs1="git reset --soft HEAD^"
 
-# TODO Finish me!
-# Fugitive.vim additions
-# function __fugitive_git_status() {
-#     if [ local git_dirpath="$(git rev-parse --git-dir)"
-#     local retcode=${?}
-#     if [ 
-# }
-#
-# alias vgs="
-# alias egs="
-
 # Dealing with remotes
 alias gcl="git clone"
 alias gf="git fetch --prune"
@@ -292,9 +272,6 @@ alias gprune-local="git branch --merged | grep -v '\*' | grep -v 'master' | grep
 
 # Just because it's intuitive
 alias eject="diskutil unmount"
-
-# Because I do Py
-alias ipy="ipython"
 
 alias chrome="open -a 'Google Chrome'"
 
@@ -353,6 +330,7 @@ function easy_chrome() {
     )
 }
 
+# ===================== Gradle ================================
 # Searches for a gradlew file up the tree and uses it for gradle commands
 # Add 'nocd' as the first argument to run the gradle commands from the directory you're in at the moment
 function gradle_search() {
@@ -416,7 +394,7 @@ function parallel-tmux() {
     tmux attach
 }
 
-# Some easy navigation vars & commands
+# ==================== Some easy navigation vars & commands ========================
 dotfiles_dirpath="${HOME}/app/dotfiles"
 alias dotfiles="cd '${dotfiles_dirpath}'"
 
@@ -443,3 +421,25 @@ alias someday="cd '${someday_dirpath}'"
 
 alias self_improvement="cd '${gref_dirpath}/self-improvement'"
 
+
+# ==================== Docker ================================
+clear_containers() {
+    docker rm $(docker stop $(docker ps -a --quiet --format="{{.ID}}"))
+}
+alias cclear=clear_containers
+
+clear_old_images() {
+    docker image rm $(docker images --quiet --filter "dangling=true")
+}
+alias iclear=clear_old_images
+
+
+# ==================== Custom-built Apps =======================
+# Wealthdraft aliases
+alias wealthdraft="java -jar ${HOME}/app/wealthdraft/*.jar"
+
+# cli-journal aliases
+alias journal="java -jar ${HOME}/app/cli-journal/*.jar"
+alias jnew="journal new"
+
+alias todays-goals="journal new todays-goals.md todays-goals"
