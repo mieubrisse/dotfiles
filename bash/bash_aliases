@@ -1,5 +1,5 @@
 # Better diff (Mac only)
-alias   diff="colordiff --ignore-space-change -u"
+alias diff="colordiff --ignore-space-change -u"
 
 # Datetime
 alias today='date +%F'
@@ -166,6 +166,13 @@ function use_command_filter_results() {
 
 alias vff="use_command_filter_results 'vim -O' fuzzy_find"
 alias vfl="use_command_filter_results 'vim -O' fuzzy_ls"
+
+function code() {
+    cd "${HOME}/code"
+    if [ "${#}" -gt 0 ]; then
+        use_command_filter_results 'cd' fuzzy_ls "${@}"
+    fi
+}
 
 # Easily copy the contents of one or more file
 function clip() {
