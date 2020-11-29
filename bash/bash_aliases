@@ -98,6 +98,35 @@ function smallest {
     _ls_results '-Sr' 'tail' "$NUM_RESULTS"
 }
 
+# Given a file, detects what type it is and:
+# 1) cd's to it if it's a directory
+# 2) opens it in Vim if it's a text file
+# 3) throws an error if it's a binary file
+function smart_open {
+    filepath="${1}"
+    if ! [ -e "${filepath}" ]; then
+        echo "Error: No such file at '${filepath}'" >&2
+        return 1
+    fi
+
+    filetype="$(file "${filepath}" | awk '{print $NF}')"
+    return_code=0
+    case "${filetype}" in
+        text)
+            vim "${filepath}"
+            ;;
+        directory)
+            cd "${filepath}"
+            ;;
+        *)
+            # TODO handle PDF & JPG types
+            echo "Error: Unknown filetype '${filetype}'" >&2
+            return_code=1
+            ;;
+    esac
+    return "${return_code}"
+}
+
 # TODO Idea:
 # Fuzzy_find and fuzzy_ls can take an additional argument of the directory to search!
 
@@ -161,18 +190,11 @@ alias fff="_pipe_to_filter fuzzy_find"
 # $3+ - Arguments passed to command for generating results to filter
 function use_command_filter_results() {
     # Unquoted word-splitting is intentional here
-    $1 $(${2} "${@:3}" | filter)
+    ${1} $(${2} "${@:3}" | filter)
 }
 
 alias vff="use_command_filter_results 'vim -O' fuzzy_find"
 alias vfl="use_command_filter_results 'vim -O' fuzzy_ls"
-
-function code() {
-    cd "${HOME}/code"
-    if [ "${#}" -gt 0 ]; then
-        use_command_filter_results 'cd' fuzzy_ls "${@}"
-    fi
-}
 
 # Easily copy the contents of one or more file
 function clip() {
@@ -181,9 +203,6 @@ function clip() {
 
 # Have mkdir create parent directories if they don't already exist
 alias mkdir="mkdir -p"
-
-# Make directory and cd into it
-function mkdircd() { mkdir "$@"; cd "$1"; }
 
 # === grep ===========
 alias csgr='grep -I --color=auto'    # Case-sensitive grep
@@ -200,10 +219,6 @@ function csergr() { csegr --exclude-dir="." --exclude-dir=".." -r "$@" ./* ./.*;
 # Grep chain commands
 alias hgr='history | gr'
 alias pgr='ps aux | gr'
-
-# Add an "alert" alias for long running commands.  Use like so:
-# TODO This is broken
-# alias alert="notify-send --urgency=low -i \"$([ $? = 0 ] && echo terminal || echo error)\" \"$(history|tail -n1|sed -e '\''s/^\s*[0-9]\+\s*//;s/[;&|]\s*alert\$//'\'')\""
 
 # Map command to open last vim session
 alias   v="vim"
@@ -231,51 +246,6 @@ function sshl {
 
 # Command line JSON prettifier
 alias prettify-json="python -mjson.tool"
-
-# --- Git Commands ------------------------
-# Viewing changes
-alias gs="git status -sb"
-alias gsh="git show"
-alias gd="git diff --word-diff=color"
-alias gdc="gd --cached"
-alias gl="git log --graph --abbrev-commit --decorate --date=relative --format=format:'%C(bold blue)%h%C(reset) - %C(bold green)(%ar)%C(reset) %C(white)%s%C(reset) %C(bold black)[%an]%C(reset)%C(bold yellow)%d%C(reset)' --all"
-alias gll="git log --graph --abbrev-commit --decorate --format=format:'%C(bold blue)%h%C(reset) - %C(bold cyan)%aD%C(reset) %C(bold green)(%ar)%C(reset)%C(bold yellow)%d%C(reset)%n'' %C(white)%s%C(reset) %C(dim white)- %an%C(reset)' --all"
-
-# Making changes
-alias gb="git branch"
-alias gco="git checkout"
-alias ga="git add"
-
-# We hijack Git's autocomplete here so we get autocompletion on our custom aliases
-# This relies on the bash-completion Homebrew package
-__git_complete gco _git_checkout
-__git_complete gb _git_branch
-
-# TODO It's getting to the point where I need a better system for dealing with fuzzy find/ls results..
-alias gaff="use_command_filter_results 'git add' fuzzy_find"
-alias gafl="use_command_filter_results 'git add' fuzzy_ls"
-
-alias empty-commit="git commit --allow-empty -m $1"
-alias gcm="git commit"
-alias gcmm="git commit -m $1"
-alias gg="git commit -am $1"
-alias grs="git reset"
-alias grs1="git reset --soft HEAD^"
-
-# Dealing with remotes
-alias gcl="git clone"
-alias gf="git fetch --prune"
-alias gpll="git pull"
-function gpsh() {	# Push the branch upstream if it doesn't exist; otherwise just git push
-	BRANCH_NAME="$(git rev-parse --abbrev-ref HEAD)"
-	if [[ $(git config "branch.$BRANCH_NAME.merge") == '' ]]; then
-            git push -u origin "$BRANCH_NAME" "$@"
-        else
-            git push "$@"
-        fi
-}
-alias gprune-local-dry-run="git branch --merged | grep -v '\*' | grep -v 'master' | grep -v 'develop'"
-alias gprune-local="git branch --merged | grep -v '\*' | grep -v 'master' | grep -v 'develop' | xargs -n 1 git branch -d"
 
 # Just because it's intuitive
 alias eject="diskutil unmount"
@@ -337,7 +307,59 @@ function easy_chrome() {
     )
 }
 
-# ===================== Gradle ================================
+# ======================================================================================
+#                                      Git
+# ======================================================================================
+# Viewing changes
+alias gs="git status -sb"
+alias gsh="git show"
+alias gd="git diff --word-diff=color"
+alias gdc="gd --cached"
+alias gl="git log --graph --abbrev-commit --decorate --date=relative --format=format:'%C(bold blue)%h%C(reset) - %C(bold green)(%ar)%C(reset) %C(white)%s%C(reset) %C(bold black)[%an]%C(reset)%C(bold yellow)%d%C(reset)' --all"
+
+# Making changes
+alias gb="git branch"
+alias gco="git checkout"
+alias ga="git add"
+
+# We hijack Git's autocomplete here so we get autocompletion on our custom aliases
+# This relies on the bash-completion Homebrew package
+__git_complete gco _git_checkout
+__git_complete gb _git_branch
+
+# TODO It's getting to the point where I need a better system for dealing with fuzzy find/ls results..
+alias gaff="use_command_filter_results 'git add' fuzzy_find"
+alias gafl="use_command_filter_results 'git add' fuzzy_ls"
+
+alias empty-commit="git commit --allow-empty -m $1"
+alias gcm="git commit"
+alias gcmm="git commit -m $1"
+alias gg="git commit -am $1"
+alias grs="git reset"
+alias grs1="git reset --soft HEAD^"
+
+# Dealing with remotes
+alias gcl="git clone"
+alias gf="git fetch --prune"
+alias gpll="git pull"
+function gpsh() {	# Push the branch upstream if it doesn't exist; otherwise just git push
+	BRANCH_NAME="$(git rev-parse --abbrev-ref HEAD)"
+	if [[ $(git config "branch.$BRANCH_NAME.merge") == '' ]]; then
+            git push -u origin "$BRANCH_NAME" "$@"
+        else
+            git push "$@"
+        fi
+}
+alias gprune-local-dry-run="git branch --merged | grep -v '\*' | grep -v 'master' | grep -v 'develop'"
+alias gprune-local="git branch --merged | grep -v '\*' | grep -v 'master' | grep -v 'develop' | xargs -n 1 git branch -d"
+
+alias gfl="bash ~/.bash_utils/gitflow-pp.sh"
+
+
+
+# ======================================================================================
+#                                      Gradle
+# ======================================================================================
 # Searches for a gradlew file up the tree and uses it for gradle commands
 # Add 'nocd' as the first argument to run the gradle commands from the directory you're in at the moment
 function gradle_search() {
@@ -373,8 +395,6 @@ grep '^Host' "${HOME}/.ssh/config" | grep -v '[*]' | awk '{print $2}' | while re
     alias "${ssh_host}"="ssh '${ssh_host}'"
 done
 
-alias gfl="bash ~/.bash_utils/gitflow-pp.sh"
-
 alias virtualenv="pyenv virtualenv"
 
 # Make following a file much easier
@@ -401,35 +421,52 @@ function parallel-tmux() {
     tmux attach
 }
 
-# ==================== Some easy navigation vars & commands ========================
+
+
+# ======================================================================================
+#                                      Navigation
+# ======================================================================================
+function _smart_open_dir_contents {
+    cd "${1}"
+    if [ "${#}" -gt 1 ]; then
+        use_command_filter_results 'smart_open' fuzzy_ls "${@:2}"
+    fi
+}
+
 dotfiles_dirpath="${HOME}/app/dotfiles"
 alias dotfiles="cd '${dotfiles_dirpath}'"
 
+code_dirpath="${HOME}/code"
+alias code="_smart_open_dir_contents '${code_dirpath}'"
+
 downloads_dirpath="${HOME}/Downloads"
-alias downloads="cd '${downloads_dirpath}'"
+alias downloads="_smart_open_dir_contents '${downloads_dirpath}'"
 
 gdrive_dirpath="${HOME}/gdrive"
-alias gdrive="cd '${gdrive_dirpath}'"
+alias gdrive="_smart_open_dir_contents '${gdrive_dirpath}'"
 
 checklists_dirpath="${gdrive_dirpath}/checklists-and-templates"
-alias checklists="cd '${checklists_dirpath}'"
+alias checklists="_smart_open_dir_contents '${checklists_dirpath}'"
 
 gref_dirpath="${gdrive_dirpath}/general-reference"
-alias gref="cd '${gref_dirpath}'"
+alias gref="_smart_open_dir_contents '${gref_dirpath}'"
 
 receipts_dirpath="${gdrive_dirpath}/receipts-records-confirmations"
-alias receipts="cd '${receipts_dirpath}'"
+alias receipts="_smart_open_dir_contents '${receipts_dirpath}'"
 
 psup_dirpath="${gdrive_dirpath}/project-support"
-alias psup="cd '${psup_dirpath}'"
+alias psup="_smart_open_dir_contents '${psup_dirpath}'"
 
 someday_dirpath="${gdrive_dirpath}/someday-maybe"
-alias someday="cd '${someday_dirpath}'"
+alias someday="_smart_open_dir_contents '${someday_dirpath}'"
 
-alias self_improvement="cd '${gref_dirpath}/self-improvement'"
+alias self_improvement="_smart_open_dir_contents '${gref_dirpath}/self-improvement'"
 
 
-# ==================== Docker ================================
+
+# ======================================================================================
+#                                      Docker
+# ======================================================================================
 clear_containers() {
     docker rm $(docker stop $(docker ps -a --quiet --format="{{.ID}}"))
 }
@@ -441,7 +478,10 @@ clear_old_images() {
 alias iclear=clear_old_images
 
 
-# ==================== Custom-built Apps =======================
+
+# ======================================================================================
+#                                  Custom-Built Apps
+# ======================================================================================
 # Wealthdraft aliases
 alias wealthdraft="java -jar ${HOME}/app/wealthdraft/*.jar"
 
