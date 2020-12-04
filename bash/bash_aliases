@@ -426,10 +426,10 @@ function parallel-tmux() {
 # ======================================================================================
 #                                      Navigation
 # ======================================================================================
-function _smart_open_dir_contents {
-    cd "${1}"
-    if [ "${#}" -gt 1 ]; then
-        use_command_filter_results 'smart_open' fuzzy_ls "${@:2}"
+function _smart_open_dir_file {
+    cd "${2}"
+    if [ "${#}" -gt 2 ]; then
+        use_command_filter_results 'smart_open' "${1}" "${@:3}"
     fi
 }
 
@@ -437,30 +437,30 @@ dotfiles_dirpath="${HOME}/app/dotfiles"
 alias dotfiles="cd '${dotfiles_dirpath}'"
 
 code_dirpath="${HOME}/code"
-alias code="_smart_open_dir_contents '${code_dirpath}'"
+alias code="_smart_open_dir_file fuzzy_ls '${code_dirpath}'"
 
 downloads_dirpath="${HOME}/Downloads"
-alias downloads="_smart_open_dir_contents '${downloads_dirpath}'"
+alias downloads="_smart_open_dir_file fuzzy_ls '${downloads_dirpath}'"
 
 gdrive_dirpath="${HOME}/gdrive"
-alias gdrive="_smart_open_dir_contents '${gdrive_dirpath}'"
+alias gdrive="_smart_open_dir_file fuzzy_ls '${gdrive_dirpath}'"
 
-checklists_dirpath="${gdrive_dirpath}/checklists-and-templates"
-alias checklists="_smart_open_dir_contents '${checklists_dirpath}'"
+check_dirpath="${gdrive_dirpath}/checklists-and-templates"
+alias check="_smart_open_dir_file fuzzy_find '${check_dirpath}'"
 
 gref_dirpath="${gdrive_dirpath}/general-reference"
-alias gref="_smart_open_dir_contents '${gref_dirpath}'"
+alias gref="_smart_open_dir_file fuzzy_ls '${gref_dirpath}'"
 
 receipts_dirpath="${gdrive_dirpath}/receipts-records-confirmations"
-alias receipts="_smart_open_dir_contents '${receipts_dirpath}'"
+alias receipts="_smart_open_dir_file fuzzy_find '${receipts_dirpath}'"
 
 psup_dirpath="${gdrive_dirpath}/project-support"
-alias psup="_smart_open_dir_contents '${psup_dirpath}'"
+alias psup="_smart_open_dir_file fuzzy_ls '${psup_dirpath}'"
 
 someday_dirpath="${gdrive_dirpath}/someday-maybe"
-alias someday="_smart_open_dir_contents '${someday_dirpath}'"
+alias someday="_smart_open_dir_file fuzzy_find '${someday_dirpath}'"
 
-alias self_improvement="_smart_open_dir_contents '${gref_dirpath}/self-improvement'"
+alias self_improvement="_smart_open_dir_file fuzzy_find '${gref_dirpath}/self-improvement'"
 
 
 
