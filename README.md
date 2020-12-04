@@ -1,12 +1,12 @@
 Mieubrisse's Dotfiles Repo
 ==========================
-Features
---------
-### Terminal Prompt
+Terminal Prompt
+---------------
 ![](./README-media/terminal-prompt1.png)
 
 ![](./README-media/terminal-prompt2.png)
 
+Of note:
 * Entries are timestamped
 * The entire prompt itself will turn red when the last command failed
 * Git directories are highlighted in blue
@@ -15,14 +15,22 @@ Features
 * An indicator is shown for how the local branch compares to the remote (e.g. `-8`), to remind you to pull or push appropriately
 * The color of the text you enter is configurable, so you can set different colors on different machines as a subtle visual reminder of the machine you're working on
 
-### Fuzzy File Access
+cd
+---
+* `ls` will be run automatically after `cd`ing into a directory
+* `cd 2..` will run `cd ..` twice, `cd 4..` will run `cd ..` four times, etc.
+
+
+Fuzzy File Access
+-----------------
 Adds two new commands, `fuzzy_ls` and `fuzzy_find`, which will return files whose names contain the fragments specified:
 
 ![](./README-media/fuzzy-finding.png)
 
 `fuzzy_ls` searches for files only in the current directory, while `fuzzy_find` recursively searches the current directory and its subdirectories. These have been aliased to `fl` and `ff` for easy access.
 
-### Filtering
+Filtering
+---------
 Adds a `filter` command that allows users to filter command results linewise:
 
 ![](./README-media/filtering.png)
@@ -31,12 +39,14 @@ Multiple disjoint results can be specified with `,` (e.g. `1,3`), and ranges can
 
 NOTE: Requires Python.
 
-### Combining Fuzzy File Access & Filtering
+Combining Fuzzy File Access & Filtering
+---------------------------------------
 Adds several aliases for combining fuzzy-finding and filtering, e.g. `vff` which runs the equivalent of `vim -O $(fuzzy_find "the" "search" "terms" | filter)` for _incredibly_ easy file access:
 
 ![](./README-media/vim-fuzzy-find.png)
 
-### Smart Open 
+Smart Open 
+-----------
 
 Adds a `smart_open` command which will attempt to guess the right command to open a file based on the filetype. This can be combined with `fuzzy_ls`/`fuzzy_find` and `filter` to instantly access any file under a directory from anywhere in the filesystem. 
 
@@ -51,16 +61,13 @@ For more details, see the way that `_smart_open_dir_file` gets used here:
 
 WARNING: You'll feel like you're flying when using this!
 
-### Java
+Java
+----
 
 * The `grd` command will search up all parent directories for a `gradlew` file, so that you can run `grd run` if you're four directories deep rather than `../../../../gradlew run`
 
-### cd
-
-* `ls` will be run automatically after `cd`ing into a directory
-* `cd 2..` will run `cd ..` twice, `cd 4..` will run `cd ..` four times, etc.
-
-### Command Line Stuff
+Command Line Stuff
+------------------
 * "clip FILE" copies the file to the system clipboard (Mac only)
 * "ff INPUT" is a shortening of "find -iname '\*INPUT\*'"
 * "rgr INPUT" is a shortening of "grep -ir 'INPUT' \*"
@@ -74,6 +81,10 @@ WARNING: You'll feel like you're flying when using this!
 [](https://github.com/mieubrisse/dotfiles/blob/d436564a75aa1a25e27cba8327d3b4d1cebd1778/bash/bash_aliases#L313-L354)
 
 
-### Vim Stuff
-* J and K will page down and up respectively
-* Pressing + with text highlighted in visual mode will copy it to the system clipboard
+Vim Stuff
+---------
+* `<shift-J>` and `<shift-K>` will page down and up respectively
+* `\``l` will clear highlighting of the last search term
+* `\``w` = `:w`
+* `\``x` = `:wq`
+* Pressing `+` with text highlighted in visual mode will copy it to the system clipboard
