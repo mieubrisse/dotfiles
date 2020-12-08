@@ -25,6 +25,155 @@ alias l='ls'
 # du should always be human readable
 alias du='du -h'
 
+
+# Overwrite cd to jump up multiple levels with 'cd <# dir>..' syntax
+function cd() {
+    # If string isn't long enough, use builtin cd anyways
+    if [[ ${#1} -lt 3 ]]; then
+        builtin cd "$@"
+    else
+        # Check if string is in '<number>..' form
+        if [[ "${1:(-2)}" == ".." ]] && [[ -n "${1%..}" ]] && [[ "${1%..}" =~ ^[0-9]+$ ]]; then
+            REPEAT_TIMES="${1%..}"
+            if [ "${REPEAT_TIMES}" -le 0 ]; then
+                echo "Cannot do ${REPEAT_TIMES} cd's"
+                return 1
+            fi
+
+            CD_STR=""
+            while read; do
+                CD_STR="../$CD_STR"
+            done < <(seq 1 "${REPEAT_TIMES}")
+            cd "$CD_STR"
+        else
+            builtin cd "$@"
+        fi
+    fi
+}
+
+
+# Easily copy the contents of one or more file
+function clip() {
+    pbcopy < "${@}"
+}
+
+# Have mkdir create parent directories if they don't already exist
+alias mkdir="mkdir -p"
+
+
+# Grep chain commands
+alias hgr='history | gr'
+alias pgr='ps aux | gr'
+
+# Map command to open last vim session
+alias   v="vim"
+# TODO I have never used this and maybe I never will
+VIM_SESSION=~/.vim/.saved-session.vim
+alias   vims="vim -S ${VIM_SESSION}"
+
+# Jobs should show PID by default
+alias   jobs="jobs -l"
+
+# Don't want to make srm too easy to use!
+# alias srm="srm -i"
+
+# Easy SSH port forwarding
+function sshl { 
+    COMMAND="${@:2}"
+    ssh -L "${1}:localhost:${1}" "${COMMAND[@]}"
+}
+
+# Command line JSON prettifier
+alias prettify-json="python -mjson.tool"
+
+# Just because it's intuitive
+alias eject="diskutil unmount"
+
+alias chrome="open -a 'Google Chrome'"
+
+
+# ======================================================================================
+#                                   Searching & Navigating
+# ======================================================================================
+alias csgr='grep -I --color=auto'    # Case-sensitive grep
+alias gr='csgr -i'
+alias csegr='grep -I --color=auto' # Case-sensitive egrep
+alias egr='csegr -i'
+alias fgrep='fgrep --color=auto'
+alias egrep='egrep --color=auto'
+function rgr() { gr --exclude-dir="." --exclude-dir=".." -r "$@" ./* ./.*; }
+function csrgr() { csgr --exclude-dir="." --exclude-dir=".." -r "$@" ./* ./.*; }  # Case-sensitive recursive grep
+function ergr() { egr --exclude-dir="." --exclude-dir=".." -r "$@" ./* ./.*; }
+function csergr() { csegr --exclude-dir="." --exclude-dir=".." -r "$@" ./* ./.*; }  # Case-sensitive recursive egrep
+
+# Given a file, detects what type it is and:
+# 1) cd's to it if it's a directory
+# 2) opens it in Vim if it's a text file
+# 3) throws an error if it's a binary file
+function smart_open {
+    filepath="${1}"
+    if ! [ -e "${filepath}" ]; then
+        echo "Error: No such file at '${filepath}'" >&2
+        return 1
+    fi
+
+    filetype="$(file "${filepath}" | awk '{print $NF}')"
+    return_code=0
+    case "${filetype}" in
+        text)
+            vim "${filepath}"
+            ;;
+        directory)
+            cd "${filepath}"
+            ;;
+        *)
+            # TODO handle PDF & JPG types
+            echo "Error: Unknown filetype '${filetype}'" >&2
+            return_code=1
+            ;;
+    esac
+    return "${return_code}"
+}
+alias so="smart_open"
+
+# TODO Idea:
+# Fuzzy_find and fuzzy_ls can take an additional argument of the directory to search!
+
+# Make find not suck, and exclude some sensible defaults (which I hope don't come back to bite me one day...)
+alias cif="find . ! -name '*.class' -and -iname" # Case-insensitive find
+function fuzzy_find() { 
+    ARGS="${@}"
+    cif "*${ARGS// /*}*"
+}
+function fuzzy_ls() {
+    ARGS="${@}"
+    cif "*${ARGS// /*}*" -maxdepth 1
+}
+
+# Allows user to choose which lines of piped input to pass through
+alias filter="~/.bash_utils/filter.py"
+
+# Pipes the output of the given command to filter
+function _pipe_to_filter() {
+    "${@}" | filter
+}
+alias fl="_pipe_to_filter fuzzy_ls"
+alias ff="_pipe_to_filter fuzzy_find"
+
+# Fuzzy searches for the given file, then filters output and feeds it into the given command
+# $1 - Command to feed chosen file to
+# $2 - Command to generate results for filtering
+# $3+ - Arguments passed to command for generating results to filter
+function use_command_filter_results() {
+    # Unquoted word-splitting is intentional here
+    ${1} $(${2} "${@:3}" | filter)
+}
+
+alias vff="use_command_filter_results 'vim -O' fuzzy_find"
+alias vfl="use_command_filter_results 'vim -O' fuzzy_ls"
+alias sff="use_command_filter_results 'smart_open' fuzzy_find"
+alias sfl="use_command_filter_results 'smart_open' fuzzy_ls"
+
 # $1 - arguments to pass to ls
 # $2 - function to use to sort ls results (head|tail)
 # $3 - number of results to ask for from head/tail
@@ -98,163 +247,15 @@ function smallest {
     _ls_results '-Sr' 'tail' "$NUM_RESULTS"
 }
 
-# Given a file, detects what type it is and:
-# 1) cd's to it if it's a directory
-# 2) opens it in Vim if it's a text file
-# 3) throws an error if it's a binary file
-function smart_open {
-    filepath="${1}"
-    if ! [ -e "${filepath}" ]; then
-        echo "Error: No such file at '${filepath}'" >&2
-        return 1
-    fi
-
-    filetype="$(file "${filepath}" | awk '{print $NF}')"
-    return_code=0
-    case "${filetype}" in
-        text)
-            vim "${filepath}"
-            ;;
-        directory)
-            cd "${filepath}"
-            ;;
-        *)
-            # TODO handle PDF & JPG types
-            echo "Error: Unknown filetype '${filetype}'" >&2
-            return_code=1
-            ;;
-    esac
-    return "${return_code}"
-}
-
-# TODO Idea:
-# Fuzzy_find and fuzzy_ls can take an additional argument of the directory to search!
-
-# Make find not suck, and exclude some sensible defaults (which I hope don't come back to bite me one day...)
-alias cif="find . ! -name '*.class' -and -iname" # Case-insensitive find
-function fuzzy_find() { 
-    ARGS="${@}"
-    cif "*${ARGS// /*}*"
-}
-function fuzzy_ls() {
-    ARGS="${@}"
-    cif "*${ARGS// /*}*" -maxdepth 1
-}
-alias ff="fuzzy_find"
-alias fl="fuzzy_ls"
-
-# Overwrite cd to jump up multiple levels with 'cd <# dir>..' syntax
-function cd() {
-    # If string isn't long enough, use builtin cd anyways
-    if [[ ${#1} -lt 3 ]]; then
-        builtin cd "$@"
-    else
-        # Check if string is in '<number>..' form
-        if [[ "${1:(-2)}" == ".." ]] && [[ -n "${1%..}" ]] && [[ "${1%..}" =~ ^[0-9]+$ ]]; then
-            REPEAT_TIMES="${1%..}"
-            if [ "${REPEAT_TIMES}" -le 0 ]; then
-                echo "Cannot do ${REPEAT_TIMES} cd's"
-                return 1
-            fi
-
-            CD_STR=""
-            while read; do
-                CD_STR="../$CD_STR"
-            done < <(seq 1 "${REPEAT_TIMES}")
-            cd "$CD_STR"
-        else
-            builtin cd "$@"
-        fi
-    fi
-}
-
-# Allows user to choose which lines of piped input to pass through
-alias filter="~/.bash_utils/filter.py"
-alias ft="filter"
-
-# Pipes the output of the given command to filter
-function _pipe_to_filter() {
-    "${@}" | filter
-}
-alias flf="_pipe_to_filter fuzzy_ls"
-alias fff="_pipe_to_filter fuzzy_find"
-
-# TODO Idea:
-# Store a history of fuzzy find + filter searches,
-#  and remember the choices the user makes so we
-#  can give them a default choice the next time
-
-# Fuzzy searches for the given file, then filters output and feeds it into the given command
-# $1 - Command to feed chosen file to
-# $2 - Command to generate results for filtering
-# $3+ - Arguments passed to command for generating results to filter
-function use_command_filter_results() {
-    # Unquoted word-splitting is intentional here
-    ${1} $(${2} "${@:3}" | filter)
-}
-
-alias vff="use_command_filter_results 'vim -O' fuzzy_find"
-alias vfl="use_command_filter_results 'vim -O' fuzzy_ls"
-
-# Easily copy the contents of one or more file
-function clip() {
-    pbcopy < "${@}"
-}
-
-# Have mkdir create parent directories if they don't already exist
-alias mkdir="mkdir -p"
-
-# === grep ===========
-alias csgr='grep -I --color=auto'    # Case-sensitive grep
-alias gr='csgr -i'
-alias csegr='grep -I --color=auto' # Case-sensitive egrep
-alias egr='csegr -i'
-alias fgrep='fgrep --color=auto'
-alias egrep='egrep --color=auto'
-function rgr() { gr --exclude-dir="." --exclude-dir=".." -r "$@" ./* ./.*; }
-function csrgr() { csgr --exclude-dir="." --exclude-dir=".." -r "$@" ./* ./.*; }  # Case-sensitive recursive grep
-function ergr() { egr --exclude-dir="." --exclude-dir=".." -r "$@" ./* ./.*; }
-function csergr() { csegr --exclude-dir="." --exclude-dir=".." -r "$@" ./* ./.*; }  # Case-sensitive recursive egrep
-
-# Grep chain commands
-alias hgr='history | gr'
-alias pgr='ps aux | gr'
-
-# Map command to open last vim session
-alias   v="vim"
-# TODO I have never used this and maybe I never will
-VIM_SESSION=~/.vim/.saved-session.vim
-alias   vims="vim -S ${VIM_SESSION}"
-
-# Jobs should show PID by default
-alias   jobs="jobs -l"
-
-# Don't want to make srm too easy to use!
-# alias srm="srm -i"
-
-# Output redirection functions
-# TODO These don't seem to work so well..
-function    unify_output() { 2>&1 "${@}"; }
-function    quiet() { "${@}" 2> /dev/null; }
-function    silent() { "${@}" > /dev/null 2>&1; }
-
-# Easy SSH port forwarding
-function sshl { 
-    COMMAND="${@:2}"
-    ssh -L "${1}:localhost:${1}" "${COMMAND[@]}"
-}
-
-# Command line JSON prettifier
-alias prettify-json="python -mjson.tool"
-
-# Just because it's intuitive
-alias eject="diskutil unmount"
-
-alias chrome="open -a 'Google Chrome'"
-
+# ======================================================================================
+#                                            Vim 
+# ======================================================================================
 alias sp="vim -o"
 alias vsp="vim -O"
 
+# ======================================================================================
+#                                      Template-Filling
+# ======================================================================================
 # Handy convenience function for opening a meeting notes file from template
 function meeting() {
     if [[ "${#}" -lt 3 ]]; then
