@@ -1,6 +1,42 @@
 # Used for debugging slow .bashrc load times.. 
 echo "Started loading .bashrc..."
 _bashrc_start_time="$(gdate +%s%3N)"
+_last_perf_checkpoint="${_bashrc_start_time}"
+
+# Whether to print perf checkpoint information for debugging slow .bashrc loads
+_PRINT_PERF_CHECKPOINTS=false
+
+# This is used for debugging a slow .bashrc
+# To use, drop `run_perf_checkpoint "Some checkpoint name"` in the code
+function run_perf_checkpoint() {
+    if "${_PRINT_PERF_CHECKPOINTS}"; then
+        checkpoint_name="${1}"
+        _now="$(gdate +%s%3N)"
+        echo "Checkpoint '${checkpoint_name}' ($((_now - _last_perf_checkpoint))ms since last checkpoint)"
+        _last_perf_checkpoint="${_now}"
+    fi
+}
+    
+# ------------------------------------- Bash Completion -----------------------------------
+# # NOTE: This version of Bash completion, which adds completion to allll the commands, is very slow (~250ms)
+# function add_bash_completion() {
+#     # Add tab completion for many Bash commands
+#     run_perf_checkpoint "After 'brew --prefix' and before sourcing Bash completion"
+#     if which brew &> /dev/null && [ -r "${_brew_prefix}/etc/profile.d/bash_completion.sh" ]; then
+#             # Ensure existing Homebrew v1 completions continue to work
+#             export BASH_COMPLETION_COMPAT_DIR="${_brew_prefix}/etc/bash_completion.d";
+#             source "${_brew_prefix}/etc/profile.d/bash_completion.sh";
+#     elif [ -f /etc/bash_completion ]; then
+#             source /etc/bash_completion;
+#     fi;
+# }
+
+# I only really care about Git completion, so use that
+function add_bash_completion() {
+    # NOTE: this should be "source $(brew --prefix)/etc/...." but we hardcode the Homebrew prefix to avoid a slow subhsell call
+    source /usr/local/etc/bash_completion.d/git-completion.bash   
+}
+# ----------------------------------- End Bash Completion -----------------------------------
 
 export EDITOR="vim"
 
@@ -54,6 +90,9 @@ HISTIGNORE='ls:bg:fg:history'
 # Define an array that config blocks can append to if they want something on the path
 PATH_ADDITIONS=()
 
+
+run_perf_checkpoint "Before Pyenv"
+
 # ---- PyEnv -------------------------------------------------------------------------
 export PYENV_ROOT="$HOME/.pyenv"
 
@@ -63,6 +102,8 @@ eval "$(pyenv init - --no-rehash)"
 
 eval "$(pyenv virtualenv-init -)"
 PATH_ADDITIONS+=("$PYENV_ROOT/bin")
+
+run_perf_checkpoint "After Pyenv; before Jenv"
 
 # ---- Jenv --------------------------------------------------------------------------
 # Do rehash in background to speed up startup
@@ -74,6 +115,8 @@ function __jenv_set_java_home() {
     export JAVA_HOME="$HOME/.jenv/versions/$(jenv version | awk '{ print $1}')"
 }
 __jenv_set_java_home
+
+run_perf_checkpoint "After Jenv"
 
 # ------------ Golang ---------------------------------------------------------------
 export GOPATH="${HOME}/go"
@@ -351,16 +394,10 @@ PROMPT_COMMAND=__prompt_command
 # http://unix.stackexchange.com/questions/198723/change-color-of-input-text-not-output
 trap "echo -ne \"$(tput sgr0)\"" DEBUG
 
-# Add tab completion for many Bash commands
+run_perf_checkpoint "Before 'brew --prefix'"
 _brew_prefix="$(brew --prefix)"
-if which brew &> /dev/null && [ -r "${_brew_prefix}/etc/profile.d/bash_completion.sh" ]; then
-	# Ensure existing Homebrew v1 completions continue to work
-	export BASH_COMPLETION_COMPAT_DIR="${_brew_prefix}/etc/bash_completion.d";
-	source "${_brew_prefix}/etc/profile.d/bash_completion.sh";
-elif [ -f /etc/bash_completion ]; then
-	source /etc/bash_completion;
-fi;
-
+add_bash_completion
+run_perf_checkpoint "After sourcing Bash completion"
 
 # Now, add all the additions that the above code specified
 for PATH_TO_ADD in "${PATH_ADDITIONS[@]}"; do
@@ -373,22 +410,29 @@ done
 # e.g. bash_aliases depends on bash_completion
 # There may be a better way to do these sorts of Bash "dependencies"
 
+run_perf_checkpoint "Before Bash additions"
+
 # Custom bash additions
 if [ -f ~/.bash_additions ]; then
   source ~/.bash_additions
 fi
+
+run_perf_checkpoint "After Bash additions and before Bash aliases"
 
 # Alias definitions
 if [ -f ~/.bash_aliases ]; then
     source ~/.bash_aliases
 fi
 
+run_perf_checkpoint "After Bash aliases and before Bash local"
+
 # Machine-specific additions
 if [ -f ~/.bash_local ]; then
     source ~/.bash_local
 fi
 
-echo "Millis to load .bashrc: $(($(gdate +%s%3N) - _bashrc_start_time))"
+run_perf_checkpoint "Finished loading .bashrc"
+echo "$(($(gdate +%s%3N) - _bashrc_start_time))ms to load entire .bashrc"
 
 # Always ls whenever we create a new tab
 ls
