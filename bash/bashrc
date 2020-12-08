@@ -91,9 +91,15 @@ HISTIGNORE='ls:bg:fg:history'
 PATH_ADDITIONS=()
 
 
+# ---- NVM -------------------------------------------------------------------------
+# NOTE: I definitely don't want NVM activating on every single shell startup (costs about 150ms)
+# export NVM_DIR="${HOME}/.nvm"
+# [ -s "/usr/local/opt/nvm/nvm.sh" ] && . "/usr/local/opt/nvm/nvm.sh"  # This loads nvm
+# [ -s "/usr/local/opt/nvm/etc/bash_completion.d/nvm" ] && . "/usr/local/opt/nvm/etc/bash_completion.d/nvm"  # This loads nvm bash_completion
+
 
 # ---- PyEnv -------------------------------------------------------------------------
-# NOTE: I don't use Python often; if I start using it again I can re-enable this
+# NOTE: I don't use Python often and this costs about 150ms of startup time
 # run_perf_checkpoint "Before Pyenv"
 # export PYENV_ROOT="$HOME/.pyenv"
 # 
@@ -108,8 +114,10 @@ PATH_ADDITIONS=()
 
 # ---- Jenv --------------------------------------------------------------------------
 # Do rehash in background to speed up startup
+run_perf_checkpoint "Before activating jenv"
 eval "$(jenv init - --no-rehash)"
 (jenv rehash &) 2> /dev/null
+run_perf_checkpoint "After activating jenv"
 
 # Annoyingly, jenv doesn't set JAVA_HOME automatically so we have to do it manually
 function __jenv_set_java_home() {
@@ -117,7 +125,6 @@ function __jenv_set_java_home() {
 }
 __jenv_set_java_home
 
-run_perf_checkpoint "After Jenv"
 
 # ------------ Golang ---------------------------------------------------------------
 export GOPATH="${HOME}/go"
