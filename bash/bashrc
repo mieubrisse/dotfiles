@@ -21,7 +21,7 @@ function run_perf_checkpoint() {
 # # NOTE: This version of Bash completion, which adds completion to allll the commands, is very slow (~250ms)
 # function add_bash_completion() {
 #     # Add tab completion for many Bash commands
-#     run_perf_checkpoint "After 'brew --prefix' and before sourcing Bash completion"
+#     _brew_prefix="$(brew --prefix)"
 #     if which brew &> /dev/null && [ -r "${_brew_prefix}/etc/profile.d/bash_completion.sh" ]; then
 #             # Ensure existing Homebrew v1 completions continue to work
 #             export BASH_COMPLETION_COMPAT_DIR="${_brew_prefix}/etc/bash_completion.d";
@@ -119,11 +119,13 @@ eval "$(jenv init - --no-rehash)"
 (jenv rehash &) 2> /dev/null
 run_perf_checkpoint "After activating jenv"
 
+run_perf_checkpoint "Before setting JAVA_HOME through jenv"
 # Annoyingly, jenv doesn't set JAVA_HOME automatically so we have to do it manually
 function __jenv_set_java_home() {
     export JAVA_HOME="$HOME/.jenv/versions/$(jenv version | awk '{ print $1}')"
 }
 __jenv_set_java_home
+run_perf_checkpoint "After setting JAVA_HOME through jenv"
 
 
 # ------------ Golang ---------------------------------------------------------------
@@ -147,6 +149,7 @@ PATH_ADDITIONS+=("/usr/local/opt/go@1.13/bin")
 #     echo '\[\e['"${val}"';5;'"${color}"'m\]'
 # }
 
+run_perf_checkpoint "Before saving __render_working_dir function"
 # Renders the working directory, highlighting the current Git directory (if any)
 # $1 - Exit code of the last command
 # $2 - Color to use when the last command was successful
@@ -199,7 +202,9 @@ function __render_working_dir() {
     # For speed, instead of echo'ing this for subshell capture later, we'll just set a variable
     retval="${return_str//${HOME}/~}"
 }
+run_perf_checkpoint "After saving __render_working_dir function"
 
+run_perf_checkpoint "Before saving __render_git_prompt function"
 # Generates a string displaying Git information that can be added to the prompt 
 # retval - String to add to prompt
 function __render_git_prompt() {
@@ -310,7 +315,9 @@ function __render_git_prompt() {
     # For speed, instead of echo'ing this for subshell capture later, we'll just set a variable
     retval="${returnstr}"
 }
+run_perf_checkpoint "After saving __render_git_prompt function"
 
+run_perf_checkpoint "Before saving __prompt_command function"
 # On changing directory, ls and git fetch in background if git directory
 # NOTE: This prompt is starting to get a bit unwieldy (0.035s outside a Git directory, 0.05-0.1s inside) so maybe need to scale back
 # As a comparison, before we added the "highlight Git directory in the path", the prompt took about 0.04s inside a Git directory and
@@ -397,15 +404,15 @@ function __prompt_command() {
     __new_wd=$PWD
 }
 PROMPT_COMMAND=__prompt_command
+run_perf_checkpoint "After saving __prompt_command function"
 
 # This is a hacky and awesome thing that allows me to change my command color text but not the output. See:
 # http://unix.stackexchange.com/questions/198723/change-color-of-input-text-not-output
 trap "echo -ne \"$(tput sgr0)\"" DEBUG
 
-run_perf_checkpoint "Before 'brew --prefix'"
-_brew_prefix="$(brew --prefix)"
+run_perf_checkpoint "Before adding Bash completion"
 add_bash_completion
-run_perf_checkpoint "After sourcing Bash completion"
+run_perf_checkpoint "After adding Bash completion"
 
 # Now, add all the additions that the above code specified
 for PATH_TO_ADD in "${PATH_ADDITIONS[@]}"; do
