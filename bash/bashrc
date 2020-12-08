@@ -91,19 +91,20 @@ HISTIGNORE='ls:bg:fg:history'
 PATH_ADDITIONS=()
 
 
-run_perf_checkpoint "Before Pyenv"
 
 # ---- PyEnv -------------------------------------------------------------------------
-export PYENV_ROOT="$HOME/.pyenv"
-
-# Do rehash in background to speed up startup
-eval "$(pyenv init - --no-rehash)"
-(pyenv rehash &) 2> /dev/null
-
-eval "$(pyenv virtualenv-init -)"
-PATH_ADDITIONS+=("$PYENV_ROOT/bin")
-
-run_perf_checkpoint "After Pyenv; before Jenv"
+# NOTE: I don't use Python often; if I start using it again I can re-enable this
+# run_perf_checkpoint "Before Pyenv"
+# export PYENV_ROOT="$HOME/.pyenv"
+# 
+# # Do rehash in background to speed up startup
+# eval "$(pyenv init - --no-rehash)"
+# (pyenv rehash &) 2> /dev/null
+# 
+# eval "$(pyenv virtualenv-init -)"
+# PATH_ADDITIONS+=("$PYENV_ROOT/bin")
+# 
+# run_perf_checkpoint "After Pyenv; before Jenv"
 
 # ---- Jenv --------------------------------------------------------------------------
 # Do rehash in background to speed up startup
