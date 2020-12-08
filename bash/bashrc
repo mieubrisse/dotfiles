@@ -389,3 +389,6 @@ if [ -f ~/.bash_local ]; then
 fi
 
 echo "Millis to load .bashrc: $(($(gdate +%s%3N) - _bashrc_start_time))"
+
+# Always ls whenever we create a new tab
+ls
