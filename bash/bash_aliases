@@ -150,6 +150,7 @@ function fuzzy_ls() {
     ARGS="${@}"
     cif "*${ARGS// /*}*" -maxdepth 1
 }
+alias ff="fuzzy_find"
 
 # Allows user to choose which lines of piped input to pass through
 alias filter="~/.bash_utils/filter.py"
@@ -158,8 +159,7 @@ alias filter="~/.bash_utils/filter.py"
 function _pipe_to_filter() {
     "${@}" | filter
 }
-alias fl="_pipe_to_filter fuzzy_ls"
-alias ff="_pipe_to_filter fuzzy_find"
+alias fff="_pipe_to_filter fuzzy_find"
 
 # Fuzzy searches for the given file, then filters output and feeds it into the given command
 # $1 - Command to feed chosen file to
