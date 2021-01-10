@@ -451,7 +451,7 @@ check_dirpath="${gdrive_dirpath}/checklists-and-templates"
 alias check="_smart_open_dir_file fuzzy_find '${check_dirpath}'"
 
 gref_dirpath="${gdrive_dirpath}/general-reference"
-alias gref="_smart_open_dir_file fuzzy_ls '${gref_dirpath}'"
+alias gref="_smart_open_dir_file fuzzy_find '${gref_dirpath}'"
 
 receipts_dirpath="${gdrive_dirpath}/receipts-records-confirmations"
 alias receipts="_smart_open_dir_file fuzzy_find '${receipts_dirpath}'"
