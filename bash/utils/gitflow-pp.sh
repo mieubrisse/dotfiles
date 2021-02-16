@@ -17,11 +17,11 @@
 # 
 # To run through a normal release flow inside a repo:
 # 
-#  1. Run `_gitflow release start` (a version will be suggested if you have an X.Y.Z-dev tag on your develop branch)
+#  1. Run `gfl release start` (a version will be suggested if you have an X.Y.Z-dev tag on your develop branch)
 #  2. Make any necessary changes on your release branch (e.g. updating your CHANGELOG.md)
-#  3. Run `_gitflow release finish` (a version will be suggested if you're on the release branch)
+#  3. Run `gfl release finish` (a version will be suggested if you're on the release branch)
 #  4. Verify that all merges happened as expected and your `git log --graph` looks sane
-#  5. Run `_gitflow push` to push all branches and tags up to the remote
+#  5. Run `gfl push` to push all branches and tags up to the remote
 #
 # ====================================================================================================================
 
