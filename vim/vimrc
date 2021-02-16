@@ -26,6 +26,7 @@ Plugin 'nanotech/jellybeans.vim'
 
 Plugin 'vim-scripts/groovy.vim'
 Plugin 'tfnico/vim-gradle'
+Plugin 'uarun/vim-protobuf'
 " Plugin 'kien/ctrlp.vim'
 " Plugin 'scrooloose/nerdtree'
 Plugin 'tomtom/tcomment_vim'
@@ -353,10 +354,10 @@ vnoremap j gj
 vnoremap k gk
 
 " Map <S-j> and <S-k> to PageDown and PageUp respectively
-nnoremap <S-J> <C-F>zz
-nnoremap <S-K> <C-B>zz
-vnoremap <S-J> <C-F>zz
-vnoremap <S-K> <C-B>zz
+nnoremap J 25jzz
+nnoremap K 25kzz
+vnoremap J 25jzz
+vnoremap K 25kzz
 
 " Easily flip paste mode toggle
 nnoremap <Leader>p :set invpaste paste?<CR>
