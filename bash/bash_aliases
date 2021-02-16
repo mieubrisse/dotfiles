@@ -151,6 +151,7 @@ function fuzzy_ls() {
     cif "*${ARGS// /*}*" -maxdepth 1
 }
 alias ff="fuzzy_find"
+alias fl="fuzzy_ls"
 
 # Allows user to choose which lines of piped input to pass through
 alias filter="~/.bash_utils/filter.py"
@@ -473,6 +474,25 @@ clear_containers() {
     docker rm $(docker stop $(docker ps -a --quiet --format="{{.ID}}"))
 }
 alias cclear=clear_containers
+function volume_exec() {
+    volume_name="${1}"
+    shift 1
+
+    volume_path="$(docker volume inspect "${volume_name}" | grep 'Mountpoint' | awk '{print $2}' | sed 's/"\(.*\)",/\1/g')"
+    full_volume_path="/docker${volume_path}"
+
+    num_args="${#}"
+    penultimate_arg_index="$((num_args - 1))"
+
+    path_inside_volume="${1}"
+    if [ "${num_args}" -gt 1 ]; then
+        set -- "${@:1:${penultimate_arg_index}}" "${full_volume_path}/${@:${num_args}}"
+    else
+        set -- "${full_volume_path}/${@:${num_args}}"
+    fi
+
+    docker run --rm -it -v /:/docker alpine:edge "${@}"
+}
 
 clear_old_images() {
     docker image rm $(docker images --quiet --filter "dangling=true")
@@ -485,7 +505,7 @@ alias iclear=clear_old_images
 #                                  Custom-Built Apps
 # ======================================================================================
 # Wealthdraft aliases
-alias wealthdraft="java -jar ${HOME}/app/wealthdraft/*.jar"
+alias run-wealthdraft="java -jar ${HOME}/app/wealthdraft/*.jar"
 
 # cli-journal aliases
 alias journal="java -jar ${HOME}/app/cli-journal/*.jar"
