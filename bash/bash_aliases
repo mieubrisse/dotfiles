@@ -118,7 +118,7 @@ function smart_open {
     fi
 
     # TODO Handle multiple input files
-    filetype="$(file "${filepath}" | awk '{print $NF}')"
+    filetype="$(file "${filepath}" | sed 's/, with very long lines//g' | awk '{print $NF}')"
     return_code=0
     case "${filetype}" in
         text)
@@ -144,10 +144,12 @@ alias so="smart_open"
 alias cif="find . ! -name '*.class' -and -iname" # Case-insensitive find
 function fuzzy_find() { 
     ARGS="${@}"
+    ARGS="${ARGS%%/}"  # Remove trailing slash so we can find directories by name
     cif "*${ARGS// /*}*"
 }
 function fuzzy_ls() {
     ARGS="${@}"
+    ARGS="${ARGS%%/}"  # Remove trailing slash so we can find directories by name
     cif "*${ARGS// /*}*" -maxdepth 1
 }
 alias ff="fuzzy_find"
