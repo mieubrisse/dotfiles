@@ -354,10 +354,10 @@ vnoremap j gj
 vnoremap k gk
 
 " Map <S-j> and <S-k> to PageDown and PageUp respectively
-nnoremap J 25jzz
-nnoremap K 25kzz
-vnoremap J 25jzz
-vnoremap K 25kzz
+nnoremap J 20jzz
+nnoremap K 20kzz
+vnoremap J 20jzz
+vnoremap K 20kzz
 
 " Easily flip paste mode toggle
 nnoremap <Leader>p :set invpaste paste?<CR>
