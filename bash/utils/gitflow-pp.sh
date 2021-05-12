@@ -11,7 +11,7 @@
 #  - provides '_gitflow push' for pushing tags and master/develop branch to remote (in that order, for Jenkins)
 # 
 # Installation:
-#  1. Run `brew install git-flow`
+#  1. Install the Gitflow tooling: https://github.com/nvie/gitflow/wiki/Installation
 #  2. Clone this repo somewhere on your machine
 #  3. In your .bashrc, add `alias gfl="bash /path/to/this/gitflow-pp.sh"`
 # 
