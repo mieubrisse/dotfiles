@@ -92,10 +92,12 @@ PATH_ADDITIONS=()
 
 
 # ---- NVM -------------------------------------------------------------------------
-# NOTE: I definitely don't want NVM activating on every single shell startup (costs about 150ms)
-# export NVM_DIR="${HOME}/.nvm"
-# [ -s "/usr/local/opt/nvm/nvm.sh" ] && . "/usr/local/opt/nvm/nvm.sh"  # This loads nvm
-# [ -s "/usr/local/opt/nvm/etc/bash_completion.d/nvm" ] && . "/usr/local/opt/nvm/etc/bash_completion.d/nvm"  # This loads nvm bash_completion
+# NOTE: NVM is slow as hell (500ms!!) to load normally, so we speed it up by adding a default Node to the path
+# See: https://www.ioannispoulakas.com/2020/02/22/how-to-speed-up-shell-load-while-using-nvm/
+export NVM_DIR="${HOME}/.nvm"
+export PATH="${NVM_DIR}/versions/node/v14.17.1/bin:$PATH"
+[ -s "/usr/local/opt/nvm/nvm.sh" ] && . "/usr/local/opt/nvm/nvm.sh" --no-use    # The --no-use check skips a very slow, costly check
+[ -s "/usr/local/opt/nvm/etc/bash_completion.d/nvm" ] && . "/usr/local/opt/nvm/etc/bash_completion.d/nvm"  # Loads nvm Bash completion
 
 
 # ---- PyEnv -------------------------------------------------------------------------
