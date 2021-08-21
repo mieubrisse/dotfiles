@@ -13,6 +13,9 @@
 # Pyenv
 .python-version
 
+# Node
+node_modules
+
 # Stupid Mac...
 .DS_Store
 
