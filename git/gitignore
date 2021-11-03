@@ -15,6 +15,7 @@
 
 # Node
 node_modules
+yarn-error.log
 
 # Stupid Mac...
 .DS_Store
@@ -56,3 +57,6 @@ doc/tags
 
 .gradle
 build
+
+# Don't put big artifacts in Git by accident
+*.tgz
