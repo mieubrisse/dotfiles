@@ -91,6 +91,28 @@ alias eject="diskutil unmount"
 
 alias chrome="open -a 'Google Chrome'"
 
+function replace() {
+    needle="${1:-}"
+    replacement="${2:-}"
+    filename_regex="${3:-}"
+
+    if [ -z "${needle}" ]; then
+        echo "Error: First argument must be a string to find" >&2
+        return 1
+    fi
+    if [ -z "${replacement}" ]; then
+        echo "Error: Second argument must be a string to replace found patterns with" >&2
+        return 1
+    fi
+    if [ -z "${filename_regex}" ]; then
+        echo "Error: Third argument must be a 'find'-compatible regex of filenames to match" >&2
+        return 1
+    fi
+
+    local DELETE_SUFFIX=".deleteme"
+    sed -i"${DELETE_SUFFIX}" "s?${needle}?${replacement}?g" $(find . -name "${filename_regex}")
+    find . -name "*${DELETE_SUFFIX}" -delete
+}
 
 # ======================================================================================
 #                                   Searching & Navigating
@@ -504,6 +526,18 @@ alias iclear=clear_old_images
 
 
 # ======================================================================================
+#                                      Kubernetes
+# ======================================================================================
+alias k8s="kubectl"
+
+
+# ======================================================================================
+#                                      Kurtosis
+# ======================================================================================
+alias kt="kurtosis"
+
+
+# ======================================================================================
 #                                  Custom-Built Apps
 # ======================================================================================
 # Wealthdraft aliases
@@ -514,3 +548,5 @@ alias journal="java -jar ${HOME}/app/cli-journal/*.jar"
 alias jnew="journal new"
 
 alias todays-goals="journal new todays-goals.md todays-goals"
+
+
