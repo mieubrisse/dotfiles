@@ -5,7 +5,6 @@
 [color]
 	ui = auto
 [core]
-	excludesfile = ~/.gitignore
         pager = less -S
 	editor = /usr/local/bin/vim
 [push]

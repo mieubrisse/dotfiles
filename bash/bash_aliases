@@ -380,9 +380,6 @@ function gpsh() {	# Push the branch upstream if it doesn't exist; otherwise just
 alias gprune-local-dry-run="git branch --merged | grep -v '\*' | grep -v 'master' | grep -v 'develop'"
 alias gprune-local="git branch --merged | grep -v '\*' | grep -v 'master' | grep -v 'develop' | xargs -n 1 git branch -d"
 
-alias gfl="bash ~/.bash_utils/gitflow-pp.sh"
-
-
 
 # ======================================================================================
 #                                      Gradle
