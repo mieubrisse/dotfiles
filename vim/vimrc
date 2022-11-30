@@ -1,3 +1,11 @@
+" ----------- Vim Polyglot --------------------------
+" vim-polyglot wants you to set this BEFORE loading the plugin
+" Because our plugins get loaded below, we set this here
+" Disable markdown polyglot on markdown and csv, because it's weird
+let g:polyglot_disabled = ['markdown']
+let g:csv_no_conceal = 1
+" ----------- Vim Polyglot --------------------------
+
 " ------- VUNDLE ------
 " Set 'nocompatible' to ward off unexpected things that your distro might
 " have made, as well as sanely reset options when re-sourcing .vimrc
@@ -11,7 +19,9 @@ filetype off
 " ------------------------------ Vim-Plug Plugins --------------------------
 call plug#begin("~/.vim-plug")
 
-" NOTE: Remember to call :PlugInstall after adding a plugin here!!!!
+" NOTES:
+" - :PlugInstall is required after adding a plugin here!!!!
+" - :PlugClean will remove old plugins
 
 " Seems like jellybeans has gone out of development
 Plug 'nanotech/jellybeans.vim'
@@ -57,7 +67,6 @@ Plug 'vim-airline/vim-airline'
 " Plug 'gregsexton/gitv'
 " Plug 'kablamo/vim-git-log'
 Plug 'maxbrunsfeld/vim-yankstack'
-
 
 " All Plug calls must be executed before this
 call plug#end()
@@ -139,12 +148,6 @@ call plug#end()
 filetype plugin indent on
 " ---------------------
 
-" ----------- Vim Polyglot --------------------------
-" Disable markdown polyglot on markdown and csv, because it's weird
-let g:polyglot_disabled = ['markdown']
-let g:csv_no_conceal = 1
-" ----------- Vim Polyglot --------------------------
-
 " ------------ Plasticboy Markdown Plugin -------------------
 " This isn't quite as smooth as I'd like; get rid of it
 let g:vim_markdown_auto_insert_bullets = 0
@@ -166,6 +169,12 @@ nmap <C-n> <Plug>yankstack_substitute_newer_paste
 autocmd FileType *.yml setlocal noautoindent
 autocmd FileType *.yaml setlocal noautoindent
 " ----------------------------
+
+" ------ Starlark ------------
+" The only Vim Starlark plugin uses weird coloring, so we set the syntax to
+" Python
+autocmd FileType *.star setlocal filetype=python
+" -----------------------------
 
 " ------ Jedi Vim -------
 let g:jedi#documentation_command = ""
