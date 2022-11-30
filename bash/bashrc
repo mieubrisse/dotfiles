@@ -95,24 +95,25 @@ PATH_ADDITIONS=()
 # NOTE: NVM is slow as hell (500ms!!) to load normally, so we speed it up by adding a default Node to the path
 # See: https://www.ioannispoulakas.com/2020/02/22/how-to-speed-up-shell-load-while-using-nvm/
 export NVM_DIR="${HOME}/.nvm"
-export PATH="${NVM_DIR}/versions/node/v14.17.1/bin:$PATH"
-[ -s "/usr/local/opt/nvm/nvm.sh" ] && . "/usr/local/opt/nvm/nvm.sh" --no-use    # The --no-use check skips a very slow, costly check
-[ -s "/usr/local/opt/nvm/etc/bash_completion.d/nvm" ] && . "/usr/local/opt/nvm/etc/bash_completion.d/nvm"  # Loads nvm Bash completion
+export PATH="${NVM_DIR}/versions/node/v16.13.0/bin:$PATH"
+BREW_PREFIX="$(brew --prefix)"
+[ -s "${BREW_PREFIX}/opt/nvm/nvm.sh" ] && . "${BREW_PREFIX}/opt/nvm/nvm.sh" --no-use    # The --no-use check skips a very slow, costly check
+[ -s "${BREW_PREFIX}/opt/nvm/etc/bash_completion.d/nvm" ] && . "${BREW_PREFIX}/opt/nvm/etc/bash_completion.d/nvm"  # Loads nvm Bash completion
 
 
 # ---- PyEnv -------------------------------------------------------------------------
 # NOTE: I don't use Python often and this costs about 150ms of startup time
-# run_perf_checkpoint "Before Pyenv"
-# export PYENV_ROOT="$HOME/.pyenv"
-# 
-# # Do rehash in background to speed up startup
-# eval "$(pyenv init - --no-rehash)"
-# (pyenv rehash &) 2> /dev/null
-# 
-# eval "$(pyenv virtualenv-init -)"
-# PATH_ADDITIONS+=("$PYENV_ROOT/bin")
-# 
-# run_perf_checkpoint "After Pyenv; before Jenv"
+run_perf_checkpoint "Before Pyenv"
+export PYENV_ROOT="$HOME/.pyenv"
+
+# Do rehash in background to speed up startup
+eval "$(pyenv init - --no-rehash)"
+(pyenv rehash &) 2> /dev/null
+
+eval "$(pyenv virtualenv-init -)"
+PATH_ADDITIONS+=("$PYENV_ROOT/bin")
+
+run_perf_checkpoint "After Pyenv; before Jenv"
 
 # ---- Jenv --------------------------------------------------------------------------
 # Do rehash in background to speed up startup
@@ -453,3 +454,6 @@ echo "$(($(gdate +%s%3N) - _bashrc_start_time))ms to load entire .bashrc"
 
 # Always ls whenever we create a new tab
 ls
+
+# added by Snowflake SnowSQL installer v1.2
+export PATH=/Applications/SnowSQL.app/Contents/MacOS:$PATH

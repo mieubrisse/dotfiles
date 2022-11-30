@@ -542,7 +542,9 @@ alias run-wealthdraft="java -jar ${HOME}/app/wealthdraft/*.jar"
 
 # cli-journal aliases
 alias journal="java -jar ${HOME}/app/cli-journal/*.jar"
+alias j="journal"
 alias jnew="journal new"
+alias jfind="journal find"
 
 alias todays-goals="journal new todays-goals.md todays-goals"
 
