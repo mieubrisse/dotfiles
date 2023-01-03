@@ -22,8 +22,6 @@ symlink_arr=(
 	"${script_dirpath}/vim,${HOME}/.vim"
 	"${script_dirpath}/bash/utils,${HOME}/.bash_utils"
 	"${script_dirpath}/bash/editrc,${HOME}/.editrc"
-	"${script_dirpath}/bash/bash_completion,${HOME}/.bash_completion"
-	"${script_dirpath}/bash/bash-completions,${HOME}/.bash-completions"
 	"${script_dirpath}/tmux/tmux.conf,${HOME}/.tmux.conf"
 	"${HOME}/.bashrc,${HOME}/.bash_profile"
 	"${HOME}/.vim/vimrc,${HOME}/.vimrc"
