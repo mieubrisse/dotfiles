@@ -16,26 +16,19 @@ function run_perf_checkpoint() {
         _last_perf_checkpoint="${_now}"
     fi
 }
+
+
+# NOTE: This is used pretty much everywhere; grab it once and reuse so we're not doing a bunch of subshells
+BREW_PREFIX="$(brew --prefix)"
     
 # ------------------------------------- Bash Completion -----------------------------------
-# # NOTE: This version of Bash completion, which adds completion to allll the commands, is very slow (~250ms)
-# function add_bash_completion() {
-#     # Add tab completion for many Bash commands
-#     _brew_prefix="$(brew --prefix)"
-#     if which brew &> /dev/null && [ -r "${_brew_prefix}/etc/profile.d/bash_completion.sh" ]; then
-#             # Ensure existing Homebrew v1 completions continue to work
-#             export BASH_COMPLETION_COMPAT_DIR="${_brew_prefix}/etc/bash_completion.d";
-#             source "${_brew_prefix}/etc/profile.d/bash_completion.sh";
-#     elif [ -f /etc/bash_completion ]; then
-#             source /etc/bash_completion;
-#     fi;
-# }
-
-# I only really care about Git completion, so use that
-function add_bash_completion() {
-    # NOTE: this should be "source $(brew --prefix)/etc/...." but we hardcode the Homebrew prefix to avoid a slow subhsell call
-    source /usr/local/etc/bash_completion.d/git-completion.bash   
+function add_third_party_completions() {
+    # There is a Homebrew package called bash-completions@v2, that knows how to install
+    # completion files for any *other* Homebrew package I install
+    # This line allows bash-completions@v2 to do its magic
+    [[ -r "/usr/local/etc/profile.d/bash_completion.sh" ]] && source "/usr/local/etc/profile.d/bash_completion.sh"
 }
+
 # ----------------------------------- End Bash Completion -----------------------------------
 
 export EDITOR="vim"
@@ -92,65 +85,65 @@ PATH_ADDITIONS=()
 
 
 # ---- NVM -------------------------------------------------------------------------
-# NOTE: NVM is slow as hell (500ms!!) to load normally, so we speed it up by adding a default Node to the path
-# See: https://www.ioannispoulakas.com/2020/02/22/how-to-speed-up-shell-load-while-using-nvm/
-export NVM_DIR="${HOME}/.nvm"
-export PATH="${NVM_DIR}/versions/node/v16.13.0/bin:$PATH"
-BREW_PREFIX="$(brew --prefix)"
-[ -s "${BREW_PREFIX}/opt/nvm/nvm.sh" ] && . "${BREW_PREFIX}/opt/nvm/nvm.sh" --no-use    # The --no-use check skips a very slow, costly check
-[ -s "${BREW_PREFIX}/opt/nvm/etc/bash_completion.d/nvm" ] && . "${BREW_PREFIX}/opt/nvm/etc/bash_completion.d/nvm"  # Loads nvm Bash completion
+function activate_nvm() {
+    # NOTE: NVM is slow as hell (500ms!!) to load normally, so we speed it up by adding a default Node to the path
+    # See: https://www.ioannispoulakas.com/2020/02/22/how-to-speed-up-shell-load-while-using-nvm/
+    export NVM_DIR="${HOME}/.nvm"
+    export PATH="${NVM_DIR}/versions/node/v16.13.0/bin:$PATH"
+    [ -s "${BREW_PREFIX}/opt/nvm/nvm.sh" ] && . "${BREW_PREFIX}/opt/nvm/nvm.sh" --no-use    # The --no-use check skips a very slow, costly check
+    [ -s "${BREW_PREFIX}/opt/nvm/etc/bash_completion.d/nvm" ] && . "${BREW_PREFIX}/opt/nvm/etc/bash_completion.d/nvm"  # Loads nvm Bash completion
+}
 
+run_perf_checkpoint "Before activating nvm"
+activate_nvm
+run_perf_checkpoint "After activating nvm"
 
 # ---- PyEnv -------------------------------------------------------------------------
-# NOTE: I don't use Python often and this costs about 150ms of startup time
-run_perf_checkpoint "Before Pyenv"
-export PYENV_ROOT="$HOME/.pyenv"
+function activate_pyenv() {
+    export PYENV_ROOT="$HOME/.pyenv"
 
-# Do rehash in background to speed up startup
-eval "$(pyenv init - --no-rehash)"
-(pyenv rehash &) 2> /dev/null
+    # Do rehash in background to speed up startup
+    eval "$(pyenv init - --no-rehash)"
+    (pyenv rehash &) 2> /dev/null
 
-eval "$(pyenv virtualenv-init -)"
-PATH_ADDITIONS+=("$PYENV_ROOT/bin")
+    eval "$(pyenv virtualenv-init -)"
+    PATH_ADDITIONS+=("$PYENV_ROOT/bin")
+}
 
-run_perf_checkpoint "After Pyenv; before Jenv"
+# NOTE: I don't use Python often and this costs about 175ms of startup time
+# run_perf_checkpoint "Before activating pyenv"
+# activate_pyenv
+# run_perf_checkpoint "After activating pyenv"
 
 # ---- Jenv --------------------------------------------------------------------------
-# Do rehash in background to speed up startup
-run_perf_checkpoint "Before activating jenv"
-eval "$(jenv init - --no-rehash)"
-(jenv rehash &) 2> /dev/null
-run_perf_checkpoint "After activating jenv"
+function activate_jenv_and_java_home() {
 
-run_perf_checkpoint "Before setting JAVA_HOME through jenv"
-# Annoyingly, jenv doesn't set JAVA_HOME automatically so we have to do it manually
-function __jenv_set_java_home() {
-    export JAVA_HOME="$HOME/.jenv/versions/$(jenv version | awk '{ print $1}')"
+    # NOTE: As of 2022-12-01 I've deactivated jenv because it adds
+    # Do rehash in background to speed up startup
+    run_perf_checkpoint "Before activating jenv"
+    eval "$(jenv init - --no-rehash)"
+    (jenv rehash &) 2> /dev/null
+    run_perf_checkpoint "After activating jenv"
+
+    run_perf_checkpoint "Before setting JAVA_HOME through jenv"
+    # Annoyingly, jenv doesn't set JAVA_HOME automatically so we have to do it manually
+    function __jenv_set_java_home() {
+        export JAVA_HOME="$HOME/.jenv/versions/$(jenv version | awk '{ print $1}')"
+    }
+    __jenv_set_java_home
+    run_perf_checkpoint "After setting JAVA_HOME through jenv"
 }
-__jenv_set_java_home
-run_perf_checkpoint "After setting JAVA_HOME through jenv"
 
+# Deactivated because I'm not currently using Java and this costs ~250ms of startup time
+# run_perf_checkpoint "Before activating jenv & setting JAVA_HOME"
+# activate_jenv_and_java_home
+# run_perf_checkpoint "After activating jenv & setting JAVA_HOME"
 
 # ------------ Golang ---------------------------------------------------------------
 export GOPATH="${HOME}/go"
 PATH_ADDITIONS+=("/usr/local/opt/go@1.13/bin")
 
 # ----------- Bash Prompt -----------------------------------------------------------
-
-# # Helper function to get foreground and background colors
-# # NOTE: Unused because it slows down the prompt considerably
-# function __get_color() {
-#     local place="${1}"
-#     local color="${2}"
-#
-#     if [ "${place}" == "fore" ]; then
-#         local val="38"
-#     else
-#         local val="48"
-#     fi
-#
-#     echo '\[\e['"${val}"';5;'"${color}"'m\]'
-# }
 
 run_perf_checkpoint "Before saving __render_working_dir function"
 # Renders the working directory, highlighting the current Git directory (if any)
@@ -413,9 +406,9 @@ run_perf_checkpoint "After saving __prompt_command function"
 # http://unix.stackexchange.com/questions/198723/change-color-of-input-text-not-output
 trap "echo -ne \"$(tput sgr0)\"" DEBUG
 
-run_perf_checkpoint "Before adding Bash completion"
-add_bash_completion
-run_perf_checkpoint "After adding Bash completion"
+run_perf_checkpoint "Before adding third-party Bash completions"
+add_third_party_completions
+run_perf_checkpoint "After adding third-party Bash completions"
 
 # Now, add all the additions that the above code specified
 for PATH_TO_ADD in "${PATH_ADDITIONS[@]}"; do

@@ -74,9 +74,6 @@ alias   vims="vim -S ${VIM_SESSION}"
 # Jobs should show PID by default
 alias   jobs="jobs -l"
 
-# Don't want to make srm too easy to use!
-# alias srm="srm -i"
-
 # Easy SSH port forwarding
 function sshl { 
     COMMAND="${@:2}"
@@ -350,7 +347,7 @@ alias gco="git checkout"
 alias ga="git add"
 
 # We hijack Git's autocomplete here so we get autocompletion on our custom aliases
-# This relies on the bash-completion Homebrew package
+# This relies on the bash-completion Homebrew package being loaded before this runs
 __git_complete gco _git_checkout
 __git_complete gb _git_branch
 
