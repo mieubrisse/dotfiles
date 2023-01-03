@@ -25,8 +25,8 @@ symlink_arr=(
 	"${script_dirpath}/tmux/tmux.conf,${HOME}/.tmux.conf"
 	"${HOME}/.bashrc,${HOME}/.bash_profile"
 	"${HOME}/.vim/vimrc,${HOME}/.vimrc"
-        "${script_dirpath}/ipython/ipython_config.py,${ipython_dirpath}/ipython_config.py"
-        "${script_dirpath}/keybindings/DefaultKeyBinding.dict,${keybindings_dirpath}/DefaultKeyBinding.dict"
+  "${script_dirpath}/ipython/ipython_config.py,${ipython_dirpath}/ipython_config.py"
+  "${script_dirpath}/keybindings/DefaultKeyBinding.dict,${keybindings_dirpath}/DefaultKeyBinding.dict"
 	"${script_dirpath}/intellij-idea/ideavimrc,${HOME}/.ideavimrc"
 )
 
