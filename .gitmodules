@@ -1,3 +1,0 @@
-[submodule "bash/bash-completions/git-flow-completion"]
-	path = bash/bash-completions/git-flow-completion
-	url = git@github.com:petervanderdoes/git-flow-completion.git
