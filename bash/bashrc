@@ -1,3 +1,13 @@
+# vvvvvvvvvvvvvvvv KEEP THIS FIRST vvvvvvvvvvvvvvvvvvvvvvvvv
+# NOTE: This is used pretty much everywhere; grab it once and reuse so we're not doing a bunch of subshells
+if [ -d "/opt/homebrew" ]; then
+    BREW_PREFIX="/opt/homebrew"
+else
+    BREW_PREFIX="/usr/local"
+fi
+export PATH="${BREW_PREFIX}/bin:${PATH}"
+# ^^^^^^^^^^^^^^^^ KEEP THIS FIRST ^^^^^^^^^^^^^^^^^^^^^^^^^
+
 # Used for debugging slow .bashrc load times.. 
 echo "Started loading .bashrc..."
 _bashrc_start_time="$(gdate +%s%3N)"
@@ -16,14 +26,6 @@ function run_perf_checkpoint() {
         _last_perf_checkpoint="${_now}"
     fi
 }
-
-# NOTE: This is used pretty much everywhere; grab it once and reuse so we're not doing a bunch of subshells
-if [ -d "/opt/homebrew" ]; then
-    BREW_PREFIX="/opt/homebrew"
-else
-    BREW_PREFIX="/usr/local"
-fi
-export PATH="${BREW_PREFIX}/bin:${PATH}"
     
 # ------------------------------------- Bash Completion -----------------------------------
 function add_third_party_completions() {
