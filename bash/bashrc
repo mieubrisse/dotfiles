@@ -17,9 +17,13 @@ function run_perf_checkpoint() {
     fi
 }
 
-
 # NOTE: This is used pretty much everywhere; grab it once and reuse so we're not doing a bunch of subshells
-BREW_PREFIX="$(brew --prefix)"
+if [ -d "/opt/homebrew" ]; then
+    BREW_PREFIX="/opt/homebrew"
+else
+    BREW_PREFIX="/usr/local"
+fi
+export PATH="${BREW_PREFIX}/bin:${PATH}"
     
 # ------------------------------------- Bash Completion -----------------------------------
 function add_third_party_completions() {
