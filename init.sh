@@ -1,8 +1,5 @@
 # Little script to initialize all my dotfiles and things on a new box
 
-
-
-
 set -euo pipefail
 script_dirpath="$(cd "$(dirname "${0}")" && pwd)"
 
@@ -35,6 +32,3 @@ for link_def in "${symlink_arr[@]}"; do
 	link_filepath="$(echo "${link_def}" | cut -d',' -f2)"
 	ln -sfn "${source_filepath}" "${link_filepath}"
 done
-
-# Save less keybindings
-lesskey "${script_dirpath}/less/lesskey"
