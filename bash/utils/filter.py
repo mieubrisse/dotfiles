@@ -1,10 +1,10 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 
 import sys
 
 dev_tty = open("/dev/tty", "w")
 def print_msg(msg):
-    print >> dev_tty, msg
+    print(msg, file=dev_tty)
 
 def validate_choices(choice_str, input_lines):
     """Validates the user's string of choices, returning the choices object if successful or raising a RuntimeError if not"""
@@ -88,9 +88,9 @@ else:
             for index in range(index_set[0], index_set[1] + 1):
                 results.append(input_lines[index])
         else:
-            print "Ignoring invalid index set: " + str(index_set)
+            print("Ignoring invalid index set: " + str(index_set))
 
 for result in results:
-    print result
+    print(result)
 
 dev_tty.close()
