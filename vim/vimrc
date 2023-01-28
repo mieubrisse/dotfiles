@@ -73,11 +73,6 @@ call plug#end()
 " ---------------------------- End Vim-Plug Plugins ------------------------
 
 
-
-
-
-
-
 " " set the runtime path to include Vundle and initialize
 " set rtp+=~/.vim/vundle/Vundle.vim
 " call vundle#begin('~/.vundle')
@@ -201,7 +196,10 @@ nnoremap <Leader>ha :GitGutterStageHunk<CR>
 
 " ------ Color Scheme ------
 colorscheme jellybeans
-let g:jellybeans_background_color_256 = "000000"
+" let g:jellybeans_background_color_256 = "000000"
+let g:jellybeans_overrides = {
+\    'background': { 'guibg': '000000' },
+\}
 " --------------------
 
 " Allow editing Mac crontab with Vim
@@ -553,9 +551,6 @@ function! s:RunShellCommand(cmdline)
 endfunction
 
 nnoremap <Leader>gl :Shell git log --graph --abbrev-commit --decorate --date=relative --format=format:'\%h - (\%ar) \%s [\%an]\%d' --all<CR>
-
-" PARs are just ZIPs
-au BufReadCmd *.par call zip#Browse(expand("<amatch>"))
 
 " ================== Reminders (not actually code) =========================
 " Merge two blocks of lines: https://stackoverflow.com/questions/10760326/merge-multiple-lines-two-blocks-in-vim
