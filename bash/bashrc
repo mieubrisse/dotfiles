@@ -32,7 +32,7 @@ function add_third_party_completions() {
     # There is a Homebrew package called bash-completions@v2, that knows how to install
     # completion files for any *other* Homebrew package I install
     # This line allows bash-completions@v2 to do its magic
-    [[ -r "/usr/local/etc/profile.d/bash_completion.sh" ]] && source "/usr/local/etc/profile.d/bash_completion.sh"
+    [[ -r "${BREW_PREFIX}/etc/profile.d/bash_completion.sh" ]] && source "${BREW_PREFIX}/etc/profile.d/bash_completion.sh"
 }
 
 # ----------------------------------- End Bash Completion -----------------------------------

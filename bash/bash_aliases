@@ -175,7 +175,7 @@ alias ff="fuzzy_find"
 alias fl="fuzzy_ls"
 
 # Allows user to choose which lines of piped input to pass through
-alias filter="~/.bash_utils/filter.py"
+alias filter="${HOME}/.bash_utils/filter.py"
 
 # Pipes the output of the given command to filter
 function _pipe_to_filter() {
@@ -542,10 +542,10 @@ alias python="python3"
 #                                  Custom-Built Apps
 # ======================================================================================
 # Wealthdraft aliases
-alias run-wealthdraft="java -jar ${HOME}/app/wealthdraft/*.jar"
+alias run-wealthdraft="activate_jenv_and_java_home && java -jar ${HOME}/app/wealthdraft/*.jar"
 
 # cli-journal aliases
-alias journal="java -jar ${HOME}/app/cli-journal/*.jar"
+alias journal="activate_jenv_and_java_home && java -jar ${HOME}/app/cli-journal/*.jar"
 alias j="journal"
 alias jnew="journal new"
 alias jfind="journal find"
