@@ -9,13 +9,13 @@ def print_msg(msg):
 def validate_choices(choice_str, input_lines):
     """Validates the user's string of choices, returning the choices object if successful or raising a RuntimeError if not"""
     indices = []
-    choices = map(str.strip, choice_str.split(","))
+    choices = list(map(str.strip, choice_str.split(",")))
     for choice in choices:
         # Ignore empty selections
         if not choice:
             continue
 
-        choice_range = map(str.strip, choice.split("-"))
+        choice_range = list(map(str.strip, choice.split("-")))
 
         # Single choice case
         if len(choice_range) == 1:
@@ -72,7 +72,7 @@ else:
     while not selection_valid:
         print_msg("Use which? ")
         try :
-            choice_str = raw_input()
+            choice_str = input()
         except KeyboardInterrupt:
             sys.exit(1)
         try: 
