@@ -82,6 +82,9 @@ filetype plugin indent on
 " This isn't quite as smooth as I'd like; get rid of it
 let g:vim_markdown_auto_insert_bullets = 0
 let g:vim_markdown_new_list_item_indent = 0
+let g:vim_markdown_folding_disabled = 1
+let g:vim_markdown_conceal = 0
+let g:vim_markdown_strikethrough = 1
 " -------------------------------------------------------------
 
 " -------------- Yankstack ----------------------
