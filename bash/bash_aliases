@@ -539,6 +539,28 @@ alias python="python3"
 
 
 # ======================================================================================
+#                                  ffmpeg + gifsicle
+# ======================================================================================
+function gifinate() {
+    if [ "${#}" -ne "2" ]; then
+        echo "Usage: gifinate input_filepath output_size" >&2
+        echo "Note that size will be in WxH format" >&2
+        return 1
+    fi
+    input_filepath="${1}"
+    output_size="${2}"
+
+    if [ "${input_filepath%%.mov}" = "${input_filepath}" ]; then
+        echo "Error: Input filepath must be a .mov" >&2
+        return 1
+    fi
+
+    ffmpeg -i "${input_filepath}" -s "${output_size}" -pix_fmt rgb24 -r 15 -f gif - | gifsicle --optimize=3 --delay=3 > "${input_filepath}.gif"
+}
+
+
+
+# ======================================================================================
 #                                  Custom-Built Apps
 # ======================================================================================
 # Wealthdraft aliases
