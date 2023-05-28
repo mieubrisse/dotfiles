@@ -564,7 +564,24 @@ function gifinate() {
 #                                  Custom-Built Apps
 # ======================================================================================
 # Wealthdraft aliases
-alias run-wealthdraft="activate_jenv_and_java_home && java -jar ${HOME}/app/wealthdraft/*.jar"
+function wealthdraft() {
+    binary_dirpath="/wealthdraft"
+    configs_dirpath="/config"
+    docker run --rm \
+        -v "${gref_dirpath}/finance/wealthdraft-personal-configs:${configs_dirpath}" \
+        -v "${HOME}/app/wealthdraft:${binary_dirpath}" \
+        amazoncorretto:11-alpine \
+        sh -c "java -jar ${binary_dirpath}/*.jar \
+            --gov-constants ${configs_dirpath}/gov-constants.yml \
+            --scenarios ${configs_dirpath}/scenarios.yml \
+            --assets ${configs_dirpath}/assets.yml \
+            --assets-history ${configs_dirpath}/assets-history.yml \
+            --projections ${configs_dirpath}/projections.yml \
+            --asset-allocations ${configs_dirpath}/asset-allocations.yml \
+            --filters ${configs_dirpath}/filters.yml \
+            --all"
+
+}
 
 # cli-journal aliases
 alias journal="activate_jenv_and_java_home && java -jar ${HOME}/app/cli-journal/*.jar"
