@@ -277,61 +277,6 @@ alias sp="vim -o"
 alias vsp="vim -O"
 
 # ======================================================================================
-#                                      Template-Filling
-# ======================================================================================
-# Handy convenience function for opening a meeting notes file from template
-function meeting() {
-    if [[ "${#}" -lt 3 ]]; then
-        echo -e "Usage:\tmeeting <note destination dir> <template filepath> <note name fragment> [<note name fragment>...]"
-        return 1
-    fi
-    dest_dirpath="${1}"
-    shift
-    template_filepath="${1}"
-    shift
-    args_str="${@}"
-    filename="${args_str// /-}"
-    filepath="${dest_dirpath}/$(today)_${filename%%.md}.md"
-    if ! [[ -f "${filepath}" ]]; then
-        vim -c "read ${template_filepath}" "${filepath}"
-    else
-        vim "${filepath}"
-    fi
-}
-
-# Convenience method for starting a new set of meeting notes for a project
-# NOTE: This relies on the meeting_notes_template_filepath variable being set
-function easy_meeting() {
-    if [ -z "${meeting_notes_template_filepath}" ]; then
-        echo "meeting_notes_template_filepath variable is unset; make sure it gets set in ~/.bash_local" >&2
-        return 1
-    fi
-
-    project="${1}"
-    meeting_notes_dirpath="${HOME}/Documents/${project,,}/meeting-notes"
-    if ! [ -d "${meeting_notes_dirpath}" ]; then
-        mkdir "${meeting_notes_dirpath}"
-    fi
-    meeting "${meeting_notes_dirpath}" "${meeting_notes_template_filepath}" "${@}"
-}
-
-# Convenience method for converting meeting notes to Markdown
-function easy_chrome() {
-    project="${1}"
-    shift 1
-    meeting_notes_dirpath="${HOME}/Documents/${project,,}/meeting-notes"
-    (
-        cd "${meeting_notes_dirpath}"
-
-        # Interestingly, piping to 'readarray' doesn't work, but this does
-        readarray -t matching_files < <(fuzzy_ls "${@}" | filter)
-        if ! [ ${#matching_files[@]} -eq 0 ]; then
-            chrome "${matching_files[@]}"
-        fi
-    )
-}
-
-# ======================================================================================
 #                                      Git
 # ======================================================================================
 # Viewing changes
@@ -528,9 +473,12 @@ alias k8s="kubectl"
 # ======================================================================================
 #                                      Kurtosis
 # ======================================================================================
-alias kt="kurtosis"
 # Alias 'kt' to 'kurtosis'
+alias kt="kurtosis"
 complete -F __start_kurtosis kt
+
+# Alias 'kt' to the dev version of Kurtosis
+alias ktdev="${code_dirpath}/kurtosis-monorepo/cli/cli/scripts/launch-cli.sh"
 
 # ======================================================================================
 #                                      Python
@@ -583,9 +531,12 @@ function wealthdraft() {
 
 }
 
+
+# ======================================================================================
+#                                    CLI Journal
+# ======================================================================================
 # cli-journal aliases
 alias journal="activate_jenv_and_java_home && java -jar ${HOME}/app/cli-journal/*.jar"
-alias j="journal"
 alias jnew="journal new"
 alias jfind="journal find"
 

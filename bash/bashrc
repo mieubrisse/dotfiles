@@ -148,6 +148,7 @@ function activate_jenv_and_java_home() {
 # ------------ Golang ---------------------------------------------------------------
 export GOPATH="${HOME}/go"
 PATH_ADDITIONS+=("/usr/local/opt/go@1.13/bin")
+PATH_ADDITIONS+=("${GOPATH}/bin")
 
 # ----------- Docker -----------------------------------------------------------
 PATH_ADDITIONS+=("${HOME}/.docker/bin")
@@ -414,15 +415,15 @@ run_perf_checkpoint "After saving __prompt_command function"
 # http://unix.stackexchange.com/questions/198723/change-color-of-input-text-not-output
 trap "echo -ne \"$(tput sgr0)\"" DEBUG
 
-run_perf_checkpoint "Before adding third-party Bash completions"
-add_third_party_completions
-run_perf_checkpoint "After adding third-party Bash completions"
-
 # Now, add all the additions that the above code specified
 for PATH_TO_ADD in "${PATH_ADDITIONS[@]}"; do
     PATH="$PATH:$PATH_TO_ADD"
 done
 
+# It's important that we add the third-party Bash completions *after* the PATH additions, so any PATH additions get picked up
+run_perf_checkpoint "Before adding third-party Bash completions"
+add_third_party_completions
+run_perf_checkpoint "After adding third-party Bash completions"
 
 
 # NOTE: All these custom scripts should be sourced AFTER everything else, so they can depend on things
