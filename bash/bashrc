@@ -158,6 +158,9 @@ PATH_ADDITIONS+=("${HOME}/.docker/bin")
 
 # ----------- fzf -------------------------------------------------------------
 export FZF_DEFAULT_COMMAND='fd --strip-cwd-prefix --hidden --follow .'
+# TODO use the --color tab to style
+export FZF_DEFAULT_OPTS="--style=minimal --preview='case \$(file -b --mime-type {} ) in text/*) bat --color=always {};; inode/directory) ls {};; image/*) tiv -w 100 -h 100 {};; esac'"
+# export FZF_DEFAULT_OPTS="--style=minimal --preview='file -b --mime-type {}'"
 [ -f ~/.fzf.bash ] && source ~/.fzf.bash
 
 # ----------- Bash Prompt -----------------------------------------------------------

@@ -273,23 +273,58 @@ function smallest {
 
 
 # ======================================================================================
-#                                            fzf
+#                                      fzf "cmd-k"
 # ======================================================================================
-alias fzf='fzf --preview="bat --color=always {}"'
-alias fv='fzf -m --preview="bat --color=always {}" --bind "enter:become(vim -O {+})"'
-# alias fcd='FZF_DEFAULT_COMMAND="'${FZF_DEFAULT_COMMAND' 
+function cmdk() {
+    fd_base_cmd="fd --follow --hidden --color=always"
 
-function fcd() {
-    pwd_exclude=""
-    if [[ "${PWD}" == *"${HOME}"* ]]; then
-        pwd_exclude="-not -path '${PWD}*'"
+    # Exclude the Applications and Library directories, because they're a faff
+    cmdk_fzf_default_command="{ ${fd_base_cmd} --strip-cwd-prefix . & ${fd_base_cmd} ${pwd_exclude} -E 'Applications' -E 'Library' . '${HOME}'; }"
+
+    # EXPLANATION:
+    # -m allows multiple selections
+    # --ansi tells fzf to parse the ANSI color codes that we're generating with fd
+    # --scheme=path optimizes the fzf algorithm for path-based items
+    IFS=$'\n' output_paths=( $(FZF_DEFAULT_COMMAND="${cmdk_fzf_default_command}" fzf -m --scheme=path --ansi) )
+    if [ "${?}" -ne 0 ]; then
+        return
     fi
 
+    dirs=()
+    text_files=()
+    open_targets=()
+    for output in "${output_paths[@]}"; do
+        case $(file -b --mime-type "${output}") in
+            text/*)
+                text_files+=("${output}")
+                ;;
+            inode/directory)
+                dirs+=("${output}")
+                ;;
+            application/pdf)
+                open_targets+=("${output}")
+                ;;
+            image/*)
+                open_targets+=("${output}")
+                ;;
+        esac
+    done
 
-    # If we're in a subdirectory of the home directory, show all other paths 
-    fcd_fzf_default_command="{ find . -type d -not -path '*/\.git/*' & find '${HOME}' -type d ${pwd_exclude} -not -path '${HOME}/Applications*' -not -path '${HOME}/Library*' -not -path '*/\.git/*'; }"
-    echo "${fcd_fzf_default_command}"
-    FZF_DEFAULT_COMMAND="${fcd_fzf_default_command}" fzf --preview="fd --exact-depth 1 . {}" --bind 'enter:become(cd {})'
+    num_dirs="${#dirs[@]}"
+    if [ "${num_dirs}" -eq 1 ]; then
+        cd "${dirs[0]}"
+    elif [ "${num_dirs}" -gt 1 ]; then
+        echo "Error: Cannot cd to more than one directory at a time" >&2
+        return 1
+    fi
+
+    for open_target_filepath in "${open_targets[@]}"; do
+        open "${open_target_filepath}"
+    done
+
+    if [ "${#text_files[@]}" -gt 0 ]; then
+        vim -O "${text_files[@]}"
+    fi
 }
 
 
@@ -312,17 +347,19 @@ alias gl="git log --graph --abbrev-commit --decorate --date=relative --format=fo
 
 # Making changes
 alias gb="git branch"
-alias gco="git checkout"
+function gco {
+    if [ "${#}" -eq 0 ]; then
+        git branch -la --format="%(refname:short)" | sed 's,^origin/,,' | sort -u | fzf --bind='enter:become(git checkout {})'
+    else
+        git checkout "${@}"
+    fi
+}
 alias ga="git add"
 
 # We hijack Git's autocomplete here so we get autocompletion on our custom aliases
 # This relies on the bash-completion Homebrew package being loaded before this runs
 __git_complete gco _git_checkout
 __git_complete gb _git_branch
-
-# TODO It's getting to the point where I need a better system for dealing with fuzzy find/ls results..
-alias gaff="use_command_filter_results 'git add' fuzzy_find"
-alias gafl="use_command_filter_results 'git add' fuzzy_ls"
 
 alias empty-commit="git commit --allow-empty -m $1"
 alias gcm="git commit"
