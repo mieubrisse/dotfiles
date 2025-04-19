@@ -276,16 +276,62 @@ function smallest {
 #                                      fzf "cmd-k"
 # ======================================================================================
 function cmdk() {
-    fd_base_cmd="fd --follow --hidden --color=always"
+    # Set up the prompt for reading files
+    read -r -d '' _cmdk_fzf_default_cmd <<-'EOF'
+fd_base_cmd="fd --follow --hidden --color=always"
 
-    # Exclude the Applications and Library directories, because they're a faff
-    cmdk_fzf_default_command="{ ${fd_base_cmd} --strip-cwd-prefix . & ${fd_base_cmd} ${pwd_exclude} -E 'Applications' -E 'Library' . '${HOME}'; }"
+echo '/'      # Shortcut for getting to root
+echo 'HOME'   # Shortcut for getting to HOME
+
+# Show one level of files at root for convenience
+${fd_base_cmd} --exact-depth 1 . / 
+
+# Show one level of files in /tmp for convenience
+${fd_base_cmd} --min-depth 0 --max-depth 1 . /tmp
+
+if [ "${PWD}" = "${HOME}" ]; then
+    # NOTE: We do this last in case it takes a long time
+    # Skip the Applications and Library in the home directory; they contain a bunch of garbage
+    ${fd_base_cmd} --strip-cwd-prefix -E 'Applications' -E 'Library' .
+else
+    # Skip the Applications and Library in the home directory; they contain a bunch of garbage
+    ${fd_base_cmd} -E 'Applications' -E 'Library' . "${HOME}"
+
+    # NOTE: We do this last in case it takes a long time
+    ${fd_base_cmd} --strip-cwd-prefix .
+fi
+EOF
+
+    
+    read -r -d '' _cmdk_fzf_preview_cmd <<-'EOF'
+ls_base_cmd='ls --color=always'
+
+case {} in
+    HOME)
+        ${ls_base_cmd} "${HOME}"
+        ;;
+    *)
+        case $(file -b --mime-type {} ) in 
+            text/*) 
+                bat --color=always {}
+                ;; 
+            inode/directory) 
+                ${ls_base_cmd} {}
+                ;; 
+            image/*) 
+                tiv -w 100 -h 100 {}
+                ;; 
+        esac
+        ;;
+esac
+EOF
+    
 
     # EXPLANATION:
     # -m allows multiple selections
     # --ansi tells fzf to parse the ANSI color codes that we're generating with fd
     # --scheme=path optimizes the fzf algorithm for path-based items
-    IFS=$'\n' output_paths=( $(FZF_DEFAULT_COMMAND="${cmdk_fzf_default_command}" fzf -m --scheme=path --ansi) )
+    IFS=$'\n' output_paths=( $(FZF_DEFAULT_COMMAND="${_cmdk_fzf_default_cmd}" fzf -m --scheme=path --ansi --preview="${_cmdk_fzf_preview_cmd}") )
     if [ "${?}" -ne 0 ]; then
         return
     fi
@@ -294,18 +340,25 @@ function cmdk() {
     text_files=()
     open_targets=()
     for output in "${output_paths[@]}"; do
-        case $(file -b --mime-type "${output}") in
-            text/*)
-                text_files+=("${output}")
+        case "${output}" in
+            HOME)
+                dirs+=("${HOME}")
                 ;;
-            inode/directory)
-                dirs+=("${output}")
-                ;;
-            application/pdf)
-                open_targets+=("${output}")
-                ;;
-            image/*)
-                open_targets+=("${output}")
+            *)
+                case $(file -b --mime-type "${output}") in
+                    text/*)
+                        text_files+=("${output}")
+                        ;;
+                    inode/directory)
+                        dirs+=("${output}")
+                        ;;
+                    application/pdf)
+                        open_targets+=("${output}")
+                        ;;
+                    image/*)
+                        open_targets+=("${output}")
+                        ;;
+                esac
                 ;;
         esac
     done
