@@ -270,6 +270,30 @@ function smallest {
     _ls_results '-Sr' 'tail' "$NUM_RESULTS"
 }
 
+
+
+# ======================================================================================
+#                                            fzf
+# ======================================================================================
+alias fzf='fzf --preview="bat --color=always {}"'
+alias fv='fzf -m --preview="bat --color=always {}" --bind "enter:become(vim -O {+})"'
+# alias fcd='FZF_DEFAULT_COMMAND="'${FZF_DEFAULT_COMMAND' 
+
+function fcd() {
+    pwd_exclude=""
+    if [[ "${PWD}" == *"${HOME}"* ]]; then
+        pwd_exclude="- ${PWD}"
+    fi
+
+
+    # If we're in a subdirectory of the home directory, show all other paths 
+    fcd_fzf_default_command="{ fd --strip-cwd-prefix --follow --type d . & fd --follow --type d \"${pwd_exclude}\" -E \"${HOME}/Applications*\" -E \"${HOME}/Library*\" . \"${HOME}\"; }"
+    echo "${fcd_fzf_default_command}"
+    FZF_DEFAULT_COMMAND="${fcd_fzf_default_command}" fzf --preview="fd --exact-depth 1 . {}" --bind 'enter:become(cd {})'
+}
+
+
+
 # ======================================================================================
 #                                            Vim 
 # ======================================================================================
@@ -430,6 +454,8 @@ alias self_improvement="_smart_open_dir_file fuzzy_find '${gref_dirpath}/self-im
 
 
 
+
+
 # ======================================================================================
 #                                      Docker
 # ======================================================================================
@@ -543,3 +569,7 @@ alias jfind="journal find"
 alias todays-goals="journal new todays-goals.md todays-goals"
 
 
+# ======================================================================================
+#                                    Health Journal
+# ======================================================================================
+alias health="vim ${gdrive_dirpath}/general-reference/health/health-journal.md"
