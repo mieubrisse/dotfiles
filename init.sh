@@ -25,6 +25,7 @@ symlink_arr=(
   "${script_dirpath}/ipython/ipython_config.py,${ipython_dirpath}/ipython_config.py"
   "${script_dirpath}/keybindings/DefaultKeyBinding.dict,${keybindings_dirpath}/DefaultKeyBinding.dict"
 	"${script_dirpath}/intellij-idea/ideavimrc,${HOME}/.ideavimrc"
+  "${script_dirpath}/fd/fdignore,${HOME}/.fdignore"
 )
 
 for link_def in "${symlink_arr[@]}"; do

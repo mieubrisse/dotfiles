@@ -282,12 +282,12 @@ alias fv='fzf -m --preview="bat --color=always {}" --bind "enter:become(vim -O {
 function fcd() {
     pwd_exclude=""
     if [[ "${PWD}" == *"${HOME}"* ]]; then
-        pwd_exclude="- ${PWD}"
+        pwd_exclude="-not -path '${PWD}*'"
     fi
 
 
     # If we're in a subdirectory of the home directory, show all other paths 
-    fcd_fzf_default_command="{ fd --strip-cwd-prefix --follow --type d . & fd --follow --type d \"${pwd_exclude}\" -E \"${HOME}/Applications*\" -E \"${HOME}/Library*\" . \"${HOME}\"; }"
+    fcd_fzf_default_command="{ find . -type d -not -path '*/\.git/*' & find '${HOME}' -type d ${pwd_exclude} -not -path '${HOME}/Applications*' -not -path '${HOME}/Library*' -not -path '*/\.git/*'; }"
     echo "${fcd_fzf_default_command}"
     FZF_DEFAULT_COMMAND="${fcd_fzf_default_command}" fzf --preview="fd --exact-depth 1 . {}" --bind 'enter:become(cd {})'
 }
