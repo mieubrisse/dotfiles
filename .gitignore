@@ -2,3 +2,8 @@
 backup-*-wrapper.sh
 
 vim/.netrwhist
+
+# To symlink the Karabiner config file we have to symlink the entire 'karabiner' directory into this repo due to:
+#  https://karabiner-elements.pqrs.org/docs/manual/misc/configuration-file-path/
+# But Karabiner wants to put automatic backups in the karabiner directory which don't belong in the repo, so ignoring them
+karabiner/automatic_backups

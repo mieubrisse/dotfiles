@@ -3,11 +3,16 @@
 set -euo pipefail
 script_dirpath="$(cd "$(dirname "${0}")" && pwd)"
 
-# Create various needed directories
 ipython_dirpath="${HOME}/.ipython/profile_default"
-mkdir -p "${ipython_dirpath}"
-keybindings_dirpath="${HOME}/Library/KeyBindings"
-mkdir -p "${keybindings_dirpath}"
+karabiner_config_dirpath="${HOME}/.config/karabiner"
+
+# Create various needed directories
+dirpaths_to_create=(
+    "${ipython_dirpath}"
+)
+for dirpath in "${dirpaths_to_create[@]}"; do
+    mkdir -p "${dirpath}"
+done
 
 # Big array of symlinks to create in the form (source,link to create)
 symlink_arr=(
@@ -23,9 +28,10 @@ symlink_arr=(
 	"${HOME}/.bashrc,${HOME}/.bash_profile"
 	"${HOME}/.vim/vimrc,${HOME}/.vimrc"
   "${script_dirpath}/ipython/ipython_config.py,${ipython_dirpath}/ipython_config.py"
-  "${script_dirpath}/keybindings/DefaultKeyBinding.dict,${keybindings_dirpath}/DefaultKeyBinding.dict"
 	"${script_dirpath}/intellij-idea/ideavimrc,${HOME}/.ideavimrc"
   "${script_dirpath}/fd/fdignore,${HOME}/.fdignore"
+  "${HOME}/Google Drive/My Drive,${HOME}/gdrive" # Google Drive
+  "${script_dirpath}/karabiner,${karabiner_config_dirpath}" # Karabiner config
 )
 
 for link_def in "${symlink_arr[@]}"; do
