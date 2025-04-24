@@ -278,28 +278,32 @@ function smallest {
 function cmdk() {
     # Set up the prompt for reading files
     read -r -d '' _cmdk_fzf_default_cmd <<-'EOF'
+
 fd_base_cmd="fd --follow --hidden --color=always"
 
-echo '/'      # Shortcut for getting to root
-echo 'HOME'   # Shortcut for getting to HOME
-
-# Show one level of files at root for convenience
-${fd_base_cmd} --exact-depth 1 . / 
-
-# Show one level of files in /tmp for convenience
-${fd_base_cmd} --min-depth 0 --max-depth 1 . /tmp
+# !!! NOTE !!!! order is important!!
+# fzf gives higher weight to lines earlier in the input, so we put most relevant things first
 
 if [ "${PWD}" = "${HOME}" ]; then
-    # NOTE: We do this last in case it takes a long time
     # Skip the Applications and Library in the home directory; they contain a bunch of garbage
     ${fd_base_cmd} --strip-cwd-prefix -E 'Applications' -E 'Library' .
 else
-    # Skip the Applications and Library in the home directory; they contain a bunch of garbage
-    ${fd_base_cmd} -E 'Applications' -E 'Library' . "${HOME}"
-
-    # NOTE: We do this last in case it takes a long time
     ${fd_base_cmd} --strip-cwd-prefix .
 fi
+
+echo 'HOME'   # HOME
+echo '..'     # Parent directory
+
+# If we're not in the home directory, include stuff in the home directory
+if [ "${PWD}" != "${HOME}" ]; then
+    # Skip the Applications and Library in the home directory; they contain a bunch of garbage
+    ${fd_base_cmd} -E 'Applications' -E 'Library' . "${HOME}"
+fi
+
+echo '/tmp/'  # /tmp
+
+echo '/'      # Root
+${fd_base_cmd} --exact-depth 1 . / # Show one level of root
 EOF
 
     
@@ -330,8 +334,16 @@ EOF
     # EXPLANATION:
     # -m allows multiple selections
     # --ansi tells fzf to parse the ANSI color codes that we're generating with fd
-    # --scheme=path optimizes the fzf algorithm for path-based items
-    IFS=$'\n' output_paths=( $(FZF_DEFAULT_COMMAND="${_cmdk_fzf_default_cmd}" fzf -m --scheme=path --ansi --preview="${_cmdk_fzf_preview_cmd}") )
+    # --scheme=path optimizes for path-based input
+    # --with-nth allows us to use the custom sorting mechanism
+    IFS=$'\n' output_paths=( 
+        $(FZF_DEFAULT_COMMAND="${_cmdk_fzf_default_cmd}" fzf \
+            -m \
+            --ansi \
+            --scheme=path \
+            --preview="${_cmdk_fzf_preview_cmd}" \
+        )
+    )
     if [ "${?}" -ne 0 ]; then
         return
     fi
