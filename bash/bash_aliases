@@ -367,6 +367,9 @@ EOF
                     application/pdf)
                         open_targets+=("${output}")
                         ;;
+                    application/vnd.openxmlformats-officedocument.wordprocessingml.document)
+                        open_targets+=("${output}")
+                        ;;
                     image/*)
                         open_targets+=("${output}")
                         ;;

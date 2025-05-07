@@ -491,6 +491,12 @@ endfunction
 
 nnoremap <Leader>gl :Shell git log --graph --abbrev-commit --decorate --date=relative --format=format:'\%h - (\%ar) \%s [\%an]\%d' --all<CR>
 
+
+
+" I often accidentally type :W instead of :w and Vim yells at me. This stops
+" that annoying behaviour
+command! W w
+
 " ================== Reminders (not actually code) =========================
 " Merge two blocks of lines: https://stackoverflow.com/questions/10760326/merge-multiple-lines-two-blocks-in-vim
 " 1) Select first block of lines you want to merge and yank them to a register
