@@ -86,7 +86,13 @@ alias prettify-json="python -mjson.tool"
 # Just because it's intuitive
 alias eject="diskutil unmount"
 
+# Adds a `chrome` command that I use for rendering Markdown files, with completion
 alias chrome="open -a 'Google Chrome'"
+_chrome_completion() {
+  local cur="${COMP_WORDS[COMP_CWORD]}"
+  COMPREPLY=( $(compgen -f -- "$cur" | grep -E '\.md$') )
+}
+complete -F _chrome_completion chrome
 
 function replace() {
     needle="${1:-}"
@@ -355,6 +361,9 @@ EOF
         case "${output}" in
             HOME)
                 dirs+=("${HOME}")
+                ;;
+            *.key)   # Mac's keynote presentation files are 'application/zip' MIME type, so we have to identify by extension
+                open_targets+=("${output}")
                 ;;
             *)
                 case $(file -b --mime-type "${output}") in
