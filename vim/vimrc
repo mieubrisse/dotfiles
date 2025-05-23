@@ -368,6 +368,17 @@ nnoremap $ g$
 vnoremap j gj
 vnoremap k gk
 
+" Keep cursor centered, except when at the top of the file
+set scrolloff=999
+autocmd CursorMoved * call AdjustScrolloff()
+function! AdjustScrolloff()
+  if line('.') <= winheight(0) / 2
+    setlocal scrolloff=0
+  else
+    setlocal scrolloff=999
+  endif
+endfunction
+
 " Map <S-j> and <S-k> to PageDown and PageUp respectively
 nnoremap J 20jzz
 nnoremap K 20kzz
@@ -417,17 +428,6 @@ function! DoPrettifyXML()
 endfunction
 command! PrettifyXML call DoPrettifyXML()
 
-" Better buffer nav
-nnoremap <Leader>b :b#<CR>
-
-" Better tab navigation
-nnoremap <Leader>tt :tabnew<CR>
-nnoremap <Leader>tn :tabn<CR>
-nnoremap <Leader>tp :tabp<CR>
-nnoremap <Leader>te :tabedit <CR>
-nnoremap <Leader>tq :tabclose<CR>
-nnoremap <Leader>tx :tabclose<CR>
-
 " Easy way to echo a line for Bash debugging
 nnoremap <Leader>db V:s/"/\\"/g<CR>^iecho "<ESC>$a"<ESC>
 
@@ -447,6 +447,11 @@ nnoremap <Leader>x :wq<CR>
 nnoremap <Leader>X :wa<CR>:qa<CR>
 
 nnoremap <Leader>E :set autoread \| checktime<CR>
+
+" Allows easy rendering of Markdown files in Chrome when combined with this
+" Markdown viewing Chrome extension:
+"  https://chromewebstore.google.com/detail/markdown-viewer/ckkdlimhmcjmikdlpkmbgfkaikojcbjk
+nnoremap <Leader>c :! open -a 'Google Chrome' "%"<CR><CR>
 
 " -------------------- Markdown Editing Commands --------------------
 " Very useful shortcut to make a Markdown headers out of given line
