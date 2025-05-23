@@ -11,10 +11,13 @@ alias crontab="VIM_CRONTAB=true crontab"
 
 # ls conveniences
 function ls() { # Display an empty line for empty directories
-    if [[ $(/bin/ls "${@}" | wc -l) -eq 0 ]]; then
+    # local ls_cmd=/bin/ls
+    local ls_cmd="lsd --icon never"
+
+    if [[ $(${ls_cmd} "${@}" | wc -l) -eq 0 ]]; then
         echo 
     else
-        /bin/ls -G "$@"
+        ${ls_cmd} -G "$@"
     fi
 }
 alias ll='ls -Alhtr'
@@ -89,10 +92,26 @@ alias eject="diskutil unmount"
 # Adds a `chrome` command that I use for rendering Markdown files, with completion
 alias chrome="open -a 'Google Chrome'"
 _chrome_completion() {
-  local cur="${COMP_WORDS[COMP_CWORD]}"
-  COMPREPLY=( $(compgen -f -- "$cur" | grep -E '\.md$') )
+    local cur="${COMP_WORDS[COMP_CWORD]}"
+    local IFS=$'\n'
+    local matches=()
+
+    for entry in $(compgen -f -- "$cur"); do
+        if [ -d "$entry" ]; then
+            matches+=("${entry}/")
+        elif echo "$entry" | grep -q '\.md$'; then
+            matches+=("$entry")
+        fi
+    done
+
+    COMPREPLY=("${matches[@]}")
+
+    # Prevent trailing space after completion so directories can be drilled into
+    if [ ${#COMPREPLY[@]} -eq 1 ] && echo "${COMPREPLY[0]}" | grep -q '/$'; then
+        compopt -o nospace
+    fi
 }
-complete -F _chrome_completion chrome
+complete -F _chrome_completion chrome # Allow completion of Markdown files, and directories that might have Markdown files
 
 function replace() {
     needle="${1:-}"
@@ -424,14 +443,36 @@ alias gl="git log --graph --abbrev-commit --decorate --date=relative --format=fo
 
 # Making changes
 alias gb="git branch"
-function gco {
+function gco {   # Use fzf to select branches if no arguments are provided
     if [ "${#}" -eq 0 ]; then
         git branch -la --format="%(refname:short)" | sed 's,^origin/,,' | sort -u | fzf --bind='enter:become(git checkout {})'
     else
         git checkout "${@}"
     fi
 }
-alias ga="git add"
+
+ga() {   # Use fzf to select files if no arguments are provided
+    if [ $# -eq 0 ]; then
+        local candidates
+        candidates=$(git status --porcelain | grep '^[ MARC][ MD]' | cut -c4-)
+
+        if [ -z "$candidates" ]; then
+            echo "Working directory clean; no files to add."
+            return
+        fi
+
+        local selection
+        selection=$(echo -e "[ALL]\n$candidates" | fzf -m --prompt="Add files: ")
+
+        if [[ "$selection" == *"[ALL]"* ]]; then
+            echo "$candidates" | xargs git add --
+        elif [ -n "$selection" ]; then
+            echo "$selection" | xargs git add --
+        fi
+    else
+        git add "$@"
+    fi
+}
 
 # We hijack Git's autocomplete here so we get autocompletion on our custom aliases
 # This relies on the bash-completion Homebrew package being loaded before this runs
@@ -442,7 +483,28 @@ alias empty-commit="git commit --allow-empty -m $1"
 alias gcm="git commit"
 alias gcmm="git commit -m $1"
 alias gg="git commit -am $1"
-alias grs="git reset"
+grs() {    # Use fzf to select files to reset if no arguments are provided
+    if [ $# -eq 0 ]; then
+        local candidates
+        candidates=$(git status --porcelain | grep '^[ MARC][ MD]' | cut -c4-)
+
+        if [ -z "$candidates" ]; then
+            echo "Working directory clean; no files to unstage."
+            return
+        fi
+
+        local selection
+        selection=$(echo -e "[ALL]\n$candidates" | fzf -m --prompt="Reset files: ")
+
+        if [[ "$selection" == *"[ALL]"* ]]; then
+            echo "$candidates" | xargs git reset --
+        elif [ -n "$selection" ]; then
+            echo "$selection" | xargs git reset --
+        fi
+    else
+        git reset "$@"
+    fi
+}
 alias grs1="git reset --soft HEAD^"
 
 # Dealing with remotes
