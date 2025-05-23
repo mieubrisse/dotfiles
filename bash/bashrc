@@ -157,7 +157,8 @@ PATH_ADDITIONS+=("${GOPATH}/bin")
 PATH_ADDITIONS+=("${HOME}/.docker/bin")
 
 # ----------- fzf -------------------------------------------------------------
-export FZF_DEFAULT_COMMAND='fd --strip-cwd-prefix --hidden --follow .'
+export FZF_CTRL_T_COMMAND="sh ${HOME}/app/cmdk/list-files.sh"
+export FZF_CTRL_T_OPTS="-m --ansi --scheme=path --preview='sh ${HOME}/app/cmdk/preview.sh {}'"
 
 # TODO use the --color tab to style
 export FZF_DEFAULT_OPTS="--style=minimal"

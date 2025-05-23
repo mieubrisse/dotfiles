@@ -401,11 +401,11 @@ EOF
     # --scheme=path optimizes for path-based input
     # --with-nth allows us to use the custom sorting mechanism
     IFS=$'\n' output_paths=( 
-        $(FZF_DEFAULT_COMMAND="${_cmdk_fzf_default_cmd}" fzf \
+        $(FZF_DEFAULT_COMMAND="sh ${HOME}/app/cmdk/list-files.sh" fzf \
             -m \
             --ansi \
             --scheme=path \
-            --preview="${_cmdk_fzf_preview_cmd}" \
+            --preview="sh ${HOME}/app/cmdk/preview.sh {}"
         )
     )
     if [ "${?}" -ne 0 ]; then
