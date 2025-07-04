@@ -1,12 +1,14 @@
-" ----------- Vim Polyglot --------------------------
+" ========================================================================
+"                                 Plugins 
+" ========================================================================
+" ---------------------------- vim-polyglot ------------------------------
 " vim-polyglot wants you to set this BEFORE loading the plugin
 " Because our plugins get loaded below, we set this here
-" Disable markdown polyglot on markdown and csv, because it's weird
-let g:polyglot_disabled = ['markdown']
+" We disable markdown polyglot on markdown and csv, because it's weird
+let g:polyglot_disabled = ['markdown', 'csv']
 let g:csv_no_conceal = 1
-" ----------- Vim Polyglot --------------------------
 
-" ------- VUNDLE ------
+" ----------------------------- Vundle -----------------------------------
 " Set 'nocompatible' to ward off unexpected things that your distro might
 " have made, as well as sanely reset options when re-sourcing .vimrc
 " This is also required for Vundle
@@ -15,7 +17,7 @@ set nocompatible
 " Required for Vundle install
 filetype off
 
-" ------------------------------ Vim-Plug Plugins --------------------------
+" ------------------------- Vim-Plug Plugins ------------------------------
 call plug#begin("~/.vim-plug")
 
 " NOTES:
@@ -67,6 +69,9 @@ Plug 'vim-airline/vim-airline'
 " Plug 'kablamo/vim-git-log'
 Plug 'maxbrunsfeld/vim-yankstack'
 
+" Syntax highlighting for CSV, since polyglot's is bad
+Plug 'mechatroner/rainbow_csv'
+
 " All Plug calls must be executed before this
 call plug#end()
 " ---------------------------- End Vim-Plug Plugins ------------------------
@@ -78,22 +83,22 @@ call plug#end()
 " Required to tun back on for Vundle stuff to work
 filetype plugin indent on
 
-" ------------ Plasticboy Markdown Plugin -------------------
-" This isn't quite as smooth as I'd like; get rid of it
+
+" ---------------------- Plasticboy Markdown Plugin ----------------------
+" This fancy stuff doens't work as well as I'd like so I get rid of it
 let g:vim_markdown_auto_insert_bullets = 0
 let g:vim_markdown_new_list_item_indent = 0
 let g:vim_markdown_folding_disabled = 1
 let g:vim_markdown_conceal = 0
 let g:vim_markdown_strikethrough = 1
-" -------------------------------------------------------------
 
-" -------------- Yankstack ----------------------
+
+" ---------------------------- yankstack ----------------------------------
 let g:yankstack_map_keys = 0
 nmap <C-p> <Plug>yankstack_substitute_older_paste
 nmap <C-n> <Plug>yankstack_substitute_newer_paste
-" -------------- Yankstack ----------------------
 
-" ------ Ansible YAML --------
+" ------------------------------ Ansible YAML ----------------------------
 " Vim's built-in YAML doesn't handle indentation well, so we need to use the only
 " YAML plugin that actually does it right
 " Why do all the YAML plugins suck... :(
@@ -101,15 +106,13 @@ nmap <C-n> <Plug>yankstack_substitute_newer_paste
 " au BufRead,BufNewFile *.yaml set filetype=ansible
 autocmd FileType *.yml setlocal noautoindent
 autocmd FileType *.yaml setlocal noautoindent
-" ----------------------------
 
-" ------ Starlark ------------
+" ---------------------------- Starlark ----------------------------------
 " The only Vim Starlark plugin uses weird coloring, so we set the syntax to
 " Python
 autocmd FileType *.star setlocal filetype=python
-" -----------------------------
 
-" ------ Jedi Vim -------
+" ---------------------------- Jedi Vim ----------------------------------
 let g:jedi#documentation_command = ""
 let g:jedi#popup_select_first = 1
 
@@ -118,28 +121,29 @@ let g:jedi#popup_select_first = 1
 if v:version >= 705 || (v:version == 704 && has('patch775'))
    set completeopt=menuone,longest,preview,noinsert
 endif
-" -----------------------
 
-" ------ Airline -------
+" ----------------------------- Airline ----------------------------------
 let g:airline_left_sep=''
 let g:airline_right_sep=''
 
 " I really only care about percentage through file, so only show me that
 let g:airline_section_z = airline#section#create(['%3p%%'])
-" ------------------------
 
-" ---------- Gitgutter ----------
+" ---------------------------- Gitgutter ---------------------------------
 nnoremap <Leader>ha :GitGutterStageHunk<CR>
-" -------------------------------
 
-" ------ Color Scheme ------
+" -------------------------- Color Scheme --------------------------------
 colorscheme jellybeans
 " let g:jellybeans_background_color_256 = "000000"
 let g:jellybeans_overrides = {
 \    'background': { 'guibg': '000000' },
 \}
-" --------------------
 
+
+
+" ========================================================================
+"                          Setting Options
+" ========================================================================
 " Allow editing Mac crontab with Vim
 " Source: http://superuser.com/questions/359580/error-adding-cronjobs-in-mac-os-x-lion
 if $VIM_CRONTAB == "true"
@@ -193,20 +197,6 @@ set showmatch
 " such, it may be a good idea to disable them and use the securemodelines
 " script, <http://www.vim.org/scripts/script.php?script_id=1876>.
 " set nomodeline
-
-"------------------------------------------------------------
-" Usability options {{{1
-
-" " Triger `autoread` when files changes on disk
-" " https://unix.stackexchange.com/questions/149209/refresh-changed-content-of-file-opened-in-vim/383044#383044
-" " https://vi.stackexchange.com/questions/13692/prevent-focusgained-autocmd-running-in-command-line-editing-mode
-"     autocmd FocusGained,BufEnter,CursorHold,CursorHoldI *
-"             \ if mode() !~ '\v(c|r.?|!|t)' && getcmdwintype() == '' | checktime | endif
-" 
-" " Notification after file change
-" " https://vi.stackexchange.com/questions/13091/autocmd-event-for-autoread
-" autocmd FileChangedShellPost *
-"   \ echohl WarningMsg | echo "File changed on disk. Buffer reloaded." | echohl None
 
 " Set spellcheck for certain files
 augroup spellcheck
@@ -284,11 +274,6 @@ set foldlevelstart=10   " Default show up to 10 levels of folds open on start
 set foldnestmax=10      " Don't allow past 10 levels of fold nesting
 autocmd FileType *.py setlocal foldmethod=indent   " Automatically fold based on indentation (yay, Python)
 
-"------------------------------------------------------------
-" Indentation options {{{1
-"
-" Indentation settings according to personal preference.
-
 " Do not change 'tabstop' from its default value of 8 with this setup.
 set shiftwidth=4
 set softtabstop=4
@@ -305,11 +290,30 @@ autocmd Filetype yaml setlocal ts=2 sw=2 sts=0
 set wrap
 set linebreak
 
-"------------------------------------------------------------
-" Mappings {{{1
-"
-" Useful mappings
+" Try to get Vim to autoreload upon changes
+" From https://batsov.com/articles/2025/06/02/how-to-vim-reloading-file-buffers/
+set autoread
+au FocusGained,BufEnter * :silent! checktime
 
+" Allow flashing cursor to be seen when matching parenthesis
+hi MatchParen ctermfg=white
+
+" Keep cursor centered, except when at the top of the file
+set scrolloff=999
+autocmd CursorMoved * call AdjustScrolloff()
+function! AdjustScrolloff()
+  if line('.') <= winheight(0) / 2
+    setlocal scrolloff=0
+  else
+    setlocal scrolloff=999
+  endif
+endfunction
+
+
+
+" ========================================================================
+"                                Mappings
+" ========================================================================
 " Map Y to act like D and C, i.e. to yank until EOL, rather than act as yy,
 " which is the default
 map Y y$
@@ -317,20 +321,6 @@ map Y y$
 " Map <C-L> (redraw screen) to also turn off search highlighting until the
 " next search
 nnoremap <Leader>l :nohl<CR><C-L>
-
-" Map backtick to switch buffers quickly = MAY NOT NEED THIS
-" nnoremap ` <C-^>
-
-" Allow flashing cursor to be seen when matching parenthesis
-hi MatchParen ctermfg=white
-
-" NOTE: I hardly ever use these, so they shouldn't take something as valuable
-" as the arrow keys
-" Rebind arrow keys to make resizing windows easier
-" nnoremap <Up> <C-W>+
-" nnoremap <Down> <C-W>-
-" nnoremap <Left> <C-W><
-" nnoremap <Right> <C-W>>
 
 " SYSTEM CLIPBOARD BINDINGS
 " Copy current selection to system clipboard
@@ -368,17 +358,6 @@ nnoremap $ g$
 vnoremap j gj
 vnoremap k gk
 
-" Keep cursor centered, except when at the top of the file
-set scrolloff=999
-autocmd CursorMoved * call AdjustScrolloff()
-function! AdjustScrolloff()
-  if line('.') <= winheight(0) / 2
-    setlocal scrolloff=0
-  else
-    setlocal scrolloff=999
-  endif
-endfunction
-
 " Map <S-j> and <S-k> to PageDown and PageUp respectively
 nnoremap J 20jzz
 nnoremap K 20kzz
@@ -391,9 +370,72 @@ nnoremap <Leader>p :set invpaste paste?<CR>
 " Screen-centering mappings
 nnoremap n nzz
 nnoremap N Nzz
-" TODO Center after jumping to a mark
 
-"------------------------------------------------------------
+" Easy way to echo a line for Bash debugging
+nnoremap <Leader>db V:s/"/\\"/g<CR>^iecho "<ESC>$a"<ESC>
+
+" Easy opening of splits
+nnoremap <Leader>v :vsp 
+nnoremap <Leader>s :sp 
+nnoremap <Leader>e :e 
+
+" NOTE: These are cool, but I really shouldn't get used to them for cross-box
+" muscle memory... but I love them
+" Easy mapping for writing and quitting files
+nnoremap <Leader>w :w<CR>
+nnoremap <Leader>W :wa<CR>
+noremap <Leader>q :q<CR>
+noremap <Leader>Q :qa<CR>
+nnoremap <Leader>x :wq<CR>
+nnoremap <Leader>X :wa<CR>:qa<CR>
+
+" Allows easy rendering of Markdown files in Chrome when combined with this
+" Markdown viewing Chrome extension:
+"  https://chromewebstore.google.com/detail/markdown-viewer/ckkdlimhmcjmikdlpkmbgfkaikojcbjk
+nnoremap <Leader>c :! open -a 'Google Chrome' "%"<CR><CR>
+
+" This is maybe more valuable as something else
+nnoremap <Leader>? :help<CR>
+
+" ---------------------- Markdown file editing-----------------------------
+" Very useful shortcut to make a Markdown headers out of given line
+nnoremap <Leader>h= "hyy"hpVr=
+nnoremap <Leader>h- "hyy"hpVr-
+nnoremap <Leader>h# :s/^/### /<CR>:nohl<CR>
+" -------------------------------------------------------------------------
+
+nnoremap <Leader>gl :Shell git log --graph --abbrev-commit --decorate --date=relative --format=format:'\%h - (\%ar) \%s [\%an]\%d' --all<CR>
+
+" I often accidentally type :W instead of :w and Vim yells at me. This stops
+" that annoying behaviour
+command! W w
+
+
+" ========================================================================
+"                            Custom Functions
+" ========================================================================
+" Nifty command to open the output of a command in a scratch buffer
+" Source: http://vim.wikia.com/wiki/Display_output_of_shell_commands_in_new_window
+command! -complete=shellcmd -nargs=+ Shell call s:RunShellCommand(<q-args>)
+function! s:RunShellCommand(cmdline)
+    echo a:cmdline
+    let expanded_cmdline = a:cmdline
+    for part in split(a:cmdline, ' ')
+        if part[0] =~ '\v[%#<]'
+            let expanded_part = fnameescape(expand(part))
+            let expanded_cmdline = substitute(expanded_cmdline, part, expanded_part, '')
+        endif
+    endfor
+    botright new
+    setlocal buftype=nofile bufhidden=wipe nobuflisted noswapfile nowrap
+    call setline(1, 'You entered:    ' . a:cmdline)
+    call setline(2, 'Expanded Form:  ' .expanded_cmdline)
+    call setline(3,substitute(getline(2),'.','=','g'))
+    execute '$read !'. expanded_cmdline
+    setlocal nomodifiable
+    1
+endfunction
+
 " Easy JSON prettifier
 if !exists(":PrettifyJson")
     :command PrettifyJson %!python3 -m json.tool
@@ -428,81 +470,12 @@ function! DoPrettifyXML()
 endfunction
 command! PrettifyXML call DoPrettifyXML()
 
-" Easy way to echo a line for Bash debugging
-nnoremap <Leader>db V:s/"/\\"/g<CR>^iecho "<ESC>$a"<ESC>
-
-" Easy opening of splits
-nnoremap <Leader>v :vsp 
-nnoremap <Leader>s :sp 
-nnoremap <Leader>e :e 
-
-" NOTE: These are cool, but I really shouldn't get used to them for cross-box
-" muscle memory... but I love them
-" Easy mapping for writing and quitting files
-nnoremap <Leader>w :w<CR>
-nnoremap <Leader>W :wa<CR>
-noremap <Leader>q :q<CR>
-noremap <Leader>Q :qa<CR>
-nnoremap <Leader>x :wq<CR>
-nnoremap <Leader>X :wa<CR>:qa<CR>
-
-nnoremap <Leader>E :set autoread \| checktime<CR>
-
-" Allows easy rendering of Markdown files in Chrome when combined with this
-" Markdown viewing Chrome extension:
-"  https://chromewebstore.google.com/detail/markdown-viewer/ckkdlimhmcjmikdlpkmbgfkaikojcbjk
-nnoremap <Leader>c :! open -a 'Google Chrome' "%"<CR><CR>
-
-" -------------------- Markdown Editing Commands --------------------
-" Very useful shortcut to make a Markdown headers out of given line
-nnoremap <Leader>h= "hyy"hpVr=
-nnoremap <Leader>h- "hyy"hpVr-
-nnoremap <Leader>h# :s/^/### /<CR>
-
-" TODO none of this seems to work due to https://vimhelp.org/vim_faq.txt.html#faq-20.5
-" Easy indentation
-" vnoremap <C-e> <
-" vnoremap <C-o> >
-" nnoremap <C-e> <<
-" nnoremap <C-o> >>
-" inoremap <C-e> <C-d>
-" inoremap <C-o> <C-t>
-" ---------------------------------------------------------------------
-
-" This is maybe more valuable as something else
-nnoremap <Leader>? :help 
-
-" Nifty command to open the output of a command in a scratch buffer
-" Source: http://vim.wikia.com/wiki/Display_output_of_shell_commands_in_new_window
-command! -complete=shellcmd -nargs=+ Shell call s:RunShellCommand(<q-args>)
-function! s:RunShellCommand(cmdline)
-    echo a:cmdline
-    let expanded_cmdline = a:cmdline
-    for part in split(a:cmdline, ' ')
-        if part[0] =~ '\v[%#<]'
-            let expanded_part = fnameescape(expand(part))
-            let expanded_cmdline = substitute(expanded_cmdline, part, expanded_part, '')
-        endif
-    endfor
-    botright new
-    setlocal buftype=nofile bufhidden=wipe nobuflisted noswapfile nowrap
-    call setline(1, 'You entered:    ' . a:cmdline)
-    call setline(2, 'Expanded Form:  ' .expanded_cmdline)
-    call setline(3,substitute(getline(2),'.','=','g'))
-    execute '$read !'. expanded_cmdline
-    setlocal nomodifiable
-    1
-endfunction
-
-nnoremap <Leader>gl :Shell git log --graph --abbrev-commit --decorate --date=relative --format=format:'\%h - (\%ar) \%s [\%an]\%d' --all<CR>
 
 
 
-" I often accidentally type :W instead of :w and Vim yells at me. This stops
-" that annoying behaviour
-command! W w
-
-" ================== Reminders (not actually code) =========================
+" ========================================================================
+"                                Mappings
+" ========================================================================
 " Merge two blocks of lines: https://stackoverflow.com/questions/10760326/merge-multiple-lines-two-blocks-in-vim
 " 1) Select first block of lines you want to merge and yank them to a register
 " 2) :let l=split(@THEREGISTER) 
