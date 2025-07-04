@@ -98,7 +98,7 @@ function activate_nvm() {
     # NOTE: NVM is slow as hell (500ms!!) to load normally, so we speed it up by adding a default Node to the path
     # See: https://www.ioannispoulakas.com/2020/02/22/how-to-speed-up-shell-load-while-using-nvm/
     export NVM_DIR="${HOME}/.nvm"
-    export PATH="${NVM_DIR}/versions/node/v18.14.0/bin:$PATH"
+    export PATH="${NVM_DIR}/versions/node/$(cat "${HOME}/.nvm/alias/default")/bin:$PATH"
     [ -s "${NVM_DIR}/nvm.sh" ] && . "${NVM_DIR}/nvm.sh" --no-use    # The --no-use check skips a very slow, costly check
     [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm
 }
