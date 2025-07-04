@@ -5,6 +5,35 @@
             "complex_modifications": {
                 "rules": [
                     {
+                        "description": "Left Control (Portable keyboard) → Hyper (Cmd+Opt+Shift)",
+                        "manipulators": [
+                            {
+                                "conditions": [
+                                    {
+                                        "identifiers": [
+                                            {
+                                                "product_id": 1957,
+                                                "vendor_id": 1118
+                                            }
+                                        ],
+                                        "type": "device_if"
+                                    }
+                                ],
+                                "from": {
+                                    "key_code": "left_control",
+                                    "modifiers": { "optional": ["any"] }
+                                },
+                                "to": [
+                                    {
+                                        "key_code": "left_shift",
+                                        "modifiers": ["left_command", "left_option"]
+                                    }
+                                ],
+                                "type": "basic"
+                            }
+                        ]
+                    },
+                    {
                         "description": "Ctrl-J → Down Arrow, Ctrl-K → Up Arrow (global)",
                         "manipulators": [
                             {
@@ -32,13 +61,13 @@
                         ]
                     },
                     {
-                        "description": "Map Cmd+Up to Home and Cmd+Down to End",
+                        "description": "Map Cmd+Ctrl+Up to Home and Cmd+Ctrl+Down to End",
                         "manipulators": [
                             {
                                 "from": {
                                     "key_code": "up_arrow",
                                     "modifiers": {
-                                        "mandatory": ["command"],
+                                        "mandatory": ["command", "control"],
                                         "optional": ["any"]
                                     }
                                 },
@@ -49,7 +78,7 @@
                                 "from": {
                                     "key_code": "down_arrow",
                                     "modifiers": {
-                                        "mandatory": ["command"],
+                                        "mandatory": ["command", "control"],
                                         "optional": ["any"]
                                     }
                                 },
@@ -341,6 +370,23 @@
                         {
                             "from": { "key_code": "right_option" },
                             "to": [{ "key_code": "right_command" }]
+                        }
+                    ]
+                },
+                {
+                    "identifiers": {
+                        "is_keyboard": true,
+                        "product_id": 1957,
+                        "vendor_id": 1118
+                    },
+                    "simple_modifications": [
+                        {
+                            "from": { "key_code": "left_option" },
+                            "to": [{ "key_code": "left_command" }]
+                        },
+                        {
+                            "from": { "key_code": "left_command" },
+                            "to": [{ "key_code": "left_option" }]
                         }
                     ]
                 }
