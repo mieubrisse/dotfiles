@@ -319,12 +319,55 @@ alias gl="git log --graph --abbrev-commit --decorate --date=relative --format=fo
 
 # Making changes
 alias gb="git branch"
-function gco {   # Use fzf to select branches if no arguments are provided
-    if [ "${#}" -eq 0 ]; then
-        git branch -la --format="%(refname:short)" | sed 's,^origin/,,' | sort -u | fzf --bind='enter:become(git checkout {})'
-    else
+function gco {
+    if [ "${#}" -ne 0 ]; then
         git checkout "${@}"
+        return
     fi
+
+    # Use fzf to select branches from most-recent-branches if no args are provided
+    tmpfile=$(mktemp)
+    tmpfile_all="${tmpfile}.all"
+    tmpfile_sorted="${tmpfile}.sorted"
+    tmpfile_deduped="$(mktemp)"
+
+    # Step 1: generate triples of (full_branch_name,short_branch_name,timestamp) for local & remote branches
+    {
+        git for-each-ref --format='%(refname:short),%(refname:short),%(committerdate:unix)' refs/heads/
+
+        git for-each-ref --format='%(refname:short),%(committerdate:unix)' refs/remotes/ | \
+            awk -F',' '{
+                full = $1;
+                gsub(/^origin\//, "", $1);
+                print full "," $1 "," $2
+            }'
+    } > "${tmpfile_all}"
+
+    # Step 2: sort by short branch name to put local & remote branch lines next to each other
+    sort -t',' -k2,2 -k3,3nr "${tmpfile_all}" > "${tmpfile_sorted}"
+
+    # Step 3: dedupe by short_name, preferring the local row if it's present
+    # TODO hardcodes 'origin', which might be a problem at some point in the distant future
+    awk -F',' '
+    {
+        full = $1; short = $2; ts = $3
+        is_remote = (full ~ /^origin\//)
+        if (!(short in seen) || (!is_remote && source[short] == "remote")) {
+            seen[short] = full "," short "," ts
+            source[short] = is_remote ? "remote" : "local"
+        }
+    }
+    END {
+        for (s in seen) print seen[s]
+    }
+' "${tmpfile_sorted}" > "${tmpfile_deduped}"
+
+    rm "${tmpfile_all}" "${tmpfile_sorted}"
+
+    # Step 4: final sort by timestamp descending
+    sort -t',' -k3,3nr "${tmpfile_deduped}" | cut -d',' -f1 | fzf --bind='enter:become(git checkout {})'
+
+    rm "${tmpfile_deduped}" # Not THAT important if this doesn't run (since it's a tempfile, and a small one)
 }
 
 ga() {   # Use fzf to select files if no arguments are provided
@@ -395,6 +438,7 @@ function gpsh() {	# Push the branch upstream if it doesn't exist; otherwise just
             git push "$@"
         fi
 }
+alias gphs="gpsh" # Alias for common typo I make
 alias gprune-local-dry-run="git branch --merged | grep -v '\*' | grep -v 'master' | grep -v 'develop'"
 alias gprune-local="git branch --merged | grep -v '\*' | grep -v 'master' | grep -v 'develop' | xargs -n 1 git branch -d"
 
@@ -671,6 +715,36 @@ EOF
 }
 
 alias todays-goals="journal new todays-goals.md todays-goals"
+
+# Quick helper to summon up a new post
+function new-post() {
+    if [ "${#}" -eq 0 ]; then
+        echo "Must provide name of post directory to create" >&2
+        return 1
+    fi
+
+    post_name="${1}"
+    if [[ "${post_anme}" == *" "* ]]; then
+        echo "New post name cannot have spaces" >&2
+        return 1
+    fi
+
+
+    cd "${code_dirpath}/personal-writing"
+    if [ -d "${post_name}" ]; then
+        echo "Directory '${post_name}' already exists" >&2
+        return 1
+    fi
+    if git rev-parse --verify "${post_name}" &> /dev/null; then
+        echo "Git branch '${post_name}' already exists" >&2
+        return 1
+    fi
+
+    cp -R TEMPLATE "${post_name}"
+    gco -b "${post_name}"
+    cd "${post_name}"
+    vim "post.md"
+}
 
 
 # ======================================================================================
