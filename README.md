@@ -7,19 +7,26 @@ Terminal Prompt
 ![](./README-media/terminal-prompt2.png)
 
 Of note:
-* Entries are timestamped
-* The entire prompt itself will turn red when the last command failed
-* Git directories are highlighted in blue
-* Branch name is displayed
-* Branch name turns purple when uncommitted changes exist, to remind you to commit
-* An indicator is shown for how the local branch compares to the remote (e.g. `-8`), to remind you to pull or push appropriately
-* The color of the text you enter is configurable, so you can set different colors on different machines as a subtle visual reminder of the machine you're working on
+- Entries are timestamped
+- The entire prompt itself will turn red when the last command failed
+- Git directories are highlighted in blue
+- Branch name is displayed
+- Branch name turns purple when uncommitted changes exist, to remind you to commit
+- An indicator is shown for how the local branch compares to the remote (e.g. `-8`), to remind you to pull or push appropriately
+- The color of the text you enter is configurable, so you can set different colors on different machines as a subtle visual reminder of the machine you're working on
 
 cd
 ---
-* `ls` will be run automatically after `cd`ing into a directory
-* `cd 2..` will run `cd ..` twice, `cd 4..` will run `cd ..` four times, etc.
+`cd` is upgraded with some extra functionality:
 
+- `ls` will be run automatically after `cd`ing into a directory
+- `cd 2..` will run `cd ..` twice, `cd 4..` will run `cd ..` four times, etc.
+
+gco
+---
+`gco` with arguments is an alias for `git checkout`.
+
+But without arguments, it will given you an interactive list of branches, both local and remote, sorted by most-recently-used, where selecting one will check it out.
 
 Fuzzy File Access
 -----------------
