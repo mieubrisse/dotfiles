@@ -111,6 +111,13 @@ _chrome_completion() {
 }
 complete -F _chrome_completion chrome # Allow completion of Markdown files, and directories that might have Markdown files
 
+function 1p() {
+    # TODO If no arguments are provided, let's do some fzf magic
+    op "${@}"
+    return "${?}"
+}
+complete -o default -F __start_op 1p  # We hijack 1Password's completion for our alias
+
 function replace() {
     needle="${1:-}"
     replacement="${2:-}"
@@ -322,7 +329,7 @@ alias gb="git branch"
 function gco {
     if [ "${#}" -ne 0 ]; then
         git checkout "${@}"
-        return
+        return "${?}"
     fi
 
     # Use fzf to select branches from most-recent-branches if no args are provided
@@ -368,6 +375,17 @@ function gco {
     sort -t',' -k3,3nr "${tmpfile_deduped}" | cut -d',' -f1 | fzf --bind='enter:become(git checkout {})'
 
     rm "${tmpfile_deduped}" # Not THAT important if this doesn't run (since it's a tempfile, and a small one)
+}
+
+# Same as 'gco', except does a stash & stash pop
+gcos() {
+    git stash
+    echo "📥 STASHED CHANGES"
+    gco "${@}"
+
+    # Intentionally not checking the error code of "gco", so that the stash goes
+    git stash pop
+    echo "📤 UNSTASHED CHANGES"
 }
 
 ga() {   # Use fzf to select files if no arguments are provided
@@ -524,6 +542,9 @@ alias dotfiles="cd '${dotfiles_dirpath}'"
 
 code_dirpath="${HOME}/code"
 alias code="_smart_open_dir_file fuzzy_ls '${code_dirpath}'"
+
+writing_dirpath="${code_dirpath}/personal-writing"
+alias pwriting="cd ${writing_dirpath}"   # TODO upgrade this to take in a search term and optionally 'cd' to that
 
 downloads_dirpath="${HOME}/Downloads"
 alias downloads="_smart_open_dir_file fuzzy_ls '${downloads_dirpath}'"
@@ -695,7 +716,7 @@ EOF
     # Explaining:
     # - scheme=history so that 'needle-foo' is ranked equal to 'foo-needle' when searching for 'needle'
     # - tiebreak=index so that things ranked equally are subsorted by timestamp
-
+    # - query=${*} prints all the args as a single string, separated by a space
     IFS=$'\n' output_paths=( 
         $(FZF_DEFAULT_COMMAND="${_fzf_journal_find_command}" fzf \
             -m \
@@ -705,7 +726,8 @@ EOF
             --accept-nth=1 \
             --bind='change:top' \
             --scheme=history \
-            --tiebreak=index
+            --tiebreak=index \
+            --query="${*}"
         )
     )
 
@@ -716,36 +738,12 @@ EOF
 
 alias todays-goals="journal new todays-goals.md todays-goals"
 
-# Quick helper to summon up a new post
-function new-post() {
-    if [ "${#}" -eq 0 ]; then
-        echo "Must provide name of post directory to create" >&2
-        return 1
-    fi
-
-    post_name="${1}"
-    if [[ "${post_anme}" == *" "* ]]; then
-        echo "New post name cannot have spaces" >&2
-        return 1
-    fi
-
-
-    cd "${code_dirpath}/personal-writing"
-    if [ -d "${post_name}" ]; then
-        echo "Directory '${post_name}' already exists" >&2
-        return 1
-    fi
-    if git rev-parse --verify "${post_name}" &> /dev/null; then
-        echo "Git branch '${post_name}' already exists" >&2
-        return 1
-    fi
-
-    cp -R TEMPLATE "${post_name}"
-    gco -b "${post_name}"
-    cd "${post_name}"
-    vim "post.md"
-}
-
+# ======================================================================================
+#                                    Health Journal
+# ======================================================================================
+source "${writing_dirpath}/utilities.sh"
+alias pf="find_post ${writing_dirpath}"
+alias pn="new_post ${writing_dirpath}"
 
 # ======================================================================================
 #                                    Health Journal

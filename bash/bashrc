@@ -436,19 +436,12 @@ run_perf_checkpoint "Before adding third-party Bash completions"
 add_third_party_completions
 run_perf_checkpoint "After adding third-party Bash completions"
 
+# Add the 1Password bash completions
+source <(op completion bash)
 
 # NOTE: All these custom scripts should be sourced AFTER everything else, so they can depend on things
 # e.g. bash_aliases depends on bash_completion
 # There may be a better way to do these sorts of Bash "dependencies"
-
-run_perf_checkpoint "Before Bash additions"
-
-# Custom bash additions
-if [ -f ~/.bash_additions ]; then
-  source ~/.bash_additions
-fi
-
-run_perf_checkpoint "After Bash additions and before Bash aliases"
 
 # Alias definitions
 if [ -f ~/.bash_aliases ]; then
