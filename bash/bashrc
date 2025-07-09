@@ -35,7 +35,12 @@ function add_third_party_completions() {
     [[ -r "${BREW_PREFIX}/etc/profile.d/bash_completion.sh" ]] && source "${BREW_PREFIX}/etc/profile.d/bash_completion.sh"
 }
 
-# ----------------------------------- End Bash Completion -----------------------------------
+# ------------------------------------- Bash Completion -----------------------------------
+if type railway &> /dev/null; then
+    source <(railway completion bash)
+fi
+
+# ----------------------------------- Rest of bashrc -----------------------------------------
 
 export EDITOR="vim"
 

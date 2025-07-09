@@ -530,6 +530,8 @@ function parallel-tmux() {
 # ======================================================================================
 #                                      Navigation
 # ======================================================================================
+
+# TODO replace this with all fzf stuff
 function _smart_open_dir_file {
     cd "${2}"
     if [ "${#}" -gt 2 ]; then
@@ -541,7 +543,24 @@ dotfiles_dirpath="${HOME}/app/dotfiles"
 alias dotfiles="cd '${dotfiles_dirpath}'"
 
 code_dirpath="${HOME}/code"
-alias code="_smart_open_dir_file fuzzy_ls '${code_dirpath}'"
+# alias code="_smart_open_dir_file fuzzy_ls '${code_dirpath}'"
+function code() {
+    # TODO extract into a helper function for adding fzf-completion for any subdirectory
+    if [ "${#}" -eq 0 ]; then
+        cd "${code_dirpath}"
+        return 0
+    fi
+
+    selected_dirname=$(
+        find "${code_dirpath}" -maxdepth 1 -type d -exec basename {} \; | fzf --query "${*}"
+    )
+
+    if [ -z "${selected_dirname}" ]; then
+        return 0
+    fi
+
+    cd "${code_dirpath}/${selected_dirname}"
+}
 
 writing_dirpath="${code_dirpath}/personal-writing"
 alias pwriting="cd ${writing_dirpath}"   # TODO upgrade this to take in a search term and optionally 'cd' to that
