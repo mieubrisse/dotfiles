@@ -1,3 +1,7 @@
+When modifying Git repositories
+===============================
+When you're about to finish completing a task and return control to the user, propose a `git` command that will add the files you changed and commit them with a succinct but descriptive commit message explaining what changes were made.
+
 Dependencies
 ============
 When choosing dependencies, use the latest stable released version unless you have a compelling reason to do otherwise.
