@@ -28,6 +28,12 @@ gco
 
 But without arguments, it will given you an interactive list of branches, both local and remote, sorted by most-recently-used, where selecting one will check it out.
 
+chrome
+------
+`chrome <file>` opens the respective file in Chrome. I use this with [a Markdown-rendering extension](https://chromewebstore.google.com/detail/ckkdlimhmcjmikdlpkmbgfkaikojcbjk) to preview my Markdown files.
+
+Has tab-completion for `.html` and `.md` files.
+
 Fuzzy File Access
 -----------------
 Adds two new commands, `fuzzy_ls` and `fuzzy_find`, which will return files whose names contain the fragments specified:
