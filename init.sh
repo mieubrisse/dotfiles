@@ -1,14 +1,16 @@
-# Little script to initialize all my dotfiles and things on a new box
+# Idempotently symlinks everything into the correct location
 
 set -euo pipefail
 script_dirpath="$(cd "$(dirname "${0}")" && pwd)"
 
 ipython_dirpath="${HOME}/.ipython/profile_default"
+claude_dirpath="${HOME}/.claude"
 karabiner_config_dirpath="${HOME}/.config/karabiner"
 
 # Create various needed directories
 dirpaths_to_create=(
     "${ipython_dirpath}"
+    "${claude_dirpath}"
 )
 for dirpath in "${dirpaths_to_create[@]}"; do
     mkdir -p "${dirpath}"
@@ -32,6 +34,7 @@ symlink_arr=(
   "${script_dirpath}/fd/fdignore,${HOME}/.fdignore"
   "${HOME}/Google Drive/My Drive,${HOME}/gdrive" # Google Drive
   "${script_dirpath}/karabiner,${karabiner_config_dirpath}" # Karabiner config
+  "${script_dirpath}/claude/CLAUDE.md,${claude_dirpath}/CLAUDE.md"
 )
 
 for link_def in "${symlink_arr[@]}"; do
