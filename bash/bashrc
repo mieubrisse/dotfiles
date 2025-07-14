@@ -164,6 +164,12 @@ export FZF_CTRL_T_OPTS="-m --ansi --scheme=path --preview='sh ${HOME}/app/cmdk/p
 export FZF_DEFAULT_OPTS="--style=minimal"
 [ -f ~/.fzf.bash ] && source ~/.fzf.bash
 
+# ----------- Overpowered Writing -------------------------------------------
+export WRITING_REPO_DIRPATH="${HOME}/code/personal-writing"
+opwriting_tools="${HOME}/app/opwriting"
+eval "$(${opwriting_tools}/opwriting shell)"
+PATH_ADDITIONS+=("${opwriting_tools}")
+
 # ----------- Bash Prompt -----------------------------------------------------------
 run_perf_checkpoint "Before saving __render_working_dir function"
 # Renders the working directory, highlighting the current Git directory (if any)

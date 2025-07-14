@@ -760,10 +760,8 @@ EOF
 alias todays-goals="journal new todays-goals.md todays-goals"
 
 # ======================================================================================
-#                                   Personal Writing
+#                                Overpowered Writing Tools
 # ======================================================================================
-export WRITING_REPO_DIRPATH="${writing_dirpath}"
-source "${HOME}/app/overpowered-writing-tools/sourceme.sh"
 alias pf="find_post"
 alias pn="new_post"
 
