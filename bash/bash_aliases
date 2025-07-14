@@ -99,6 +99,8 @@ _chrome_completion() {
             matches+=("${entry}/")
         elif echo "$entry" | grep -q '\.md$'; then
             matches+=("$entry")
+        elif echo "$entry" | grep -q '\.html$'; then
+            matches+=("$entry")
         fi
     done
 
@@ -758,11 +760,12 @@ EOF
 alias todays-goals="journal new todays-goals.md todays-goals"
 
 # ======================================================================================
-#                                    Health Journal
+#                                   Personal Writing
 # ======================================================================================
-source "${writing_dirpath}/utilities.sh"
-alias pf="find_post ${writing_dirpath}"
-alias pn="new_post ${writing_dirpath}"
+export WRITING_REPO_DIRPATH="${writing_dirpath}"
+source "${HOME}/app/overpowered-writing-tools/sourceme.sh"
+alias pf="find_post"
+alias pn="new_post"
 
 # ======================================================================================
 #                                    Health Journal
