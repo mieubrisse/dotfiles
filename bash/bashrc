@@ -9,7 +9,7 @@ export PATH="${BREW_PREFIX}/bin:${PATH}"
 # ^^^^^^^^^^^^^^^^ KEEP THIS FIRST ^^^^^^^^^^^^^^^^^^^^^^^^^
 
 # Used for debugging slow .bashrc load times.. 
-echo "Started loading .bashrc..."
+# echo "Started loading .bashrc..."
 _bashrc_start_time="$(gdate +%s%3N)"
 _last_perf_checkpoint="${_bashrc_start_time}"
 
@@ -26,6 +26,8 @@ function run_perf_checkpoint() {
         _last_perf_checkpoint="${_now}"
     fi
 }
+
+run_perf_checkpoint "Started loading .bashrc"
     
 # ------------------------------------- Bash Completion -----------------------------------
 function add_third_party_completions() {
@@ -462,7 +464,7 @@ if [ -f ~/.bash_local ]; then
 fi
 
 run_perf_checkpoint "Finished loading .bashrc"
-echo "$(($(gdate +%s%3N) - _bashrc_start_time))ms to load entire .bashrc"
+# echo "$(($(gdate +%s%3N) - _bashrc_start_time))ms to load entire .bashrc"
 
 # Always ls whenever we create a new tab
 ls
