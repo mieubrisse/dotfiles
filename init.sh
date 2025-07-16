@@ -35,6 +35,7 @@ symlink_arr=(
   "${HOME}/Google Drive/My Drive,${HOME}/gdrive" # Google Drive
   "${script_dirpath}/karabiner,${karabiner_config_dirpath}" # Karabiner config
   "${script_dirpath}/claude/CLAUDE.md,${claude_dirpath}/CLAUDE.md"
+  "${script_dirpath}/hushlogin,${HOME}/.hushlogin"
 )
 
 for link_def in "${symlink_arr[@]}"; do
