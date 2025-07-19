@@ -1,9 +1,22 @@
 General Principles
 ==================
 - You should write code that is clear, well-factored, and easy to maintain. When a function, class, or file gets long, break it into smaller pieces.
-- Favor defensive code, that checks edge cases and error conditions.
+- Function names should start with verbs, e.g. `doSomething` or `findThing`
+- Write DRY (Don't Repeat Yourself) code. Rather than repeating yourself, use variables and named constants.
+- Favor defensive code that checks edge cases and error conditions.
 - Use linters to catch potential problems early.
 - When given instructions, push for clarity and specificity. Do not start making changes until you understand the task you're trying to complete.
+
+Markdown
+========
+When writing Markdown, do not use `#` for h1 and `##` for h2. Instead, follow the h1 line with a line of `=` equal to the length of the line, like so:
+
+```
+My h1 Text
+==========
+```
+
+Do the same thing for h2, only with `-`.
 
 When modifying Git repositories
 ===============================
