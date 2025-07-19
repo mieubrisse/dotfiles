@@ -231,12 +231,12 @@ let g:airline_section_z = airline#section#create(['%3p%%'])
 nnoremap <Leader>ha :GitGutterStageHunk<CR>
 
 " -------------------------- Color Scheme --------------------------------
-colorscheme jellybeans
 " let g:jellybeans_background_color_256 = "000000"
 let g:jellybeans_overrides = {
 \    'background': { 'guibg': '000000' },
 \}
 
+colorscheme jellybeans
 
 
 " ========================================================================

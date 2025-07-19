@@ -87,6 +87,8 @@ Plug 'maxbrunsfeld/vim-yankstack'
 " Syntax highlighting for CSV, since polyglot's is bad
 Plug 'mechatroner/rainbow_csv'
 
+" Seems like jellybeans has gone out of development sadly
+Plug 'nanotech/jellybeans.vim'
 
 " Neovim-specific plugins
 if has('nvim')
@@ -115,10 +117,9 @@ if has('nvim')
 
     " Plug 'rebelot/kanagawa.nvim'
 
-    Plug 'scottmckendry/cyberdream.nvim'
+    "Plug 'scottmckendry/cyberdream.nvim'
 else
-    " Seems like jellybeans has gone out of development
-    Plug 'nanotech/jellybeans.vim'
+    " Vim-only plugins here
 endif
 
 " All Plug calls must be executed before this
@@ -180,6 +181,12 @@ let g:airline_section_z = airline#section#create(['%3p%%'])
 " ---------------------------- Gitgutter ---------------------------------
 nnoremap <Leader>ha :GitGutterStageHunk<CR>
 
+" -------------------------- jellybeans.vim --------------------------------
+let g:jellybeans_overrides = {
+\    'background': { 'guibg': '000000' },
+\}
+colorscheme jellybeans
+
 
 if has('nvim')
     " -------------------- nvim-cmp --------------------------
@@ -192,12 +199,7 @@ if has('nvim')
     " lua require('config.jellybeans')
 
     " -------------------- kanagawa --------------------------
-    lua require('config.theme')
+    " lua require('config.theme')
 else
-    " -------------------------- jellybeans.vim --------------------------------
-    colorscheme jellybeans
-    " let g:jellybeans_background_color_256 = "000000"
-    let g:jellybeans_overrides = {
-    \    'background': { 'guibg': '000000' },
-    \}
+    " Vim-only plugin config here
 endif
