@@ -33,7 +33,6 @@ symlink_arr=(
     "${script_dirpath}/bash/editrc,${HOME}/.editrc"
     "${script_dirpath}/tmux/tmux.conf,${HOME}/.tmux.conf"
     "${HOME}/.bashrc,${HOME}/.bash_profile"
-    "${vim_dirpath}/vimrc,${HOME}/.vimrc"
     "${script_dirpath}/ipython/ipython_config.py,${ipython_dirpath}/ipython_config.py"
     "${script_dirpath}/intellij-idea/ideavimrc,${HOME}/.ideavimrc"
     "${script_dirpath}/fd/fdignore,${HOME}/.fdignore"
@@ -42,6 +41,8 @@ symlink_arr=(
     "${script_dirpath}/claude/CLAUDE.md,${claude_dirpath}/CLAUDE.md"
     "${script_dirpath}/hushlogin,${HOME}/.hushlogin"
     "${script_dirpath}/overpowered-writing/overpowered-writing.env,${HOME}/.overpowered-writing.env"
+    "${script_dirpath}/nvim/init.vim,${HOME}/.vimrc"
+    "${script_dirpath}/nvim,${HOME}/.vim"
     "${script_dirpath}/nvim,${xdg_config_dirpath}/nvim"
 )
 
@@ -56,9 +57,9 @@ for link_def in "${symlink_arr[@]}"; do
     ln -sfn "${source_filepath}" "${link_filepath}"
 done
 
-# Install vim-plug for Neovim if it's not installed already (the file doesn't get checked into version control)
-VIM_PLUG_URL="https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim"
-VIM_PLUG_FILEPATH="${HOME}/.local/share/nvim/site/autoload/plug.vim"
-if ! [ -f "${DESTINATION_PATH}" ]; then
-    curl -fLo "${VIM_PLUG_FILEPATH}" --create-dirs "${VIM_PLUG_URL}"
-fi
+# # Install vim-plug for Neovim if it's not installed already (the file doesn't get checked into version control)
+# VIM_PLUG_URL="https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim"
+# VIM_PLUG_FILEPATH="${HOME}/.local/share/nvim/site/autoload/plug.vim"
+# if ! [ -f "${DESTINATION_PATH}" ]; then
+#     curl -fLo "${VIM_PLUG_FILEPATH}" --create-dirs "${VIM_PLUG_URL}"
+# fi
