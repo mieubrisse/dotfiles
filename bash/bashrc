@@ -39,7 +39,7 @@ function add_third_party_completions() {
 
 # ----------------------------------- Rest of bashrc -----------------------------------------
 
-export EDITOR="vim -O"
+export EDITOR="nvim -O"
 
 # Make bash and all readline programs operate in vi mode
 set -o vi
