@@ -1,3 +1,6 @@
+#!/usr/bin/env bash
+# Shebang for syntax highlight
+
 # Better diff (Mac only)
 alias diff="colordiff --ignore-space-change -u"
 
