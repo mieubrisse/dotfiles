@@ -36,6 +36,7 @@ symlink_arr=(
   "${script_dirpath}/karabiner,${karabiner_config_dirpath}" # Karabiner config
   "${script_dirpath}/claude/CLAUDE.md,${claude_dirpath}/CLAUDE.md"
   "${script_dirpath}/hushlogin,${HOME}/.hushlogin"
+  "${script_dirpath}/overpowered-writing/overpowered-writing.env,${HOME}/.overpowered-writing.env"
 )
 
 for link_def in "${symlink_arr[@]}"; do
