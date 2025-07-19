@@ -46,6 +46,21 @@ cmp.setup({
 
 })
 
+cmp.setup.filetype('markdown', {
+  enabled = function()
+    local col  = vim.fn.col('.') - 1
+    local line = vim.api.nvim_get_current_line():sub(1, col)
+    return  line:match('%[[^%]]*$')     -- label
+        or line:match('%]%([^)]*$')     -- URL
+        or line:match('<[^>]*$')        -- autolink
+  end,
+  -- sources = {
+  --   { name = 'path' },                  -- file / URL suggestions
+  --   -- LSP *after* path so it shows only if you hit <C-Space>
+  --   { name = 'nvim_lsp', keyword_length = 99 }, -- practically never auto-triggers
+  -- },
+})
+
 -- To use git you need to install the plugin petertriho/cmp-git and uncomment lines below
 -- Set configuration for specific filetype.
 --[[ cmp.setup.filetype('gitcommit', {

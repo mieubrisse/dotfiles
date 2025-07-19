@@ -182,6 +182,7 @@ let g:airline_section_z = airline#section#create(['%3p%%'])
 nnoremap <Leader>ha :GitGutterStageHunk<CR>
 
 " -------------------------- jellybeans.vim --------------------------------
+set notermguicolors  " With this set, Neovim makes the colors washed-out
 let g:jellybeans_overrides = {
 \    'background': { 'guibg': '000000' },
 \}
@@ -201,5 +202,6 @@ if has('nvim')
     " -------------------- kanagawa --------------------------
     " lua require('config.theme')
 else
+    lua vim.opt.termguicolors = true
     " Vim-only plugin config here
 endif
