@@ -1,3 +1,4 @@
+" -------------------- vim-plug plugins --------------------------
 call plug#begin("~/.vim-plug")
 
 Plug 'neovim/nvim-lspconfig'
@@ -11,7 +12,14 @@ Plug 'hrsh7th/nvim-cmp'
 Plug 'hrsh7th/cmp-vsnip'
 Plug 'hrsh7th/vim-vsnip'
 
+" Both required for jellybeans
+Plug 'rktjmp/lush.nvim'
+Plug 'metalelf0/jellybeans-nvim'
+
 call plug#end()
 
 " -------------------- nvim-cmp --------------------------
 lua require('nvim-cmp')
+
+" -------------------- jellybeans --------------------------
+colorscheme jellybeans-nvim

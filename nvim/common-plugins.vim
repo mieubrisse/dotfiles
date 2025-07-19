@@ -41,8 +41,6 @@ call plug#begin("~/.vim-plug")
 "     Plug 'hrsh7th/vim-vsnip'
 " endif
 
-" Seems like jellybeans has gone out of development
-Plug 'nanotech/jellybeans.vim'
 
 Plug 'vim-scripts/groovy.vim'
 Plug 'tfnico/vim-gradle'
@@ -148,9 +146,3 @@ let g:airline_section_z = airline#section#create(['%3p%%'])
 " ---------------------------- Gitgutter ---------------------------------
 nnoremap <Leader>ha :GitGutterStageHunk<CR>
 
-" -------------------------- Color Scheme --------------------------------
-colorscheme jellybeans
-" let g:jellybeans_background_color_256 = "000000"
-let g:jellybeans_overrides = {
-\    'background': { 'guibg': '000000' },
-\}
