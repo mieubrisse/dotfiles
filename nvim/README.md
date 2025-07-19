@@ -4,7 +4,6 @@ This Neovim directory is also the same that gets placed into `.vim`.
 
 The goal is to maintain compatibility with both Vim and Neovim.
 
-
 ```
 init.vim                Entrypoint for everything
 autoload/               Automatically loaded by both Vim and Neovim
