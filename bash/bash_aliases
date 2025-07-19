@@ -23,6 +23,8 @@ alias llt='ll -t' # Sort by date last modified
 alias la='ls -A'
 alias l='ls'
 
+alias cat="bat"
+
 # du should always be human readable
 alias du='du -h'
 
@@ -67,13 +69,11 @@ alias hgr='history | gr'
 alias pgr='ps aux | gr'
 
 # Map command to open last vim session
-alias   v="vim"
-# TODO I have never used this and maybe I never will
-VIM_SESSION=~/.vim/.saved-session.vim
-alias   vims="vim -S ${VIM_SESSION}"
+alias vim="nvim"
+alias v="vim"
 
 # Jobs should show PID by default
-alias   jobs="jobs -l"
+alias jobs="jobs -l"
 
 # Easy SSH port forwarding
 function sshl { 

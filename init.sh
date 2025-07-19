@@ -55,3 +55,10 @@ for link_def in "${symlink_arr[@]}"; do
     link_filepath="$(echo "${link_def}" | cut -d',' -f2)"
     ln -sfn "${source_filepath}" "${link_filepath}"
 done
+
+# Install vim-plug for Neovim if it's not installed already (the file doesn't get checked into version control)
+VIM_PLUG_URL="https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim"
+VIM_PLUG_FILEPATH="${HOME}/.local/share/nvim/site/autoload/plug.vim"
+if ! [ -f "${DESTINATION_PATH}" ]; then
+    curl -fLo "${VIM_PLUG_FILEPATH}" --create-dirs "${VIM_PLUG_URL}"
+fi
