@@ -31,4 +31,4 @@ lua require('config.nvim-cmp')
 lua require('config.mason')
 
 " -------------------- jellybeans --------------------------
-colorscheme jellybeans-nvim
+lua require('config.jellybeans')
