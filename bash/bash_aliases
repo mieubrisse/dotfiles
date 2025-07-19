@@ -545,7 +545,12 @@ dotfiles_dirpath="${HOME}/app/dotfiles"
 alias dotfiles="cd '${dotfiles_dirpath}'"
 
 code_dirpath="${HOME}/code"
-# alias code="_smart_open_dir_file fuzzy_ls '${code_dirpath}'"
+
+# Alias for jumping around code directories
+# If no arguments are specified, then we go directly to the code directory
+# If any number of arguments are specified, they're treated as search terms and...
+# - If one directory matches, we go directly to it
+# - If more than one directory matches, we open fzf to filter the results
 function code() {
     # TODO extract into a helper function for adding fzf-completion for any subdirectory
     if [ "${#}" -eq 0 ]; then
@@ -553,9 +558,21 @@ function code() {
         return 0
     fi
 
-    selected_dirname=$(
-        find "${code_dirpath}" -maxdepth 1 -type d -exec basename {} \; | fzf --query "${*}"
-    )
+    query_terms="${*}"
+    glob_query="*${query_terms// /*}*"
+
+    dirs_matching_glob="$(find "${code_dirpath}" -maxdepth 1 -type d -iname "${glob_query}" -exec basename {} \;)"
+    num_matches="$(echo "${dirs_matching_glob}" | wc -l)"
+    
+    # If we only have one match, then go directly to it
+    if [ "${num_matches}" -eq 1 ]; then
+        cd "${code_dirpath}/${dirs_matching_glob}"
+        return 0
+    fi
+
+    selected_dirname="$(
+        find "${code_dirpath}" -maxdepth 1 -type d -exec basename {} \; | fzf --query "${query_terms}"
+    )"
 
     if [ -z "${selected_dirname}" ]; then
         return 0
@@ -762,8 +779,10 @@ alias todays-goals="journal new todays-goals.md todays-goals"
 # ======================================================================================
 #                                Overpowered Writing Tools
 # ======================================================================================
-alias pf="find_post"
+alias pj="jump_post"
+alias pe="edit_post"
 alias pn="new_post"
+alias pp="publish_post"
 
 # ======================================================================================
 #                                    Health Journal
