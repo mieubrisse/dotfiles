@@ -6,6 +6,7 @@
 set -euo pipefail
 script_dirpath="$(cd "$(dirname "${0}")" && pwd)"
 
+xdg_config_dirpath="${HOME}/.config"
 vim_dirpath="${HOME}/.vim"
 ipython_dirpath="${HOME}/.ipython/profile_default"
 claude_dirpath="${HOME}/.claude"
@@ -41,6 +42,7 @@ symlink_arr=(
     "${script_dirpath}/claude/CLAUDE.md,${claude_dirpath}/CLAUDE.md"
     "${script_dirpath}/hushlogin,${HOME}/.hushlogin"
     "${script_dirpath}/overpowered-writing/overpowered-writing.env,${HOME}/.overpowered-writing.env"
+    "${script_dirpath}/nvim,${xdg_config_dirpath}/nvim"
 )
 
 for link_def in "${symlink_arr[@]}"; do

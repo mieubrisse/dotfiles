@@ -264,9 +264,6 @@ set notimeout ttimeout ttimeoutlen=200
 " Lazy redraw, from sensible.vim
 set lazyredraw
 
-" Use <F11> to toggle between 'paste' and 'nopaste'
-set pastetoggle=<F11>
-
 " Folding options
 set foldenable          " Turn on folding
 set foldlevelstart=10   " Default show up to 10 levels of folds open on start
