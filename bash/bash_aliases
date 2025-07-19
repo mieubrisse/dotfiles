@@ -564,7 +564,7 @@ function code() {
     glob_query="*${query_terms// /*}*"
 
     dirs_matching_glob="$(find "${code_dirpath}" -maxdepth 1 -type d -iname "${glob_query}" -exec basename {} \;)"
-    num_matches="$(echo "${dirs_matching_glob}" | wc -l)"
+    num_matches="$(printf "%s" "${dirs_matching_glob}" | wc -l)"
     
     # If we only have one match, then go directly to it
     if [ "${num_matches}" -eq 1 ]; then
