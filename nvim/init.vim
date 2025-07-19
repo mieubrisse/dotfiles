@@ -4,6 +4,13 @@
 source ~/.vim/plugins.vim
 
 " ========================================================================
+"                             Neovim-Only Config
+" ========================================================================
+if has('nvim')
+    source ~/.vim/neovim.lua
+endif
+
+" ========================================================================
 "                          Setting Options
 " ========================================================================
 " Allow editing Mac crontab with Vim
@@ -326,10 +333,11 @@ command! PrettifyXML call DoPrettifyXML()
 
 
 " ========================================================================
-"                                Mappings
+"                          REMINDERS FOR MYSELF
 " ========================================================================
 " Merge two blocks of lines: https://stackoverflow.com/questions/10760326/merge-multiple-lines-two-blocks-in-vim
 " 1) Select first block of lines you want to merge and yank them to a register
 " 2) :let l=split(@THEREGISTER) 
 " 3) Select second block of lines
 " 4) :'<,'>s/SOMESELECTOR/\=remove(l,0)/
+

@@ -202,6 +202,5 @@ if has('nvim')
     " -------------------- kanagawa --------------------------
     " lua require('config.theme')
 else
-    lua vim.opt.termguicolors = true
-    " Vim-only plugin config here
+    " Vim-only plugin configuration here
 endif
