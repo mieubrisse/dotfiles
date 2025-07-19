@@ -28,7 +28,6 @@ alias cat="bat"
 # du should always be human readable
 alias du='du -h'
 
-
 # Overwrite cd to jump up multiple levels with 'cd <# dir>..' syntax
 function cd() {
     # If string isn't long enough, use builtin cd anyways
