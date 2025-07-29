@@ -44,6 +44,7 @@ symlink_arr=(
     "${script_dirpath}/nvim/init.vim,${HOME}/.vimrc"
     "${script_dirpath}/nvim,${HOME}/.vim"
     "${script_dirpath}/nvim,${xdg_config_dirpath}/nvim"
+    "${script_dirpath}/safebrew/safebrew.env,${xdg_config_dirpath}/safebrew/safebrew.env"
 )
 
 for link_def in "${symlink_arr[@]}"; do
