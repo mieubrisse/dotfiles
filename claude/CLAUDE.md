@@ -6,6 +6,7 @@ General Principles
 - Favor defensive code that checks edge cases and error conditions.
 - Use linters to catch potential problems early.
 - When given instructions, push for clarity and specificity. Do not start making changes until you understand the task you're trying to complete.
+- If the project contains a devcontainer, do not install any tools in the global environment. Instead, install everything in the devcontainer so the environment is reproducible.
 
 Markdown
 ========
@@ -28,7 +29,7 @@ Dependencies
 ============
 When choosing dependencies, use the latest stable released version unless you have a compelling reason to do otherwise.
 
-Generating  bash files
+Bash
 ======================
 When you are generating new Bash files, always start with this header:
 
@@ -38,6 +39,8 @@ script_dirpath="$(cd "$(dirname "${0}")" && pwd)"
 ```
 
 You should then use the declared `script_dirpath` variable inside the script if you need to reference files relative to the script.
+
+When you are referencing variables, always use the full form with curly braces, `${}`. For example, `${my_var}` and not `$my_var`.
 
 Golang
 ======
