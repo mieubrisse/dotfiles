@@ -304,14 +304,6 @@ function smallest {
     _ls_results '-Sr' 'tail' "$NUM_RESULTS"
 }
 
-
-
-# ======================================================================================
-#                                      fzf "cmd-k"
-# ======================================================================================
-export CMDK_DIRPATH=${HOME}/app/cmdk
-source ~/app/cmdk/cmdk.sh
-
 # ======================================================================================
 #                                            Vim 
 # ======================================================================================
@@ -452,7 +444,7 @@ alias grs1="git reset --soft HEAD^"
 alias gcl="git clone"
 alias gf="git fetch --prune"
 alias gpll="git pull"
-function gpsh() {	# Push the branch upstream if it doesn't exist; otherwise just git push
+function gp() {	# Push the branch upstream if it doesn't exist; otherwise just git push
 	BRANCH_NAME="$(git rev-parse --abbrev-ref HEAD)"
 	if [[ $(git config "branch.$BRANCH_NAME.merge") == '' ]]; then
             git push -u origin "$BRANCH_NAME" "$@"
@@ -460,7 +452,6 @@ function gpsh() {	# Push the branch upstream if it doesn't exist; otherwise just
             git push "$@"
         fi
 }
-alias gphs="gpsh" # Alias for common typo I make
 alias gprune-local-dry-run="git branch --merged | grep -v '\*' | grep -v 'master' | grep -v 'develop'"
 alias gprune-local="git branch --merged | grep -v '\*' | grep -v 'master' | grep -v 'develop' | xargs -n 1 git branch -d"
 
