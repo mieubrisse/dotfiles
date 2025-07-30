@@ -50,6 +50,9 @@ done < "${temp_file}"
 # Clean up temp file
 rm "${temp_file}"
 
+# Trim whitespace from body
+body=$(echo "${body}" | sed 's/^[[:space:]]*//;s/[[:space:]]*$//')
+
 # Check if title is provided
 if [[ -z "${title}" ]]; then
     echo "Error: No title provided" >&2
@@ -60,5 +63,5 @@ fi
 if [[ -n "${body}" ]]; then
     gh issue create --title "${title}" --body "${body}"
 else
-    gh issue create --title "${title}"
+    gh issue create --title "${title}" --body ""
 fi
