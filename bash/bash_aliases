@@ -443,7 +443,7 @@ alias grs1="git reset --soft HEAD^"
 # Dealing with remotes
 alias gcl="git clone"
 alias gf="git fetch --prune"
-alias gpll="git pull"
+alias gpl="git pull"
 function gp() {	# Push the branch upstream if it doesn't exist; otherwise just git push
 	BRANCH_NAME="$(git rev-parse --abbrev-ref HEAD)"
 	if [[ $(git config "branch.$BRANCH_NAME.merge") == '' ]]; then
@@ -455,6 +455,10 @@ function gp() {	# Push the branch upstream if it doesn't exist; otherwise just g
 alias gprune-local-dry-run="git branch --merged | grep -v '\*' | grep -v 'master' | grep -v 'develop'"
 alias gprune-local="git branch --merged | grep -v '\*' | grep -v 'master' | grep -v 'develop' | xargs -n 1 git branch -d"
 
+
+# ======================================================================================
+#                                      Github
+# ======================================================================================
 
 # ======================================================================================
 #                                      Gradle
@@ -690,7 +694,7 @@ function wealthdraft() {
     binary_dirpath="/wealthdraft"
     configs_dirpath="/config"
     docker run --rm \
-        -v "${gref_dirpath}/finance/wealthdraft-personal-configs:${configs_dirpath}" \
+        -v "${code_dirpath}/wealthdraft-personal-configs:${configs_dirpath}" \
         -v "${HOME}/app/wealthdraft:${binary_dirpath}" \
         amazoncorretto:11-alpine \
         sh -c "java -jar ${binary_dirpath}/*.jar \
