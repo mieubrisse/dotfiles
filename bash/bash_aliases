@@ -73,6 +73,7 @@ alias pgr='ps aux | gr'
 # Map command to open last vim session
 alias vim="nvim"
 alias v="vim"
+alias vi="vim"
 
 # Jobs should show PID by default
 alias jobs="jobs -l"
@@ -715,6 +716,8 @@ function wealthdraft() {
 #                                    CLI Journal
 # ======================================================================================
 # cli-journal aliases
+journal_dirpath="${gdrive_dirpath}/journal"
+
 alias journal="activate_jenv_and_java_home && java -jar ${HOME}/app/cli-journal/*.jar"
 alias jn="journal new"
 
@@ -753,18 +756,16 @@ EOF
     # - scheme=history so that 'needle-foo' is ranked equal to 'foo-needle' when searching for 'needle'
     # - tiebreak=index so that things ranked equally are subsorted by timestamp
     # - query=${*} prints all the args as a single string, separated by a space
-    IFS=$'\n' output_paths=( 
-        $(FZF_DEFAULT_COMMAND="${_fzf_journal_find_command}" fzf \
-            -m \
-            --ansi \
-            --delimiter=$'\t' \
-            --with-nth='{2}   {3}' \
-            --accept-nth=1 \
-            --bind='change:top' \
-            --scheme=history \
-            --tiebreak=index \
-            --query="${*}"
-        )
+    mapfile -t output_paths < <(FZF_DEFAULT_COMMAND="${_fzf_journal_find_command}" fzf \
+        -m \
+        --ansi \
+        --delimiter=$'\t' \
+        --with-nth='{2}   {3}' \
+        --accept-nth=1 \
+        --bind='change:top' \
+        --scheme=history \
+        --tiebreak=index \
+        --query="${*}"
     )
 
     if [ "${#output_paths[@]}" -gt 0 ]; then
@@ -785,4 +786,40 @@ alias pp="publish_post"
 # ======================================================================================
 #                                    Health Journal
 # ======================================================================================
-alias health="vim ${gdrive_dirpath}/general-reference/health/health-journal.md"
+alias health="vim ${gref_dirpath}/health/health-journal.md"
+
+
+# ======================================================================================
+#                                    Health Journal
+# ======================================================================================
+alias musings="vim ${gref_dirpath}/musings/one-off-musings.md"
+
+# ======================================================================================
+#                                    Weekly Planning
+# ======================================================================================
+get_week_plan_filepath() {
+  # Ensure psup_dirpath is set
+  if [ -z "${psup_dirpath}" ]; then
+    echo "Error: psup_dirpath is not set."
+    return 1
+  fi
+
+  # Get the date for Sunday of the current week
+  # We have to use Gnu date (gdate) since Mac date doesn't have the -d option
+  week_date="$(gdate -d "last sunday +0 days" +"%Y-%m-%d")"
+
+  # Special case: if today is Sunday, use today
+  if [ "$(date +%u)" -eq 7 ]; then
+    week_date="$(date +"%Y-%m-%d")"
+  fi
+
+  # Construct the file path
+  echo "${journal_dirpath}/week-plan~${week_date}_12-00-00.md"
+}
+alias week="vim $(get_week_plan_filepath)"
+
+# ======================================================================================
+#                                    Myopia Planning
+# ======================================================================================
+myopia_planning_filepath="${psup_dirpath}/myopia-planning.md"
+alias myopia="vim ${myopia_planning_filepath}"

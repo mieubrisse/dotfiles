@@ -159,8 +159,8 @@ PATH_ADDITIONS+=("${GOPATH}/bin")
 PATH_ADDITIONS+=("${HOME}/.docker/bin")
 
 # ----------- fzf -------------------------------------------------------------
-export FZF_CTRL_T_COMMAND="sh ${HOME}/.cmdk/list-files.sh"
-export FZF_CTRL_T_OPTS="-m --ansi --scheme=path --preview='sh ${HOME}/.cmdk/preview.sh {}'"
+export FZF_CTRL_T_COMMAND="bash ${HOME}/.cmdk/list-files.sh"
+export FZF_CTRL_T_OPTS="-m --ansi --scheme=path --preview='bash ${HOME}/.cmdk/preview.sh {}'"
 
 # TODO use the --color tab to style
 export FZF_DEFAULT_OPTS="--style=minimal"
