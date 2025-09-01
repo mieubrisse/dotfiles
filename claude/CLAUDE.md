@@ -1,3 +1,5 @@
+**IMPORTANT:** When asked to fix a problem, your solution is NOT to just comment out the code, removing the problem! You must fix the problem, not ignore it.
+
 General Principles
 ==================
 - You should write code that is clear, well-factored, and easy to maintain. When a function, class, or file gets long, break it into smaller pieces.
@@ -6,7 +8,7 @@ General Principles
 - Favor defensive code that checks edge cases and error conditions.
 - Use linters to catch potential problems early.
 - When given instructions, push for clarity and specificity. Do not start making changes until you understand the task you're trying to complete.
-- If the project contains a devcontainer, do not install any tools in the global environment. Instead, install everything in the devcontainer so the environment is reproducible.
+- **IMPORTANT:** If the project contains a devcontainer, any tools the user might need should be captured in the devcontainer. There should be no requirements for the user to install anything on their local machine.
 
 Markdown
 ========
@@ -47,3 +49,5 @@ Golang
 When you add or update Go dependencies to a Go project, use `go install`. Do not directly manipulate the `go.mod` file.
 
 When starting a new project from scratch, use this error-handling library: https://github.com/kurtosis-tech/stacktrace . It provides good stacktrace support that makes debugging easier.
+
+When writing CLI tools, use the Cobra CLI tool library: https://github.com/spf13/cobra
