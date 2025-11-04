@@ -604,7 +604,8 @@ alias psup="_smart_open_dir_file fuzzy_ls '${psup_dirpath}'"
 someday_dirpath="${gdrive_dirpath}/someday-maybe"
 alias someday="_smart_open_dir_file fuzzy_find '${someday_dirpath}'"
 
-alias self_improvement="_smart_open_dir_file fuzzy_find '${gref_dirpath}/self-improvement'"
+self_improvement_dirpath="${gref_dirpath}/self-improvement"
+alias selfimprovement="_smart_open_dir_file fuzzy_find '${self_improvement_dirpath}'"
 
 
 
@@ -715,48 +716,56 @@ function wealthdraft() {
 # ======================================================================================
 #                                    CLI Journal
 # ======================================================================================
-# cli-journal aliases
-journal_dirpath="${gdrive_dirpath}/journal"
+export journal_dirpath="${gdrive_dirpath}/journal"   # Must be exported so fzf can use this
+
+# Builds a list of the files in the CLI journal, for use with fzf
+_fzf_journal_find_cmd() {
+    fd -e md -t f . "${journal_dirpath}" |                                   # list *.md only
+    awk -v OFS=$'\t' '
+    BEGIN {
+        grey  = "\033[90m"   # dark-grey (bright black)
+        yellow= "\033[33m"
+        reset = "\033[0m"
+    }
+    {
+        path = $0
+        file = $0
+        sub(/.*\//, "", file)     # strip leading dirs
+        sub(/\.md$/, "", file)    # strip .md
+
+        n      = split(file, parts, "~")
+        entry  = parts[1]                       # FIRST
+        tsraw  = (n>=2 ? parts[2] : "")         # SECOND  YYYY-MM-DD_HH-mm-SS
+
+        split(tsraw, t, "_")
+        gsub(/-/, ":", t[2])                    # HH-mm-SS → HH:mm:SS
+        tspretty = t[1] " " t[2]                # YYYY-MM-DD HH:mm:SS
+
+        # columns: 1=path, 2=coloured timestamp, 3=plain entry, 4=raw timestamp
+        print path, yellow tspretty reset, entry, tsraw
+    }'
+}
+export -f _fzf_journal_find_cmd  # Need to export this so fzf can use it
 
 alias journal="activate_jenv_and_java_home && java -jar ${HOME}/app/cli-journal/*.jar"
-alias jn="journal new"
+jn() {
+    joined_name="${*}"
+    joined_name_with_dashes="${joined_name// /-}"
+    
+    # Add .md only if it doesn't already end with it
+    if [[ "$joined_name_with_dashes" != *.md ]]; then
+        joined_name_with_dashes="${joined_name_with_dashes}.md"
+    fi
+
+    journal new "$joined_name_with_dashes"
+}
 
 jf() {
-    read -r -d '' _fzf_journal_find_command << 'EOF'
-fd -e md -t f . "/Users/odyssey/gdrive/journal" |                                   # list *.md only
-awk -v OFS=$'\t' '
-BEGIN {
-    grey  = "\033[90m"   # dark-grey (bright black)
-    yellow= "\033[33m"
-    reset = "\033[0m"
-}
-{
-    path = $0
-    file = $0
-    sub(/.*\//, "", file)     # strip leading dirs
-    sub(/\.md$/, "", file)    # strip .md
-
-    n      = split(file, parts, "~")
-    entry  = parts[1]                       # FIRST
-    tsraw  = (n>=2 ? parts[2] : "")         # SECOND  YYYY-MM-DD_HH-mm-SS
-
-    split(tsraw, t, "_")
-    gsub(/-/, ":", t[2])                    # HH-mm-SS → HH:mm:SS
-    tspretty = t[1] " " t[2]                # YYYY-MM-DD HH:mm:SS
-
-    # columns: 1=path, 2=coloured timestamp, 3=plain entry, 4=raw timestamp
-    print path, yellow tspretty reset, entry, tsraw
-}' |
-
-# Newest first by sorting on raw timestamp
-sort -t$'\t' -k4,4Vr
-EOF
-
     # Explaining:
     # - scheme=history so that 'needle-foo' is ranked equal to 'foo-needle' when searching for 'needle'
     # - tiebreak=index so that things ranked equally are subsorted by timestamp
     # - query=${*} prints all the args as a single string, separated by a space
-    mapfile -t output_paths < <(FZF_DEFAULT_COMMAND="${_fzf_journal_find_command}" fzf \
+    mapfile -t output_paths < <(FZF_DEFAULT_COMMAND="_fzf_journal_find_cmd" fzf \
         -m \
         --ansi \
         --delimiter=$'\t' \
@@ -773,7 +782,23 @@ EOF
     fi
 }
 
+jt() {
+    # TODO
+}
+
 alias todays-goals="journal new todays-goals.md todays-goals"
+
+new-packing-checklist() {
+    joined_name="${*}"
+    joined_name_with_dashes="${joined_name// /-}"
+    if [ -z "${joined_name_with_dashes}" ]; then
+        echo "Error: Provide name for checklist in journal: new-packing-checklist [name_fragments...]" >&2
+        return 1
+    fi
+    dest_dirpath="${journal_dirpath}/${joined_name_with_dashes}~$(now)~.md"
+    cp "${check_dirpath}/packing-lists/regular-packing-list.md" "${dest_dirpath}"
+    vim "${dest_dirpath}"
+}
 
 # ======================================================================================
 #                                Overpowered Writing Tools
@@ -795,7 +820,7 @@ alias health="vim ${gref_dirpath}/health/health-journal.md"
 alias musings="vim ${gref_dirpath}/musings/one-off-musings.md"
 
 # ======================================================================================
-#                                    Weekly Planning
+#                                 Weekly/Monthly Planning
 # ======================================================================================
 get_week_plan_filepath() {
   # Ensure psup_dirpath is set
@@ -818,8 +843,26 @@ get_week_plan_filepath() {
 }
 alias week="vim $(get_week_plan_filepath)"
 
+month() {
+    local month_dirpath="${self_improvement_dirpath}/$(date +%Y-%m)"
+    mkdir -p "${month_dirpath}"
+    vim "${month_dirpath}/month-goals.md"
+}
+
 # ======================================================================================
 #                                    Myopia Planning
 # ======================================================================================
 myopia_planning_filepath="${psup_dirpath}/myopia-planning.md"
 alias myopia="vim ${myopia_planning_filepath}"
+
+# ======================================================================================
+#                                    FounderOS
+# ======================================================================================
+founderos_dirpath="${gref_dirpath}/2025_founderos"
+alias founderos="cd ${founderos_dirpath}"
+alias compounding-sow="vim ${founderos_dirpath}/state-of-the-world-journal.md"
+
+infoproduct_dirpath="${psup_dirpath}/br-life-upgrade-infoproduct"
+alias iproduct="cd ${infoproduct_dirpath}"
+
+alias vision="vim ${self_improvement_dirpath}/2025-10/vision-board.md"
