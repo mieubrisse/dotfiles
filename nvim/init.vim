@@ -76,8 +76,8 @@ set cursorline
 " Use case sensitive search, except when searching
 set noignorecase
 set incsearch
-" nnoremap / /\c<Left><Left>
-" nnoremap ? ?\c<Left><Left>
+nnoremap / /\c<Left><Left>
+nnoremap ? ?\c<Left><Left>
 
 
 " Allow backspacing over autoindent, line breaks and start of insert action
@@ -111,8 +111,8 @@ set visualbell
 " is unset, this does nothing.
 set t_vb=
 
-" Enable use of the mouse for all modes
-"set mouse=a
+" Disable use of the mouse for all modes
+set mouse=
 
 " Set the command window height to 2 lines, to avoid many cases of having to
 " "press <Enter> to continue"
