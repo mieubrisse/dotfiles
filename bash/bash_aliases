@@ -748,6 +748,8 @@ _fzf_journal_find_cmd() {
 export -f _fzf_journal_find_cmd  # Need to export this so fzf can use it
 
 alias journal="activate_jenv_and_java_home && java -jar ${HOME}/app/cli-journal/*.jar"
+
+# Create a new journal entry
 jn() {
     joined_name="${*}"
     joined_name_with_dashes="${joined_name// /-}"
@@ -760,6 +762,36 @@ jn() {
     journal new "$joined_name_with_dashes"
 }
 
+# Create a journal entry from template
+jt() {
+    joined_name="${*}"
+    joined_name_with_dashes="${joined_name// /-}"
+
+    # Remove .md extension if present since we'll add it automatically
+    joined_name_with_dashes="${joined_name_with_dashes%.md}"
+    
+    if [ -z "${joined_name_with_dashes}" ]; then
+        echo "Error: Provide name for journal entry: jt [name_fragments...]" >&2
+        return 1
+    fi
+    
+    # Use fd and fzf to select a template from check_dirpath
+    template_file=$(fd -e md -t f -t l . "${check_dirpath}" | fzf --prompt="Select template: ")
+    
+    if [ -z "${template_file}" ]; then
+        echo "No template selected" >&2
+        return 1
+    fi
+    
+    # Create destination path with tilda-separated pattern like new-packing-checklist
+    dest_filepath="${journal_dirpath}/${joined_name_with_dashes}~$(now)~.md"
+    
+    # Copy template to destination and open in vim
+    cp "${template_file}" "${dest_filepath}"
+    vim "${dest_filepath}"
+}
+
+# Find a journal entry
 jf() {
     # Explaining:
     # - scheme=history so that 'needle-foo' is ranked equal to 'foo-needle' when searching for 'needle'
@@ -780,10 +812,6 @@ jf() {
     if [ "${#output_paths[@]}" -gt 0 ]; then
         vim -O "${output_paths[@]}"
     fi
-}
-
-jt() {
-    # TODO
 }
 
 alias todays-goals="journal new todays-goals.md todays-goals"
