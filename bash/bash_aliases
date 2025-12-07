@@ -889,9 +889,47 @@ get_week_plan_filepath() {
 alias week="vim $(get_week_plan_filepath)"
 
 month() {
-    local month_dirpath="${self_improvement_dirpath}/$(date +%Y-%m)"
-    mkdir -p "${month_dirpath}"
-    vim "${month_dirpath}/month-goals.md"
+    local current_day=$(date +%d)
+    local current_month_year=$(date +%Y-%m)
+    
+    # Calculate which months are "passed" and "to come" based on the 25th threshold
+    if [ "${current_day}" -gt 25 ]; then
+        # After 25th: current month is "passed", next month is "to come"
+        passed_month_year="${current_month_year}"
+        to_come_month_year=$(gdate -d "next month" +%Y-%m)
+    else
+        # Before 25th: last month is "passed", current month is "to come"
+        passed_month_year=$(gdate -d "last month" +%Y-%m)
+        to_come_month_year="${current_month_year}"
+    fi
+    
+    # Set up file paths
+    passed_month_dirpath="${self_improvement_dirpath}/${passed_month_year}"
+    passed_month_filepath="${passed_month_dirpath}/month-goals.md"
+    
+    to_come_month_dirpath="${self_improvement_dirpath}/${to_come_month_year}"
+    to_come_month_filepath="${to_come_month_dirpath}/month-goals.md"
+    
+    # Create directory for the month to come if it doesn't exist
+    mkdir -p "${to_come_month_dirpath}"
+    
+    # Build vim command arguments
+    vim_args=()
+    
+    # Always add the to come month file
+    vim_args+=("${to_come_month_filepath}")
+
+    # Add passed month file if it exists
+    if [ -f "${passed_month_filepath}" ]; then
+        vim_args+=("${passed_month_filepath}")
+    fi
+    
+    # Open in vertical split if we have both files, otherwise just open the single file
+    if [ ${#vim_args[@]} -eq 2 ]; then
+        vim -O "${vim_args[@]}"
+    else
+        vim "${vim_args[@]}"
+    fi
 }
 
 # ======================================================================================
