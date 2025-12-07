@@ -91,6 +91,7 @@ alias prettify-json="python -mjson.tool"
 alias eject="diskutil unmount"
 
 # Adds a `chrome` command that I use for rendering Markdown files, with completion
+# TODO: make this also open .sheet files in Google drive by examining the link
 alias chrome="open -a 'Google Chrome'"
 _chrome_completion() {
     local cur="${COMP_WORDS[COMP_CWORD]}"
@@ -171,23 +172,34 @@ function smart_open {
         return 1
     fi
 
-    # TODO Handle multiple input files
-    filetype="$(file "${filepath}" | sed 's/, with very long lines//g' | awk '{print $NF}')"
-    return_code=0
-    case "${filetype}" in
-        text)
-            vim "${filepath}"
+    # TODO Handle multiple input files (probably using fzf, or something like cmdk)
+    mime_type="$(file -b --mime-type "${filepath}")"
+    program=""
+    case "${mime_type}" in
+        text/*)
+            program="vim"
             ;;
-        directory)
-            cd "${filepath}"
+        application/json)
+            program="vim"
+            ;;
+        inode/directory)
+            program="cd"
+            ;;
+        application/pdf)
+            program="open"
+            ;;
+        application/vnd.openxmlformats-officedocument.wordprocessingml.document)
+            program="open"
+            ;;
+        image/*)
+            program="open"
             ;;
         *)
-            # TODO handle PDF & JPG types
-            echo "Error: Unknown filetype '${filetype}'" >&2
-            return_code=1
+            echo "Error: Unknown MIME type: ${mime_type}" >&2
+            return 1
             ;;
     esac
-    return "${return_code}"
+    "${program}" "${filepath}"
 }
 alias so="smart_open"
 
@@ -607,8 +619,18 @@ alias someday="_smart_open_dir_file fuzzy_find '${someday_dirpath}'"
 self_improvement_dirpath="${gref_dirpath}/self-improvement"
 alias selfimprovement="_smart_open_dir_file fuzzy_find '${self_improvement_dirpath}'"
 
+work_gdrive_dirpath="${HOME}/work-gdrive"
+alias work-gdrive="_smart_open_dir_file fuzzy_ls '${work_gdrive_dirpath}'"
 
+client() {
+    client_id="${1:-}"
+    if [ -z "${client_id}" ]; then
+        echo "Usage: client [client_id]" >&2
+        return 1
+    fi
 
+    cd "${work_gdrive_dirpath}/client-${client_id}"
+}
 
 
 # ======================================================================================
@@ -743,7 +765,8 @@ _fzf_journal_find_cmd() {
 
         # columns: 1=path, 2=coloured timestamp, 3=plain entry, 4=raw timestamp
         print path, yellow tspretty reset, entry, tsraw
-    }'
+    }' |
+    sort -t $'\t' -k4,4r
 }
 export -f _fzf_journal_find_cmd  # Need to export this so fzf can use it
 
@@ -775,8 +798,8 @@ jt() {
         return 1
     fi
     
-    # Use fd and fzf to select a template from check_dirpath
-    template_file=$(fd -e md -t f -t l . "${check_dirpath}" | fzf --prompt="Select template: ")
+    # Use fd and fzf to select a template from check_dirpath (excluding ARCHIVE)
+    template_file=$(fd -e md -t f -t l -E ARCHIVE . "${check_dirpath}" | fzf --prompt="Select template: ")
     
     if [ -z "${template_file}" ]; then
         echo "No template selected" >&2
@@ -816,18 +839,6 @@ jf() {
 
 alias todays-goals="journal new todays-goals.md todays-goals"
 
-new-packing-checklist() {
-    joined_name="${*}"
-    joined_name_with_dashes="${joined_name// /-}"
-    if [ -z "${joined_name_with_dashes}" ]; then
-        echo "Error: Provide name for checklist in journal: new-packing-checklist [name_fragments...]" >&2
-        return 1
-    fi
-    dest_dirpath="${journal_dirpath}/${joined_name_with_dashes}~$(now)~.md"
-    cp "${check_dirpath}/packing-lists/regular-packing-list.md" "${dest_dirpath}"
-    vim "${dest_dirpath}"
-}
-
 # ======================================================================================
 #                                Overpowered Writing Tools
 # ======================================================================================
@@ -848,8 +859,14 @@ alias health="vim ${gref_dirpath}/health/health-journal.md"
 alias musings="vim ${gref_dirpath}/musings/one-off-musings.md"
 
 # ======================================================================================
-#                                 Weekly/Monthly Planning
+#                             Daily/Weekly/Monthly Reflections
 # ======================================================================================
+day() {
+    entry_filepath="${journal_dirpath}/daily-journalling~$(now)~.md"
+    cp "${check_dirpath}/daily-journalling.md" "${entry_filepath}"
+    vim "${entry_filepath}"
+}
+
 get_week_plan_filepath() {
   # Ensure psup_dirpath is set
   if [ -z "${psup_dirpath}" ]; then
@@ -890,7 +907,7 @@ founderos_dirpath="${gref_dirpath}/2025_founderos"
 alias founderos="cd ${founderos_dirpath}"
 alias compounding-sow="vim ${founderos_dirpath}/state-of-the-world-journal.md"
 
-infoproduct_dirpath="${psup_dirpath}/br-life-upgrade-infoproduct"
-alias iproduct="cd ${infoproduct_dirpath}"
+lifeops_dirpath="${psup_dirpath}/lifeops"
+alias lifeops="cd ${lifeops_dirpath}"
 
 alias vision="vim ${self_improvement_dirpath}/2025-10/vision-board.md"
