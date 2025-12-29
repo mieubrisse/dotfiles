@@ -622,16 +622,6 @@ alias selfimprovement="_smart_open_dir_file fuzzy_find '${self_improvement_dirpa
 work_gdrive_dirpath="${HOME}/work-gdrive"
 alias work-gdrive="_smart_open_dir_file fuzzy_ls '${work_gdrive_dirpath}'"
 
-client() {
-    client_id="${1:-}"
-    if [ -z "${client_id}" ]; then
-        echo "Usage: client [client_id]" >&2
-        return 1
-    fi
-
-    cd "${work_gdrive_dirpath}/client-${client_id}"
-}
-
 
 # ======================================================================================
 #                                      Docker
@@ -837,6 +827,17 @@ jf() {
     fi
 }
 
+
+# "coaching journal new"
+cjn() {
+    # Form journal_name from space-separated args as fragments of journal filename (see 'jn' function for inspiration)
+    # Store client_dirname from result of fzf for directories in ${work_gdrive_dirpath}
+    # If fzf was cancelled or an error occured, exit the function with return code 1
+    # Store journal_entry_filename=${client_dirname}-${journal_name}~TIMESTAMP~.md (where TIMESTAMP matches the format of 'jn')
+    # Create a symlink called YYYY-MM-DD_HH-mm-SS_NAME_${journal_name}.md (filling in the appropriate fields) inside ${work_gdrive_dirpath}/${client_dirname}
+}
+
+
 alias todays-goals="journal new todays-goals.md todays-goals"
 
 # ======================================================================================
@@ -891,6 +892,8 @@ alias week="vim $(get_week_plan_filepath)"
 month() {
     local current_day=$(date +%d)
     local current_month_year=$(date +%Y-%m)
+
+    local template_month_goals_filepath="${check_dirpath}/monthly-goals.md"
     
     # Calculate which months are "passed" and "to come" based on the 25th threshold
     if [ "${current_day}" -gt 25 ]; then
@@ -912,6 +915,10 @@ month() {
     
     # Create directory for the month to come if it doesn't exist
     mkdir -p "${to_come_month_dirpath}"
+
+    if ! [ -f "${to_come_month_filepath}" ]; then
+        cp "${template_month_goals_filepath}" "${to_come_month_filepath}"
+    fi
     
     # Build vim command arguments
     vim_args=()
