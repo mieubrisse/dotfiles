@@ -831,10 +831,31 @@ jf() {
 # "coaching journal new"
 cjn() {
     # Form journal_name from space-separated args as fragments of journal filename (see 'jn' function for inspiration)
+    joined_name="${*}"
+    journal_name="${joined_name// /-}"
+    
     # Store client_dirname from result of fzf for directories in ${work_gdrive_dirpath}
+    client_dirname=$(find "${work_gdrive_dirpath}" -maxdepth 1 -type d -not -path "${work_gdrive_dirpath}" -exec basename {} \; | fzf --prompt="Select client: ")
+    
     # If fzf was cancelled or an error occured, exit the function with return code 1
+    if [ -z "${client_dirname}" ]; then
+        return 1
+    fi
+    
     # Store journal_entry_filename=${client_dirname}-${journal_name}~TIMESTAMP~.md (where TIMESTAMP matches the format of 'jn')
+    timestamp="$(now)"
+    journal_entry_filename="${client_dirname}-${journal_name}~${timestamp}~.md"
+    journal_entry_filepath="${journal_dirpath}/${journal_entry_filename}"
+    
     # Create a symlink called YYYY-MM-DD_HH-mm-SS_NAME_${journal_name}.md (filling in the appropriate fields) inside ${work_gdrive_dirpath}/${client_dirname}
+    symlink_filename="${timestamp}_${journal_name}.md"
+    symlink_filepath="${work_gdrive_dirpath}/${client_dirname}/${symlink_filename}"
+    
+    # Create the symlink (will be broken until user saves in vim)
+    ln -sf "${journal_entry_filepath}" "${symlink_filepath}"
+    
+    # Open the journal file in vim
+    vim "${journal_entry_filepath}"
 }
 
 
