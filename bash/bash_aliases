@@ -730,6 +730,22 @@ function wealthdraft() {
 # ======================================================================================
 export journal_dirpath="${gdrive_dirpath}/journal"   # Must be exported so fzf can use this
 
+# Helper function to sanitize journal names from arguments
+_sanitize_journal_name() {
+    local joined_name="${*}"
+    local sanitized_name="${joined_name// /-}"
+    
+    # Remove .md extension if present
+    sanitized_name="${sanitized_name%.md}"
+    
+    # Check if empty after sanitization
+    if [ -z "${sanitized_name}" ]; then
+        return 1
+    fi
+    
+    echo "${sanitized_name}"
+}
+
 # Builds a list of the files in the CLI journal, for use with fzf
 _fzf_journal_find_cmd() {
     fd -e md -t f . "${journal_dirpath}" |                                   # list *.md only
@@ -764,26 +780,19 @@ alias journal="activate_jenv_and_java_home && java -jar ${HOME}/app/cli-journal/
 
 # Create a new journal entry
 jn() {
-    joined_name="${*}"
-    joined_name_with_dashes="${joined_name// /-}"
-    
-    # Add .md only if it doesn't already end with it
-    if [[ "$joined_name_with_dashes" != *.md ]]; then
-        joined_name_with_dashes="${joined_name_with_dashes}.md"
+    local sanitized_name
+    if ! sanitized_name=$(_sanitize_journal_name "${@}"); then
+        echo "Error: Provide name for journal entry: jn [name_fragments...]" >&2
+        return 1
     fi
-
-    journal new "$joined_name_with_dashes"
+    
+    journal new "${sanitized_name}.md"
 }
 
 # Create a journal entry from template
 jt() {
-    joined_name="${*}"
-    joined_name_with_dashes="${joined_name// /-}"
-
-    # Remove .md extension if present since we'll add it automatically
-    joined_name_with_dashes="${joined_name_with_dashes%.md}"
-    
-    if [ -z "${joined_name_with_dashes}" ]; then
+    local sanitized_name
+    if ! sanitized_name=$(_sanitize_journal_name "${@}"); then
         echo "Error: Provide name for journal entry: jt [name_fragments...]" >&2
         return 1
     fi
@@ -797,7 +806,7 @@ jt() {
     fi
     
     # Create destination path with tilda-separated pattern like new-packing-checklist
-    dest_filepath="${journal_dirpath}/${joined_name_with_dashes}~$(now)~.md"
+    dest_filepath="${journal_dirpath}/${sanitized_name}~$(now)~.md"
     
     # Copy template to destination and open in vim
     cp "${template_file}" "${dest_filepath}"
@@ -831,8 +840,11 @@ jf() {
 # "coaching journal new"
 cjn() {
     # Form journal_name from space-separated args as fragments of journal filename (see 'jn' function for inspiration)
-    joined_name="${*}"
-    journal_name="${joined_name// /-}"
+    local journal_name
+    if ! journal_name=$(_sanitize_journal_name "${@}"); then
+        echo "Error: Provide name for journal entry: cjn [name_fragments...]" >&2
+        return 1
+    fi
     
     # Store client_dirname from result of fzf for directories in ${work_gdrive_dirpath}
     client_dirname=$(find "${work_gdrive_dirpath}" -maxdepth 1 -type d -not -path "${work_gdrive_dirpath}" -exec basename {} \; | fzf --prompt="Select client: ")
