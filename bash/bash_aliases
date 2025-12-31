@@ -895,10 +895,23 @@ alias musings="vim ${gref_dirpath}/musings/one-off-musings.md"
 # ======================================================================================
 #                             Daily/Weekly/Monthly Reflections
 # ======================================================================================
+
+# Used to open a file from template in Vim WITHOUT needing to write a file first (so the user can :q
+# without writing anything)
+_open_file_from_template_without_writing() {
+    local template="${1}"
+    local filepath="${2}"
+
+    # NOTE: breaks if 'filepath' has spaces
+    cat "${template}" | vim -n -i NONE \
+        -c "setlocal noundofile noswapfile" \
+        -c "setlocal filetype=markdown" \
+        -c "file ${filepath}"
+}
+
 day() {
     entry_filepath="${journal_dirpath}/daily-journalling~$(now)~.md"
-    cp "${check_dirpath}/daily-journalling.md" "${entry_filepath}"
-    vim "${entry_filepath}"
+    _open_file_from_template_without_writing "${check_dirpath}/daily-journalling.md" "${entry_filepath}"
 }
 
 get_week_plan_filepath() {
