@@ -622,6 +622,8 @@ alias selfimprovement="_smart_open_dir_file fuzzy_find '${self_improvement_dirpa
 work_gdrive_dirpath="${HOME}/work-gdrive"
 alias work-gdrive="_smart_open_dir_file fuzzy_ls '${work_gdrive_dirpath}'"
 
+alias til="vim ${gref_dirpath}/today-i-learned.md"
+
 
 # ======================================================================================
 #                                      Docker
