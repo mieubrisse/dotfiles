@@ -905,7 +905,7 @@ alias musings="vim ${gref_dirpath}/musings/one-off-musings.md"
 #
 # This function will also:
 # - Transform any lines in the template with <!-- mark:x --> into an actual mark 'x' (or 'a', or whatever)
-# - Load the 'a' register with the string 'WHY: ' for doing 'why' reflection
+# - Load the 'w' register with the string 'WHY: ' for doing 'why' reflection (see https://github.com/mieubrisse/lifeops-toolkit/blob/main/reflection.md )
 _open_file_from_template_without_writing() {
     local template="${1}"
     local filepath="${2}"
@@ -934,7 +934,7 @@ _open_file_from_template_without_writing() {
         -c "setlocal noundofile noswapfile" \
         -c "setlocal filetype=markdown" \
         -c "file ${filepath}" \
-        -c "call setreg('a', 'WHY: ')" \
+        -c "call setreg('w', 'WHY: ')" \
         "${vim_mark_commands[@]}"
 }
 

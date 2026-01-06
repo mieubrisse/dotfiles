@@ -95,7 +95,7 @@ Command Line Stuff
 
 
 Vim Stuff
----------
+=========
 * `<shift-J>` and `<shift-K>` will page down and up respectively
 * `\``l` will clear highlighting of the last search term
 * `\``w` = `:w`
