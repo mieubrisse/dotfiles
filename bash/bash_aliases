@@ -904,11 +904,32 @@ _open_file_from_template_without_writing() {
     local template="${1}"
     local filepath="${2}"
 
+    # Process template content: replace <!-- mark:x --> lines with empty lines and generate vim mark commands
+    local vim_mark_commands=()
+    local processed_content=""
+    local line_number=1
+    
+    while IFS= read -r line; do
+        if [[ "${line}" =~ ^\<!--[[:space:]]*mark:([a-zA-Z])[[:space:]]*--\>$ ]]; then
+            # Extract the mark letter
+            local mark_letter="${BASH_REMATCH[1]}"
+            # Replace the mark line with an empty line
+            processed_content+=$'\n'
+            # Add vim command to set the mark on this line
+            vim_mark_commands+=("-c" "${line_number}mark ${mark_letter}")
+        else
+            processed_content+="${line}"$'\n'
+        fi
+        ((line_number++))
+    done < "${template}"
+
     # NOTE: breaks if 'filepath' has spaces
-    cat "${template}" | vim -n -i NONE \
+    printf '%s' "${processed_content}" | vim -n -i NONE \
         -c "setlocal noundofile noswapfile" \
         -c "setlocal filetype=markdown" \
-        -c "file ${filepath}"
+        -c "file ${filepath}" \
+        -c "call setreg('a', 'WHY: ')" \
+        "${vim_mark_commands[@]}"
 }
 
 day() {
