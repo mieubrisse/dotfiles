@@ -898,8 +898,14 @@ alias musings="vim ${gref_dirpath}/musings/one-off-musings.md"
 #                             Daily/Weekly/Monthly Reflections
 # ======================================================================================
 
-# Used to open a file from template in Vim WITHOUT needing to write a file first (so the user can :q
-# without writing anything)
+# This is a helper function for writing journals/notes/reflections from a template.
+#
+# It will open a buffer in Vim with the template contents, ready to write to the desired destination.
+# Saving will only happen when the user does ':w', however.
+#
+# This function will also:
+# - Transform any lines in the template with <!-- mark:x --> into an actual mark 'x' (or 'a', or whatever)
+# - Load the 'a' register with the string 'WHY: ' for doing 'why' reflection
 _open_file_from_template_without_writing() {
     local template="${1}"
     local filepath="${2}"
