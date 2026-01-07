@@ -33,3 +33,5 @@
 	insteadOf = https://github.com/
 [init]
 	defaultBranch = main
+[diff]
+	tool = vimdiff

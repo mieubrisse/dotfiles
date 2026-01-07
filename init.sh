@@ -36,7 +36,8 @@ symlink_arr=(
     "${script_dirpath}/ipython/ipython_config.py,${ipython_dirpath}/ipython_config.py"
     "${script_dirpath}/intellij-idea/ideavimrc,${HOME}/.ideavimrc"
     "${script_dirpath}/fd/fdignore,${HOME}/.fdignore"
-    "${HOME}/Google Drive/My Drive,${HOME}/gdrive" # Google Drive
+    "${HOME}/thetallmonkey@gmail.com - Google Drive/My Drive,${HOME}/gdrive" # Google Drive
+    "${HOME}/k@kevintoday.com - Google Drive/My Drive,${HOME}/work-gdrive" # Google Drive
     "${script_dirpath}/karabiner,${karabiner_config_dirpath}" # Karabiner config
     "${script_dirpath}/claude/CLAUDE.md,${claude_dirpath}/CLAUDE.md"
     "${script_dirpath}/hushlogin,${HOME}/.hushlogin"
