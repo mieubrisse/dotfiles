@@ -40,6 +40,7 @@ symlink_arr=(
     "${HOME}/k@kevintoday.com - Google Drive/My Drive,${HOME}/work-gdrive" # Google Drive
     "${script_dirpath}/karabiner,${karabiner_config_dirpath}" # Karabiner config
     "${script_dirpath}/claude/CLAUDE.md,${claude_dirpath}/CLAUDE.md"
+    "${script_dirpath}/claude/settings.json,${claude_dirpath}/settings.json"
     "${script_dirpath}/hushlogin,${HOME}/.hushlogin"
     "${script_dirpath}/overpowered-writing/overpowered-writing.env,${HOME}/.overpowered-writing.env"
     "${script_dirpath}/nvim/init.vim,${HOME}/.vimrc"
