@@ -70,6 +70,14 @@ alias mkdir="mkdir -p"
 alias hgr='history | gr'
 alias pgr='ps aux | gr'
 
+# Load the latest history from all tabs before modifying the history
+# This allows me to see history from all tabs
+# NOTE: relies on the 'history -a' in my PROMPT_COMMAND
+history() {
+    builtin history -n
+    builtin history "${@}"
+}
+
 # Map command to open last vim session
 alias vim="nvim"
 alias v="vim"
@@ -624,6 +632,8 @@ alias work-gdrive="_smart_open_dir_file fuzzy_ls '${work_gdrive_dirpath}'"
 
 alias til="vim ${gref_dirpath}/today-i-learned.md"
 
+alias assistant="cd ${code_dirpath}/assistant && claude"
+
 
 # ======================================================================================
 #                                      Docker
@@ -780,6 +790,48 @@ export -f _fzf_journal_find_cmd  # Need to export this so fzf can use it
 
 alias journal="activate_jenv_and_java_home && java -jar ${HOME}/app/cli-journal/*.jar"
 
+# This is a helper function for creating files from templates.
+#
+# It will open a buffer in Vim with the template contents, ready to write to the desired destination.
+# Saving will only happen when the user does ':w', however.
+#
+# This function will also:
+# - Transform any lines in the template with <!-- mark:x --> into an actual mark 'x' (or 'a', or whatever)
+# - Load the 'w' register with the string 'WHY: ' for doing 'why' reflection (see https://github.com/mieubrisse/lifeops-toolkit/blob/main/reflection.md )
+# - Load the 'e' register with a macro ready to create a newline with a nested 'WHY: ' bulletpoint
+_open_file_from_template_without_writing() {
+    local template="${1}"
+    local filepath="${2}"
+
+    # Process template content: replace <!-- mark:x --> lines with empty lines and generate vim mark commands
+    local vim_mark_commands=()
+    local processed_content=""
+    local line_number=1
+    
+    while IFS= read -r line; do
+        if [[ "${line}" =~ ^\<!--[[:space:]]*mark:([a-zA-Z])[[:space:]]*--\>$ ]]; then
+            # Extract the mark letter
+            local mark_letter="${BASH_REMATCH[1]}"
+            # Replace the mark line with an empty line
+            processed_content+=$'\n'
+            # Add vim command to set the mark on this line
+            vim_mark_commands+=("-c" "${line_number}mark ${mark_letter}")
+        else
+            processed_content+="${line}"$'\n'
+        fi
+        ((line_number++))
+    done < "${template}"
+
+    # NOTE: breaks if 'filepath' has spaces
+    printf '%s' "${processed_content}" | vim -n -i NONE \
+        -c "setlocal noundofile noswapfile" \
+        -c "setlocal filetype=markdown" \
+        -c "file ${filepath}" \
+        -c "call setreg('w', '- WHY: ')" \
+        -c "call setreg('e', 'o - WHY: ')" \
+        "${vim_mark_commands[@]}"
+}
+
 # Create a new journal entry
 jn() {
     local sanitized_name
@@ -897,47 +949,6 @@ alias musings="vim ${gref_dirpath}/musings/one-off-musings.md"
 # ======================================================================================
 #                             Daily/Weekly/Monthly Reflections
 # ======================================================================================
-
-# This is a helper function for writing journals/notes/reflections from a template.
-#
-# It will open a buffer in Vim with the template contents, ready to write to the desired destination.
-# Saving will only happen when the user does ':w', however.
-#
-# This function will also:
-# - Transform any lines in the template with <!-- mark:x --> into an actual mark 'x' (or 'a', or whatever)
-# - Load the 'w' register with the string 'WHY: ' for doing 'why' reflection (see https://github.com/mieubrisse/lifeops-toolkit/blob/main/reflection.md )
-_open_file_from_template_without_writing() {
-    local template="${1}"
-    local filepath="${2}"
-
-    # Process template content: replace <!-- mark:x --> lines with empty lines and generate vim mark commands
-    local vim_mark_commands=()
-    local processed_content=""
-    local line_number=1
-    
-    while IFS= read -r line; do
-        if [[ "${line}" =~ ^\<!--[[:space:]]*mark:([a-zA-Z])[[:space:]]*--\>$ ]]; then
-            # Extract the mark letter
-            local mark_letter="${BASH_REMATCH[1]}"
-            # Replace the mark line with an empty line
-            processed_content+=$'\n'
-            # Add vim command to set the mark on this line
-            vim_mark_commands+=("-c" "${line_number}mark ${mark_letter}")
-        else
-            processed_content+="${line}"$'\n'
-        fi
-        ((line_number++))
-    done < "${template}"
-
-    # NOTE: breaks if 'filepath' has spaces
-    printf '%s' "${processed_content}" | vim -n -i NONE \
-        -c "setlocal noundofile noswapfile" \
-        -c "setlocal filetype=markdown" \
-        -c "file ${filepath}" \
-        -c "call setreg('w', 'WHY: ')" \
-        "${vim_mark_commands[@]}"
-}
-
 day() {
     entry_filepath="${journal_dirpath}/daily-journalling~$(now)~.md"
     _open_file_from_template_without_writing "${check_dirpath}/daily-journalling.md" "${entry_filepath}"
@@ -962,8 +973,59 @@ get_week_plan_filepath() {
   # Construct the file path
   echo "${journal_dirpath}/week-plan~${week_date}_12-00-00.md"
 }
-alias week="vim $(get_week_plan_filepath)"
 
+# Weekly planning function - opens previous and current week side-by-side for review
+# Uses Wednesday as threshold: Mon-Wed reviews last week vs current week, Thu-Sun reviews current week vs next week
+# Creates new week files from weekly-planning.md template, sets 'w' register to 'WHY: '
+week() {
+    local current_day_of_week=$(date +%u)  # 1=Monday, 7=Sunday
+    local template_weekly_planning_filepath="${check_dirpath}/weekly-planning.md"
+    
+    # Calculate which weeks are "passed" and "to come" based on Wednesday threshold
+    # Days 1-3 (Mon-Wed): last week is "passed", current week is "to come"
+    # Days 4-7 (Thu-Sun): current week is "passed", next week is "to come"
+    if [ "${current_day_of_week}" -gt 3 ]; then
+        # After Wednesday: current week is "passed", next week is "to come"
+        passed_week_date="$(gdate -d "last sunday +0 days" +"%Y-%m-%d")"
+        if [ "$(date +%u)" -eq 7 ]; then
+            passed_week_date="$(date +"%Y-%m-%d")"
+        fi
+        to_come_week_date="$(gdate -d "next sunday +0 days" +"%Y-%m-%d")"
+    else
+        # Before Thursday: last week is "passed", current week is "to come"
+        passed_week_date="$(gdate -d "last sunday -7 days" +"%Y-%m-%d")"
+        to_come_week_date="$(gdate -d "last sunday +0 days" +"%Y-%m-%d")"
+        if [ "$(date +%u)" -eq 7 ]; then
+            to_come_week_date="$(date +"%Y-%m-%d")"
+        fi
+    fi
+    
+    # Create file paths
+    passed_week_filepath="${journal_dirpath}/week-plan~${passed_week_date}_12-00-00.md"
+    to_come_week_filepath="${journal_dirpath}/week-plan~${to_come_week_date}_12-00-00.md"
+    
+    # Create the "to come" week file from template if it doesn't exist
+    if [ ! -f "${to_come_week_filepath}" ]; then
+        cp "${template_weekly_planning_filepath}" "${to_come_week_filepath}"
+    fi
+    
+    # Open both files side by side with 'w' register set to 'WHY: '
+    if [ ! -f "${passed_week_filepath}" ]; then
+        # Create temporary file with message
+        temp_file=$(mktemp)
+        echo "No past week reflection file exists" > "${temp_file}"
+        vim -O "${temp_file}" "${to_come_week_filepath}" \
+            -c "call setreg('w', 'WHY: ')" \
+            -c "autocmd VimLeave * silent! call delete('${temp_file}')"
+    else
+        vim -O "${passed_week_filepath}" "${to_come_week_filepath}" \
+            -c "call setreg('w', 'WHY: ')"
+    fi
+}
+
+# Monthly planning function - opens previous and current month side-by-side for review
+# Uses 25th as threshold: before 25th reviews last month vs current month, after 25th reviews current month vs next month
+# Creates new month files from monthly-goals.md template in self_improvement_dirpath
 month() {
     local current_day=$(date +%d)
     local current_month_year=$(date +%Y-%m)

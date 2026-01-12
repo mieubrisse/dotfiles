@@ -352,6 +352,10 @@ run_perf_checkpoint "Before saving __prompt_command function"
 function __prompt_command() {
     local LAST_EXIT_CODE="${?}"
 
+    # Keep history live, without needing to exit the shell to see comamnds from other tabs
+    history -a
+    history -n
+
     # Regular ASCII colors
     # NOTE: The wrapping \[ and \] are necessary so Bash can  correctly calculate the size
     #  of the prompt:
