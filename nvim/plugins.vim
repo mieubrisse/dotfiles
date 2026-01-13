@@ -118,6 +118,11 @@ if has('nvim')
     " Plug 'rebelot/kanagawa.nvim'
 
     "Plug 'scottmckendry/cyberdream.nvim'
+
+    " Requires the following in Neovim init.vim:
+    " lua require('claude-code').setup()
+    Plug 'nvim-lua/plenary.nvim'
+    Plug 'greggh/claude-code.nvim'
 else
     " Vim-only plugins here
 endif
