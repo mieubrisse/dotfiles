@@ -243,8 +243,8 @@ nnoremap <Leader>e :e
 " Easy mapping for writing and quitting files
 nnoremap <Leader>w :w<CR>
 nnoremap <Leader>W :wa<CR>
-noremap <Leader>q :q<CR>
-noremap <Leader>Q :qa<CR>
+noremap <Leader>q :q!<CR>
+noremap <Leader>Q :qa!<CR>
 nnoremap <Leader>x :wq<CR>
 nnoremap <Leader>X :wa<CR>:qa<CR>
 
