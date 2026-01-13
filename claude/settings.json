@@ -1,10 +1,14 @@
 {
   "permissions": {
     "allow": [
-        "Bash(grep *)",
-        "Bash(ls *)",
-        "Bash(pwd *)",
-        "Bash(mkdir *)"
+      "Bash(grep *)",
+      "Bash(ls *)",
+      "Bash(pwd *)",
+      "Bash(mkdir *)",
+      "Bash(gh issue view *)"
     ]
+  },
+  "enabledPlugins": {
+    "lua-lsp@claude-plugins-official": true
   }
 }
