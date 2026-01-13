@@ -430,8 +430,10 @@ ga() {   # Use fzf to select files if no arguments are provided
 
 # We hijack Git's autocomplete here so we get autocompletion on our custom aliases
 # This relies on the bash-completion Homebrew package being loaded before this runs
-__git_complete gco _git_checkout
-__git_complete gb _git_branch
+if command -v __git_complete > /dev/null; then
+    __git_complete gco _git_checkout
+    __git_complete gb _git_branch
+fi
 
 alias empty-commit="git commit --allow-empty -m $1"
 alias gcm="git commit"
@@ -634,6 +636,11 @@ alias til="vim ${gref_dirpath}/today-i-learned.md"
 
 alias assistant="cd ${code_dirpath}/assistant && claude"
 
+alias tmp="cd /tmp"
+
+alias baliases="vim ${HOME}/.bash_aliases"
+alias vimrc="vim ${HOME}/.vimrc"
+
 
 # ======================================================================================
 #                                      Docker
@@ -828,7 +835,7 @@ _open_file_from_template_without_writing() {
         -c "setlocal filetype=markdown" \
         -c "file ${filepath}" \
         -c "call setreg('w', '- WHY: ')" \
-        -c "call setreg('e', 'o - WHY: ')" \
+        -c "call setreg('e', 'o    - WHY: ')" \
         "${vim_mark_commands[@]}"
 }
 
@@ -1089,7 +1096,22 @@ founderos_dirpath="${gref_dirpath}/2025_founderos"
 alias founderos="cd ${founderos_dirpath}"
 alias compounding-sow="vim ${founderos_dirpath}/state-of-the-world-journal.md"
 
-lifeops_dirpath="${psup_dirpath}/lifeops"
+lifeops_dirpath="${code_dirpath}/lifeops-toolkit"
 alias lifeops="cd ${lifeops_dirpath}"
 
 alias vision="vim ${self_improvement_dirpath}/2025-10/vision-board.md"
+
+
+# ======================================================================================
+#                                     Claude
+# ======================================================================================
+
+# This is a wrapper around Claude to detect & inject 1Password secret references into Claude
+claude() {
+    if [ -f ".claude/secrets.env" ]; then
+        # We have to add the 'script -q /dev/null' due to a Claude bug: https://github.com/anthropics/claude-code/issues/4930
+        op run --env-file ".claude/secrets.env" -- script -q /dev/null "${BREW_PREFIX}/bin/claude" "${@}"
+    else
+        ${BREW_PREFIX}/bin/claude
+    fi
+}
