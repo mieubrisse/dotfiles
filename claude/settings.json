@@ -14,9 +14,8 @@
       "WebFetch(domain:todoist.com)"
     ],
 
-    // Started from https://github.com/dwillitzer/claude-settings/blob/main/settings.jsonc
+    "//": "Started from https://github.com/dwillitzer/claude-settings/blob/main/settings.jsonc",
     "deny": [
-      // ===== DESTRUCTIVE OPERATIONS =====
       "Bash(rm -rf /*)",
       "Bash(rm -rf /)",
       "Bash(sudo rm -rf /*)",
@@ -27,17 +26,14 @@
       "Bash(fdisk*)",
       "Bash(parted*)",
       
-      // ===== FORK BOMBS =====
       "Bash(:(){ :|:& };:*)",
       "Bash(*fork*bomb*)",
-      
-      // ===== SYSTEM CORRUPTION =====
+
       "Bash(> /dev/sda*)",
       "Bash(> /dev/nvme*)",
       "Bash(> /dev/sd*)",
       "Bash(cat /dev/urandom > *)",
       
-      // ===== CREDENTIAL THEFT =====
       "Bash(* | nc -l*)",
       "Bash(* | netcat -l*)",
       "Bash(* | socat *)",
@@ -48,7 +44,6 @@
       "Bash(wget * | sh*)",
       "Bash(wget * | bash*)",
       
-      // ===== USER MANAGEMENT =====
       "Bash(sudo passwd*)",
       "Bash(passwd*)",
       "Bash(sudo useradd*)",
@@ -59,7 +54,6 @@
       "Bash(sudo adduser*)",
       "Bash(sudo deluser*)",
       
-      // ===== SYSTEM MODIFICATION =====
       "Bash(sudo chmod 777 /*)",
       "Bash(sudo chown * /*)",
       "Bash(sudo rm /etc/*)",
@@ -68,20 +62,17 @@
       "Bash(sudo rm /usr/*)",
       "Bash(sudo > /etc/*)",
       
-      // ===== NETWORK BACKDOORS =====
       "Bash(nc -l*)",
       "Bash(netcat -l*)",
       "Bash(socat*)",
       "Bash(nmap*)",
       "Bash(masscan*)",
       
-      // ===== CRYPTO MINING =====
       "Bash(*xmrig*)",
       "Bash(*monero*)",
       "Bash(*bitcoin*)",
       "Bash(*miner*)",
       
-      // ===== GIT DANGEROUS OPS =====
       "Bash(git push --force origin master*)",
       "Bash(git push --force origin main*)",
       "Bash(git push -f origin master*)",
@@ -89,17 +80,14 @@
       "Bash(git reset --hard origin/master*)",
       "Bash(git reset --hard origin/main*)",
       
-      // ===== AWS/CLOUD CREDENTIAL ACCESS =====
       "Bash(cat ~/.aws/*)",
       "Bash(cat ~/.ssh/id_*)",
       "Bash(cat /root/.ssh/*)",
       
-      // ===== ENVIRONMENT VARIABLE DUMPS =====
       "Bash(env | base64*)",
       "Bash(printenv | base64*)",
       "Bash(set | base64*)",
       
-      // ===== REVERSE SHELLS =====
       "Bash(bash -i >& /dev/tcp/*)",
       "Bash(sh -i >& /dev/tcp/*)",
       "Bash(python -c 'import socket*)",
@@ -107,7 +95,6 @@
       "Bash(ruby -rsocket*)",
       "Bash(perl -e 'use Socket*)",
       
-      // ===== DANGEROUS DOCKER OPERATIONS =====
       "Bash(docker run --privileged *)",
       "Bash(docker run --pid=host *)",
       "Bash(docker run --net=host *)",
@@ -115,7 +102,6 @@
       "Bash(docker run -v /etc:/etc *)",
       "Bash(docker run -v /var/run/docker.sock:/var/run/docker.sock *)",
       
-      // ===== CREDENTIAL EXPOSURE =====
       "Bash(history | grep -i password*)",
       "Bash(history | grep -i token*)",
       "Bash(history | grep -i secret*)",
@@ -126,7 +112,6 @@
       "Bash(find / -name *.key*)",
       "Bash(find / -name *.pem*)",
       
-      // ===== SYSTEM SHUTDOWN =====
       "Bash(shutdown*)",
       "Bash(reboot*)",
       "Bash(halt*)",
@@ -136,63 +121,53 @@
       "Bash(sudo shutdown*)",
       "Bash(sudo reboot*)",
       
-      // ===== FIREWALL DISABLING =====
       "Bash(sudo ufw disable*)",
       "Bash(sudo iptables -F*)",
       "Bash(sudo iptables --flush*)",
       "Bash(sudo systemctl stop firewalld*)",
       "Bash(sudo service iptables stop*)",
       
-      // ===== MALICIOUS DOWNLOADS =====
       "Bash(curl * | sudo *)",
       "Bash(wget * | sudo *)",
       "Bash(curl -s * | sh*)",
       "Bash(wget -qO- * | sh*)",
       
-      // ===== LOG DELETION =====
       "Bash(rm /var/log/*)",
       "Bash(rm -rf /var/log/*)",
       "Bash(> /var/log/*)",
       "Bash(echo > /var/log/*)",
       "Bash(truncate -s 0 /var/log/*)",
       
-      // ===== PACKAGE MANAGER ABUSE =====
       "Bash(npm install -g * --unsafe-perm*)",
       "Bash(pip install * --break-system-packages*)",
       "Bash(gem install * --no-user-install*)",
       
-      // ===== KERNEL MODIFICATIONS =====
       "Bash(insmod *)",
       "Bash(rmmod *)",
       "Bash(modprobe *)",
       "Bash(sysctl -w *)",
       
-      // ===== DANGEROUS FILE OPERATIONS =====
       "Bash(chmod -R 777 /*)",
       "Bash(chmod 777 /etc/*)",
       "Bash(chmod 777 /bin/*)",
       "Bash(chmod 777 /usr/*)",
       "Bash(chown -R * /*)",
       
-      // ===== BITCOIN/CRYPTO OPERATIONS =====
       "Bash(*bitcoin-cli*)",
       "Bash(*ethereum*)",
       "Bash(*wallet.dat*)",
       "Bash(*privatekey*)",
       
-      // ===== MASS DELETION =====
       "Bash(find / -type f -delete*)",
       "Bash(find / -type d -delete*)",
       "Bash(rm -rf /home/*)",
       "Bash(rm -rf /var/*)",
       "Bash(rm -rf /opt/*)",
       
-      // ===== PROCESS INJECTION =====
       "Bash(gdb -p *)",
       "Bash(ptrace *)",
       "Bash(LD_PRELOAD=*)",
       
-      // ===== SUDO BYPASS ATTEMPTS =====
       "Bash(sudo -l*)",
       "Bash(sudo -V*)",
       "Bash(sudo su*)",
@@ -200,27 +175,19 @@
       "Bash(sudo -i*)",
       "Bash(pkexec *)",
       
-      // ===== DANGEROUS ENV EXPORTS =====
       "Bash(export PATH=*)",
       "Bash(export LD_LIBRARY_PATH=*)",
       "Bash(export PYTHONPATH=*)",
       
-      // ===== CONTAINER ESCAPE ATTEMPTS =====
       "Bash(nsenter *)",
       "Bash(docker run --cap-add=ALL *)",
       "Bash(docker run --security-opt *)",
       
-      // ===== DANGEROUS SYSTEMD OPERATIONS =====
       "Bash(systemctl mask *)",
       "Bash(systemctl disable *)",
       "Bash(systemctl daemon-reload*)",
       
-      // ===== CLOUD METADATA ACCESS =====
-      "Bash(curl http://169.254.169.254/*)",
-      "Bash(wget http://169.254.169.254/*)",
-      "Bash(curl http://metadata.google.internal/*)",
       
-      // ===== DANGEROUS REDIRECTS =====
       "Bash(exec < /dev/tcp/*)",
       "Bash(exec > /dev/tcp/*)",
       "Bash(exec 3<>/dev/tcp/*)"
