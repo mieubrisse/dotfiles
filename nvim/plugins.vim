@@ -120,9 +120,9 @@ if has('nvim')
     "Plug 'scottmckendry/cyberdream.nvim'
 
     " Requires the following in Neovim init.vim:
-    " lua require('claude-code').setup()
-    Plug 'nvim-lua/plenary.nvim'
-    Plug 'greggh/claude-code.nvim'
+    " lua require('claudecode').setup()
+    Plug 'folke/snacks.nvim'
+    Plug 'coder/claudecode.nvim'
 else
     " Vim-only plugins here
 endif
