@@ -64,10 +64,10 @@ set showmatch
 " Set spellcheck for certain files
 augroup spellcheck
     autocmd!
-    autocmd FileType gitcommit setlocal spell
-    autocmd BufNewFile,BufRead *.markdown setlocal spell
-    autocmd BufNewFile,BufRead *.md setlocal spell
-    autocmd BufNewFile,BufRead *.txt setlocal spell
+    autocmd FileType gitcommit setlocal spell spelllang=en_us,pt_br
+    autocmd BufNewFile,BufRead *.markdown setlocal spell spelllang=en_us,pt_br
+    autocmd BufNewFile,BufRead *.md setlocal spell spelllang=en_us,pt_br
+    autocmd BufNewFile,BufRead *.txt setlocal spell spelllang=en_us,pt_br
 augroup END
 
 " Highlight current line
