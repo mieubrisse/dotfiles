@@ -12,6 +12,8 @@
       "Bash(git diff *)",
       "Bash(git log *)",
       "Bash(git add *)",
+      "Bash(git commit -m *)",
+      "Bash(gp)",
 
       "Read(~/.claude/*)",
       "Read(~/.vim/*)",
