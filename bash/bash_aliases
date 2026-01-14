@@ -641,6 +641,7 @@ alias tmp="cd /tmp"
 alias baliases="vim ${HOME}/.bash_aliases"
 alias vimrc="vim ${HOME}/.vimrc"
 
+alias home="cd ${HOME}"
 
 # ======================================================================================
 #                                      Docker
@@ -1108,7 +1109,10 @@ alias vision="vim ${self_improvement_dirpath}/2025-10/vision-board.md"
 
 # This is a wrapper around Claude to detect & inject 1Password secret references into Claude
 claude() {
-    if [ -f ".claude/secrets.env" ]; then
+    # If stdin is being piped, use -p mode without op run
+    if [ ! -t 0 ]; then
+        ${BREW_PREFIX}/bin/claude -p "${@}"
+    elif [ -f ".claude/secrets.env" ]; then
         # We have to add the 'script -q /dev/null' due to a Claude bug: https://github.com/anthropics/claude-code/issues/4930
         op run --env-file ".claude/secrets.env" -- script -q /dev/null "${BREW_PREFIX}/bin/claude" "${@}"
     else
