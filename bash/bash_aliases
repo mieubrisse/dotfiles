@@ -834,7 +834,7 @@ _open_file_from_template_without_writing() {
         -c "setlocal noundofile noswapfile" \
         -c "setlocal filetype=markdown" \
         -c "file ${filepath}" \
-        -c "call setreg('w', '- WHY: ')" \
+        -c "call setreg('w', 'WHY: ')" \
         -c "call setreg('e', 'o    - WHY: ')" \
         "${vim_mark_commands[@]}"
 }
@@ -1112,6 +1112,6 @@ claude() {
         # We have to add the 'script -q /dev/null' due to a Claude bug: https://github.com/anthropics/claude-code/issues/4930
         op run --env-file ".claude/secrets.env" -- script -q /dev/null "${BREW_PREFIX}/bin/claude" "${@}"
     else
-        ${BREW_PREFIX}/bin/claude
+        ${BREW_PREFIX}/bin/claude "${@}"
     fi
 }
