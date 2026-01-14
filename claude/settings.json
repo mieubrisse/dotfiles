@@ -16,6 +16,7 @@
 
       "WebFetch(domain:anthropic.com)",
       "WebFetch(domain:github.com)",
+      "WebFetch(domain:githubusercontent.com)",
       "WebFetch(domain:notion.com)",
       "WebFetch(domain:todoist.com)"
     ],
