@@ -6,7 +6,13 @@
       "Bash(pwd *)",
       "Bash(mkdir *)",
       "Bash(gh issue view *)",
+      "Bash(echo *)",
 
+      "Bash(git status *)",
+      "Bash(git diff *)",
+      "Bash(git log *)",
+
+      "WebSearch",
 
       "WebFetch(domain:anthropic.com)",
       "WebFetch(domain:github.com)",
@@ -26,7 +32,6 @@
       "Bash(fdisk*)",
       "Bash(parted*)",
       
-      "Bash(:(){ :|:& };:*)",
       "Bash(*fork*bomb*)",
 
       "Bash(> /dev/sda*)",
