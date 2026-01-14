@@ -8,3 +8,6 @@ require('claudecode').setup({
         split_width_percentage = 0.5,
     },
 })
+
+vim.keymap.set("n", "<C-,>", "<cmd>ClaudeCode<cr>", { desc = "Toggle Claude Code" })
+vim.keymap.set("t", "<C-,>", "<cmd>ClaudeCode<cr>", { desc = "Toggle Claude Code" })
