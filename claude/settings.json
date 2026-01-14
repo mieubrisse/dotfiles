@@ -12,11 +12,22 @@
       "Bash(git diff *)",
       "Bash(git log *)",
 
+      "Read(~/.claude/*)",
+      "Read(~/.vim/*)",
+      "Read(~/.nvim/*)",
+      "Read(~/.bash_aliases)",
+      "Read(~/.bashrc)",
+      "Read(~/.zshrc)",
+      "Read(~/.zprofile)",
+      "Read(~/.gitconfig)",
+      "Read(~/.vimrc)",
+      "Read(~/.tmux.conf)",
+
       "WebSearch",
 
       "WebFetch(domain:anthropic.com)",
       "WebFetch(domain:github.com)",
-      "WebFetch(domain:githubusercontent.com)",
+      "WebFetch(domain:raw.githubusercontent.com)",
       "WebFetch(domain:notion.com)",
       "WebFetch(domain:todoist.com)"
     ],
