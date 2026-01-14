@@ -3,6 +3,7 @@
     "allow": [
       "Bash(grep *)",
       "Bash(ls *)",
+      "Bash(stat *)",
       "Bash(pwd *)",
       "Bash(mkdir *)",
       "Bash(gh issue view *)",
@@ -32,7 +33,35 @@
       "WebFetch(domain:github.com)",
       "WebFetch(domain:raw.githubusercontent.com)",
       "WebFetch(domain:notion.com)",
-      "WebFetch(domain:todoist.com)"
+      "WebFetch(domain:todoist.com)",
+
+      "WebFetch(domain:npmjs.org)",
+      "WebFetch(domain:npmjs.com)",
+      "WebFetch(domain:pypi.org)",
+      "WebFetch(domain:crates.io)",
+      "WebFetch(domain:rubygems.org)",
+      "WebFetch(domain:packagist.org)",
+      "WebFetch(domain:nuget.org)",
+      "WebFetch(domain:maven.org)",
+      "WebFetch(domain:mvnrepository.com)",
+
+      "WebFetch(domain:developer.mozilla.org)",
+      "WebFetch(domain:docs.python.org)",
+      "WebFetch(domain:doc.rust-lang.org)",
+      "WebFetch(domain:golang.org)",
+      "WebFetch(domain:go.dev)",
+      "WebFetch(domain:php.net)",
+      "WebFetch(domain:ruby-doc.org)",
+      "WebFetch(domain:docs.oracle.com)",
+
+      "WebFetch(domain:reactjs.org)",
+      "WebFetch(domain:react.dev)",
+      "WebFetch(domain:vuejs.org)",
+      "WebFetch(domain:angular.io)",
+      "WebFetch(domain:svelte.dev)",
+      "WebFetch(domain:nextjs.org)",
+      "WebFetch(domain:nodejs.org)",
+      "WebFetch(domain:docs.npmjs.com)"
     ],
 
     "//": "Started from https://github.com/dwillitzer/claude-settings/blob/main/settings.jsonc",
