@@ -11,3 +11,5 @@ require('claudecode').setup({
 
 vim.keymap.set("n", "<C-,>", "<cmd>ClaudeCode<cr>", { desc = "Toggle Claude Code" })
 vim.keymap.set("t", "<C-,>", "<cmd>ClaudeCode<cr>", { desc = "Toggle Claude Code" })
+vim.keymap.set("n", "<leader>ay", "<cmd>ClaudeCodeDiffAccept<cr>", { desc = "Accept Claude Code diff" })
+vim.keymap.set("n", "<leader>an", "<cmd>ClaudeCodeDiffDeny<cr>", { desc = "Deny Claude Code diff" })
