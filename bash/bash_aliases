@@ -875,61 +875,210 @@ jt() {
     vim "${dest_filepath}"
 }
 
-# Find a journal entry
-jf() {
-    # Explaining:
+# Helper function to select journal entries via fzf
+# Arguments:
+#   -m: Enable multi-select mode
+#   All other args: Passed as initial query to fzf
+# Returns: Selected path(s) printed to stdout (one per line)
+_fzf_select_journal_entry() {
+    local multi_select=false
+    local fzf_args=()
+
+    # Parse flags
+    if [ "${1:-}" = "-m" ]; then
+        multi_select=true
+        shift
+    fi
+
+    # Build fzf arguments
     # - scheme=history so that 'needle-foo' is ranked equal to 'foo-needle' when searching for 'needle'
     # - tiebreak=index so that things ranked equally are subsorted by timestamp
-    # - query=${*} prints all the args as a single string, separated by a space
-    mapfile -t output_paths < <(FZF_DEFAULT_COMMAND="_fzf_journal_find_cmd" fzf \
-        -m \
-        --ansi \
-        --delimiter=$'\t' \
-        --with-nth='{2}   {3}' \
-        --accept-nth=1 \
-        --bind='change:top' \
-        --scheme=history \
-        --tiebreak=index \
-        --query="${*}"
+    fzf_args=(
+        --ansi
+        --delimiter=$'\t'
+        --with-nth='{2}   {3}'
+        --accept-nth=1
+        --bind='change:top'
+        --scheme=history
+        --tiebreak=index
     )
+
+    if [ "${multi_select}" = true ]; then
+        fzf_args+=(-m)
+    fi
+
+    if [ "${#}" -gt 0 ]; then
+        fzf_args+=(--query="${*}")
+    fi
+
+    FZF_DEFAULT_COMMAND="_fzf_journal_find_cmd" fzf "${fzf_args[@]}"
+}
+
+# Find a journal entry
+jf() {
+    mapfile -t output_paths < <(_fzf_select_journal_entry -m "${@}")
 
     if [ "${#output_paths[@]}" -gt 0 ]; then
         vim -O "${output_paths[@]}"
     fi
 }
 
+# Symlink to a journal entry
+jl() {
+    # First arg: path to a symlink
+    # Second arg (optional): the exact name of a journal entry file
+    # If it's not provided, then the user gets dumped into fzf (just like jf) to find the file
+    # Finally, a symlink is created at path_to_symlink pointing to the journal entry file
 
+    local symlink_path="${1:-}"
+    local journal_entry_name="${2:-}"
+
+    # Validate symlink path is provided
+    if [ -z "${symlink_path}" ]; then
+        echo "Error: First argument must be a path for the symlink" >&2
+        return 1
+    fi
+
+    # Validate symlink path has .md extension
+    if [[ "${symlink_path}" != *.md ]]; then
+        echo "Error: Symlink path must have .md extension" >&2
+        return 1
+    fi
+
+    local journal_entry_path=""
+
+    if [ -n "${journal_entry_name}" ]; then
+        # User provided a journal entry name, find it in the journal directory
+        journal_entry_path="${journal_dirpath}/${journal_entry_name}"
+
+        if [ ! -f "${journal_entry_path}" ]; then
+            echo "Error: Journal entry not found at '${journal_entry_path}'" >&2
+            return 1
+        fi
+    else
+        # No journal entry provided, use fzf to select
+        journal_entry_path=$(_fzf_select_journal_entry)
+
+        if [ -z "${journal_entry_path}" ]; then
+            echo "No journal entry selected" >&2
+            return 1
+        fi
+    fi
+
+    # Create the symlink
+    ln -sf "${journal_entry_path}" "${symlink_path}"
+}
+
+# ======================================================================================
+#                                Coaching Journal
+# ======================================================================================
 # "coaching journal new"
 cjn() {
-    # Form journal_name from space-separated args as fragments of journal filename (see 'jn' function for inspiration)
-    local journal_name
-    if ! journal_name=$(_sanitize_journal_name "${@}"); then
-        echo "Error: Provide name for journal entry: cjn [name_fragments...]" >&2
+    local coaching_journals_dirpath="${work_gdrive_dirpath}/private-coaching-journals"
+    local template_filepath="${check_dirpath}/lifeops/coaching-session.md"
+
+    # Validate paths exist
+    if [ ! -d "${coaching_journals_dirpath}" ]; then
+        echo "Error: Coaching journals directory not found at '${coaching_journals_dirpath}'" >&2
         return 1
     fi
-    
-    # Store client_dirname from result of fzf for directories in ${work_gdrive_dirpath}
-    client_dirname=$(find "${work_gdrive_dirpath}" -maxdepth 1 -type d -not -path "${work_gdrive_dirpath}" -exec basename {} \; | fzf --prompt="Select client: ")
-    
-    # If fzf was cancelled or an error occured, exit the function with return code 1
-    if [ -z "${client_dirname}" ]; then
+
+    if [ ! -f "${template_filepath}" ]; then
+        echo "Error: Coaching session template not found at '${template_filepath}'" >&2
         return 1
     fi
-    
-    # Store journal_entry_filename=${client_dirname}-${journal_name}~TIMESTAMP~.md (where TIMESTAMP matches the format of 'jn')
+
+    # Find client directories
+    local query_terms="${*}"
+    local glob_query="*${query_terms// /*}*"
+    local client_dir=""
+
+    if [ -n "${query_terms}" ]; then
+        # Search for matching client directories
+        local dirs_matching_glob
+        dirs_matching_glob="$(find "${coaching_journals_dirpath}" -maxdepth 1 -type d ! -path "${coaching_journals_dirpath}" -iname "${glob_query}" -exec basename {} \;)"
+        local num_matches
+        num_matches="$(echo -n "${dirs_matching_glob}" | grep -c '^')"
+
+        # If we only have one match, select it automatically
+        if [ "${num_matches}" -eq 1 ]; then
+            client_dir="${dirs_matching_glob}"
+        fi
+    fi
+
+    # If no auto-selection, use fzf
+    if [ -z "${client_dir}" ]; then
+        client_dir="$(
+            find "${coaching_journals_dirpath}" -maxdepth 1 -type d ! -path "${coaching_journals_dirpath}" -exec basename {} \; | \
+            sort | \
+            fzf --prompt="Select client: " --query="${query_terms}"
+        )"
+    fi
+
+    if [ -z "${client_dir}" ]; then
+        echo "No client selected" >&2
+        return 1
+    fi
+
+    local client_dirpath="${coaching_journals_dirpath}/${client_dir}"
+    local client_name="${client_dir}"
+
+    # Create timestamp for the journal entry
+    local timestamp
     timestamp="$(now)"
-    journal_entry_filename="${client_dirname}-${journal_name}~${timestamp}~.md"
-    journal_entry_filepath="${journal_dirpath}/${journal_entry_filename}"
-    
-    # Create a symlink called YYYY-MM-DD_HH-mm-SS_NAME_${journal_name}.md (filling in the appropriate fields) inside ${work_gdrive_dirpath}/${client_dirname}
-    symlink_filename="${timestamp}_${journal_name}.md"
-    symlink_filepath="${work_gdrive_dirpath}/${client_dirname}/${symlink_filename}"
-    
-    # Create the symlink (will be broken until user saves in vim)
-    ln -sf "${journal_entry_filepath}" "${symlink_filepath}"
-    
-    # Open the journal file in vim
-    vim "${journal_entry_filepath}"
+
+    # Form the journal entry filename
+    local entry_filename="${client_name}-coaching-journal~${timestamp}~coaching-journal.md"
+    local entry_filepath="${journal_dirpath}/${entry_filename}"
+
+    # Read template and inject todo contents
+    local todo_filepath="${client_dirpath}/todo.md"
+    local todo_contents=""
+    if [ -f "${todo_filepath}" ]; then
+        todo_contents="$(cat "${todo_filepath}")"
+    fi
+
+    # Create a temporary template file with injected todo
+    local temp_template
+    temp_template="$(mktemp)"
+
+    # Process the template: replace <!-- inject:todo --> with todo contents
+    # Pattern handles extra dashes and spaces: <!--- inject:todo ---> or <!--  inject:todo  -->
+    local inject_pattern='^[[:space:]]*<!---*[[:space:]]*inject:todo[[:space:]]*-*-->[[:space:]]*$'
+    while IFS= read -r line || [ -n "${line}" ]; do
+        if [[ "${line}" =~ ${inject_pattern} ]]; then
+            # Replace the injection marker with todo contents
+            echo "${todo_contents}"
+        else
+            echo "${line}"
+        fi
+    done < "${template_filepath}" > "${temp_template}"
+
+    # Open the file from the processed template
+    _open_file_from_template_without_writing "${temp_template}" "${entry_filepath}"
+
+    # Clean up temp file
+    rm -f "${temp_template}"
+
+    # Check if the user saved the file (if file exists, create symlink)
+    if [ -f "${entry_filepath}" ]; then
+        # Create symlink in client directory
+        local symlink_filename="${timestamp}_coaching.md"
+        local symlink_path="${client_dirpath}/${symlink_filename}"
+
+        ln -sf "${entry_filepath}" "${symlink_path}"
+        echo "Created symlink: ${symlink_path}"
+    fi
+}
+
+cjtodo() {
+    # TODO
+    echo "nothing"
+}
+
+cjcat() {
+    # First, pick a client from `${work_gdrive_dirpath}/private-coaching-journals` using fzf
+    echo "nothing"
 }
 
 
