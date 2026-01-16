@@ -3,23 +3,54 @@
 General Principles
 ==================
 - You should write code that is clear, well-factored, and easy to maintain. When a function, class, or file gets long, break it into smaller pieces.
-- Function names should start with verbs, e.g. `doSomething` or `findThing`
+- Function names should start with verbs. For example, `doSomething` or `findThing`
 - Write DRY (Don't Repeat Yourself) code. Rather than repeating yourself, use variables and named constants.
 - Favor defensive code that checks edge cases and error conditions.
 - Use linters to catch potential problems early.
 - When given instructions, push for clarity and specificity. Do not start making changes until you understand the task you're trying to complete.
 - **IMPORTANT:** If the project contains a devcontainer, any tools the user might need should be captured in the devcontainer. There should be no requirements for the user to install anything on their local machine.
 
+Path Variable Naming Guidance
+================================
+When naming variables that contain file or directory names or paths, use the following guidance:
+
+- Use "file" or "dir" to indicate whether the variable contains a file or directory path...
+- ....combined with with "name" or "path" to indicate whether the variable contains the name of the file/directory, or the path
+- Variables with "path" should contain the absolute path by default
+
+For example, in Bash syntax:
+
+- `health_history_filepath` contains the full path to a file containing health history
+- `health_history_dirpath` contains the full path to a directory containing health history
+- `health_history_filename` contains just the filename of a file containing health history
+
+When it's necessary to work with relative filepaths, add the "abs" and "rel" specifiers to indicate whether the variable contains a relative or absolute path.
+
+For example, in Bash syntax:
+- `health_history_rel_filepath` contains the path to a health history file, relative to something else
+- `health_history_abs_filepath` contains the absolute path to a health history file
+
+Adapt this naming guidance into the standard naming conventions of the coding language that's being written.
+
 Markdown
 ========
-When writing Markdown, do not use `#` for h1 and `##` for h2. Instead, follow the h1 line with a line of `=` equal to the length of the line, like so:
+When writing Markdown headers, do not use `#` for h1. Instead, use the alternate h1 style of following the line with an equivalent-length line of `=`.
+
+For example:
 
 ```
 My h1 Text
 ==========
 ```
 
-Do the same thing for h2, only with `-`.
+Do the same thing for h2: do not use `##`, and do use an equivalent-length line of `-`.
+
+For example:
+
+```
+My h2 Text
+----------
+```
 
 When modifying Git repositories
 ===============================
