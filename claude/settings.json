@@ -1,6 +1,7 @@
 {
   "permissions": {
     "allow": [
+      "Bash(cd *)",
       "Bash(grep *)",
       "Bash(ls *)",
       "Bash(stat *)",
@@ -26,6 +27,9 @@
       "Read(~/.gitconfig)",
       "Read(~/.vimrc)",
       "Read(~/.tmux.conf)",
+
+      "Read(~/code/*.md)",
+      "Read(~/code/*.txt)",
 
       "WebSearch",
 
@@ -66,6 +70,8 @@
 
     "//": "Started from https://github.com/dwillitzer/claude-settings/blob/main/settings.jsonc",
     "deny": [
+      "Read(*.env)",
+
       "Bash(rm -rf /*)",
       "Bash(rm -rf /)",
       "Bash(sudo rm -rf /*)",

@@ -23,9 +23,14 @@ Do the same thing for h2, only with `-`.
 
 When modifying Git repositories
 ===============================
-When you're about to finish completing a task and return control to the user, propose a `git` command that will add the files you changed and commit them with a succinct but descriptive commit message explaining what changes were made.
+### Pushing
+Instead of `git push`, use `gp`. You do not have access to `git push`, but you do have access to `gp`.
 
-The commit should be a single sentence. There should be no commit body, or "Generated With Claude Code".
+### Commit Often
+When you're about to finish completing a task and return control to the user, propose a `git` command that will...
+1. Add the files you changed
+2. Commit them with a succinct but descriptive commit message explaining what changes were made. The commit should be a single sentence. There should be no commit body, or "Generated With Claude Code".
+3. Push them with the `gp` command (not `git push`).
 
 Dependencies
 ============
