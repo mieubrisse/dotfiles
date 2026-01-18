@@ -1,28 +1,45 @@
 #!/usr/bin/env bash
 # Shebang for syntax highlight
 
-# Better diff (Mac only)
-alias diff="colordiff --ignore-space-change -u"
+# ======================================================================================
+#                                   Dates & Times
+# ======================================================================================
 
 # Datetime
 alias today='date +%F'
 alias now='date +%F_%H-%M-%S'
 
+# ======================================================================================
+#                           Upgrades for standard Unix toolkit
+# ======================================================================================
+#
 # Allow editing Mac crontab with Vim per:
 # http://superuser.com/questions/359580/error-adding-cronjobs-in-mac-os-x-lion
 alias crontab="VIM_CRONTAB=true crontab"
 
-# ls conveniences
+# Better diff (Mac only)
+alias diff="colordiff --ignore-space-change -u"
+
+ls_cmd="eza"
+# ls_cmd="command ls"  # Use 'command ls' to avoid accidentally fork-bombing myself. Oops...
 function ls() { # Display an empty line for empty directories
-    # Use `command ls` to avoid accidentally fork-bombing myself. Oops...
-    if [[ $(command ls "${@}" | wc -l) -eq 0 ]]; then
+
+    if [[ $(${ls_cmd} "${@}" | wc -l) -eq 0 ]]; then
         echo 
     else
-        command ls -G "$@"
+        ${ls_cmd} -G "$@"
     fi
 }
-alias ll='ls -Alhtr'
-alias llt='ll -t' # Sort by date last modified
+
+function ll() {
+    # eza doesn't support ls -ltr:
+    # https://github.com/eza-community/eza/issues/1573
+    if [ "${ls_cmd}" = "eza" ]; then
+        ${ls_cmd} -Alh --sort newest
+    else
+        ${ls_cmd} -Alhtr
+    fi
+}
 alias la='ls -A'
 alias l='ls'
 
@@ -56,11 +73,6 @@ function cd() {
     fi
 }
 
-
-# Easily copy the contents of one or more file
-function clip() {
-    pbcopy < "${@}"
-}
 
 # Have mkdir create parent directories if they don't already exist
 alias mkdir="mkdir -p"
@@ -97,6 +109,12 @@ alias prettify-json="python -mjson.tool"
 
 # Just because it's intuitive
 alias eject="diskutil unmount"
+
+
+# Easily copy the contents of one or more file
+function clip() {
+    pbcopy < "${@}"
+}
 
 # Adds a `chrome` command that I use for rendering Markdown files, with completion
 # TODO: make this also open .sheet files in Google drive by examining the link
@@ -553,6 +571,51 @@ function parallel-tmux() {
 #                                      Navigation
 # ======================================================================================
 
+# Helper function that selects a subdirectory from a parent directory using fzf-style matching.
+# If query terms match exactly one directory, it's auto-selected. Otherwise, fzf is shown.
+#
+# Arguments:
+#   $1 - Parent directory path to search in
+#   $2+ - Query terms (spaces become wildcards in glob matching)
+#
+# Returns: Selected directory basename printed to stdout, or empty string if none selected
+_fzf_select_subdir() {
+    local parent_dirpath="${1}"
+    shift
+    local query_terms="${*}"
+
+    if [ ! -d "${parent_dirpath}" ]; then
+        echo "Error: Directory not found at '${parent_dirpath}'" >&2
+        return 1
+    fi
+
+    local selected_dirname=""
+
+    if [ -n "${query_terms}" ]; then
+        local glob_query="*${query_terms// /*}*"
+        local dirs_matching_glob
+        dirs_matching_glob="$(find "${parent_dirpath}" -maxdepth 1 -type d ! -path "${parent_dirpath}" -iname "${glob_query}" -exec basename {} \;)"
+        local num_matches
+        num_matches="$(echo -n "${dirs_matching_glob}" | grep -c '^')"
+
+        # If we only have one match, select it automatically
+        if [ "${num_matches}" -eq 1 ]; then
+            selected_dirname="${dirs_matching_glob}"
+        fi
+    fi
+
+    # If no auto-selection, use fzf
+    if [ -z "${selected_dirname}" ]; then
+        selected_dirname="$(
+            find "${parent_dirpath}" -maxdepth 1 -type d ! -path "${parent_dirpath}" -exec basename {} \; | \
+            sort | \
+            fzf --query="${query_terms}"
+        )"
+    fi
+
+    echo "${selected_dirname}"
+}
+
 # TODO replace this with all fzf stuff
 function _smart_open_dir_file {
     cd "${2}"
@@ -572,27 +635,13 @@ code_dirpath="${HOME}/code"
 # - If one directory matches, we go directly to it
 # - If more than one directory matches, we open fzf to filter the results
 function code() {
-    # TODO extract into a helper function for adding fzf-completion for any subdirectory
     if [ "${#}" -eq 0 ]; then
         cd "${code_dirpath}"
         return 0
     fi
 
-    query_terms="${*}"
-    glob_query="*${query_terms// /*}*"
-
-    dirs_matching_glob="$(find "${code_dirpath}" -maxdepth 1 -type d -iname "${glob_query}" -exec basename {} \;)"
-    num_matches="$(echo -n "${dirs_matching_glob}" | grep -c '^')"
-    
-    # If we only have one match, then go directly to it
-    if [ "${num_matches}" -eq 1 ]; then
-        cd "${code_dirpath}/${dirs_matching_glob}"
-        return 0
-    fi
-
-    selected_dirname="$(
-        find "${code_dirpath}" -maxdepth 1 -type d -exec basename {} \; | fzf --query "${query_terms}"
-    )"
+    local selected_dirname
+    selected_dirname="$(_fzf_select_subdir "${code_dirpath}" "${@}")"
 
     if [ -z "${selected_dirname}" ]; then
         return 0
@@ -867,6 +916,7 @@ jt() {
     fi
 
     # Create destination path with tilda-separated pattern like new-packing-checklist
+    # TODO don't use 'now'; don't rely on it existing! Instead, create a function for creating journal-compatible filenames
     dest_filepath="${journal_dirpath}/${sanitized_name}~$(now)~.md"
 
     # Open template in vim without writing until user saves
@@ -967,51 +1017,40 @@ jl() {
     ln -sf "${journal_entry_path}" "${symlink_path}"
 }
 
+jmv() {
+    # Use fzf to help the user select a file
+    # Let the user rename it, usign the same space-separated logic
+    echo "TODO"
+}
+
 # ======================================================================================
 #                                Coaching Journal
 # ======================================================================================
+coaching_journals_dirpath="${work_gdrive_dirpath}/private-coaching-journals"
+
+# quick jumping to private coaching directories
+cj() {
+    local client_dirname
+    client_dirname="$(_fzf_select_subdir "${coaching_journals_dirpath}" "${@}")" || return 1
+
+    if [ -z "${client_dirname}" ]; then
+        return 0
+    fi
+
+    cd "${coaching_journals_dirpath}/${client_dirname}"
+}
+
 # "coaching journal new"
 cjn() {
-    local coaching_journals_dirpath="${work_gdrive_dirpath}/private-coaching-journals"
     local template_filepath="${check_dirpath}/lifeops/coaching-session.md"
-
-    # Validate paths exist
-    if [ ! -d "${coaching_journals_dirpath}" ]; then
-        echo "Error: Coaching journals directory not found at '${coaching_journals_dirpath}'" >&2
-        return 1
-    fi
 
     if [ ! -f "${template_filepath}" ]; then
         echo "Error: Coaching session template not found at '${template_filepath}'" >&2
         return 1
     fi
 
-    # Find client directories
-    local query_terms="${*}"
-    local glob_query="*${query_terms// /*}*"
-    local client_dir=""
-
-    if [ -n "${query_terms}" ]; then
-        # Search for matching client directories
-        local dirs_matching_glob
-        dirs_matching_glob="$(find "${coaching_journals_dirpath}" -maxdepth 1 -type d ! -path "${coaching_journals_dirpath}" -iname "${glob_query}" -exec basename {} \;)"
-        local num_matches
-        num_matches="$(echo -n "${dirs_matching_glob}" | grep -c '^')"
-
-        # If we only have one match, select it automatically
-        if [ "${num_matches}" -eq 1 ]; then
-            client_dir="${dirs_matching_glob}"
-        fi
-    fi
-
-    # If no auto-selection, use fzf
-    if [ -z "${client_dir}" ]; then
-        client_dir="$(
-            find "${coaching_journals_dirpath}" -maxdepth 1 -type d ! -path "${coaching_journals_dirpath}" -exec basename {} \; | \
-            sort | \
-            fzf --prompt="Select client: " --query="${query_terms}"
-        )"
-    fi
+    local client_dir
+    client_dir="$(_fzf_select_subdir "${coaching_journals_dirpath}" "${@}")" || return 1
 
     if [ -z "${client_dir}" ]; then
         echo "No client selected" >&2
@@ -1026,7 +1065,7 @@ cjn() {
     timestamp="$(now)"
 
     # Form the journal entry filename
-    local entry_filename="${client_name}-coaching-journal~${timestamp}~coaching-journal.md"
+    local entry_filename="${client_name}-coaching~${timestamp}~coaching-journal.md"
     local entry_filepath="${journal_dirpath}/${entry_filename}"
 
     # Read template and inject todo contents
@@ -1070,39 +1109,8 @@ cjn() {
 }
 
 cjtodo() {
-    local coaching_journals_dirpath="${work_gdrive_dirpath}/private-coaching-journals"
-
-    if [ ! -d "${coaching_journals_dirpath}" ]; then
-        echo "Error: Coaching journals directory not found at '${coaching_journals_dirpath}'" >&2
-        return 1
-    fi
-
-    # Find client directories
-    local query_terms="${*}"
-    local glob_query="*${query_terms// /*}*"
-    local client_dirname=""
-
-    if [ -n "${query_terms}" ]; then
-        # Search for matching client directories
-        local dirs_matching_glob
-        dirs_matching_glob="$(find "${coaching_journals_dirpath}" -maxdepth 1 -type d ! -path "${coaching_journals_dirpath}" -iname "${glob_query}" -exec basename {} \;)"
-        local num_matches
-        num_matches="$(echo -n "${dirs_matching_glob}" | grep -c '^')"
-
-        # If we only have one match, select it automatically
-        if [ "${num_matches}" -eq 1 ]; then
-            client_dirname="${dirs_matching_glob}"
-        fi
-    fi
-
-    # If no auto-selection, use fzf
-    if [ -z "${client_dirname}" ]; then
-        client_dirname="$(
-            find "${coaching_journals_dirpath}" -maxdepth 1 -type d ! -path "${coaching_journals_dirpath}" -exec basename {} \; | \
-            sort | \
-            fzf --prompt="Select client: " --query="${query_terms}"
-        )"
-    fi
+    local client_dirname
+    client_dirname="$(_fzf_select_subdir "${coaching_journals_dirpath}" "${@}")" || return 1
 
     if [ -z "${client_dirname}" ]; then
         echo "No client selected" >&2
@@ -1116,39 +1124,8 @@ cjtodo() {
 }
 
 cjcat() {
-    local coaching_journals_dirpath="${work_gdrive_dirpath}/private-coaching-journals"
-
-    if [ ! -d "${coaching_journals_dirpath}" ]; then
-        echo "Error: Coaching journals directory not found at '${coaching_journals_dirpath}'" >&2
-        return 1
-    fi
-
-    # Find client directories
-    local query_terms="${*}"
-    local glob_query="*${query_terms// /*}*"
-    local client_dirname=""
-
-    if [ -n "${query_terms}" ]; then
-        # Search for matching client directories
-        local dirs_matching_glob
-        dirs_matching_glob="$(find "${coaching_journals_dirpath}" -maxdepth 1 -type d ! -path "${coaching_journals_dirpath}" -iname "${glob_query}" -exec basename {} \;)"
-        local num_matches
-        num_matches="$(echo -n "${dirs_matching_glob}" | grep -c '^')"
-
-        # If we only have one match, select it automatically
-        if [ "${num_matches}" -eq 1 ]; then
-            client_dirname="${dirs_matching_glob}"
-        fi
-    fi
-
-    # If no auto-selection, use fzf
-    if [ -z "${client_dirname}" ]; then
-        client_dirname="$(
-            find "${coaching_journals_dirpath}" -maxdepth 1 -type d ! -path "${coaching_journals_dirpath}" -exec basename {} \; | \
-            sort | \
-            fzf --prompt="Select client: " --query="${query_terms}"
-        )"
-    fi
+    local client_dirname
+    client_dirname="$(_fzf_select_subdir "${coaching_journals_dirpath}" "${@}")" || return 1
 
     if [ -z "${client_dirname}" ]; then
         echo "No client selected" >&2
@@ -1192,14 +1169,14 @@ cjcat() {
             local time_raw="${timestamp_raw##*_}"               # HH-mm-SS
             local time_part="${time_raw//-/:}"                  # HH:mm:SS
             local header_text="${date_part} ${time_part}"
-            local header_underline="${header_text//?)=}"        # Replace each char with =
+            local header_underline="${header_text//?/=}"        # Replace each char with =
 
             echo "${header_text}"
             echo "${header_underline}"
             echo ""
             command cat "${client_dirpath}/${symlink_name}"
         done
-    } | bat --language=md --style=plain
+    } | vim - -c "setlocal filetype=markdown"
 }
 
 
