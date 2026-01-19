@@ -1236,23 +1236,20 @@ week() {
     local current_day_of_week=$(date +%u)  # 1=Monday, 7=Sunday
     local template_weekly_planning_filepath="${check_dirpath}/weekly-planning.md"
     
-    # Calculate which weeks are "passed" and "to come" based on Wednesday threshold
-    # Days 1-3 (Mon-Wed): last week is "passed", current week is "to come"
-    # Days 4-7 (Thu-Sun): current week is "passed", next week is "to come"
-    if [ "${current_day_of_week}" -gt 3 ]; then
-        # After Wednesday: current week is "passed", next week is "to come"
-        passed_week_date="$(gdate -d "last sunday +0 days" +"%Y-%m-%d")"
-        if [ "$(date +%u)" -eq 7 ]; then
-            passed_week_date="$(date +"%Y-%m-%d")"
-        fi
-        to_come_week_date="$(gdate -d "next sunday +0 days" +"%Y-%m-%d")"
+    # Calculate which weeks are "passed" and "to come"
+    # Week starts on Sunday; Sun-Fri shows current week as "to come", Saturday shows next week
+    if [ "${current_day_of_week}" -eq 6 ]; then
+        # Saturday: current week is "passed", next week is "to come"
+        passed_week_date="$(gdate -d "last sunday" +"%Y-%m-%d")"
+        to_come_week_date="$(gdate -d "next sunday" +"%Y-%m-%d")"
+    elif [ "${current_day_of_week}" -eq 7 ]; then
+        # Sunday: today is the start of the week
+        passed_week_date="$(gdate -d "last sunday" +"%Y-%m-%d")"
+        to_come_week_date="$(date +"%Y-%m-%d")"
     else
-        # Before Thursday: last week is "passed", current week is "to come"
+        # Mon-Fri: "last sunday" is the start of this week
         passed_week_date="$(gdate -d "last sunday -7 days" +"%Y-%m-%d")"
-        to_come_week_date="$(gdate -d "last sunday +0 days" +"%Y-%m-%d")"
-        if [ "$(date +%u)" -eq 7 ]; then
-            to_come_week_date="$(date +"%Y-%m-%d")"
-        fi
+        to_come_week_date="$(gdate -d "last sunday" +"%Y-%m-%d")"
     fi
     
     # Create file paths
