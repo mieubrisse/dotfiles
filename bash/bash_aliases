@@ -682,14 +682,26 @@ alias work-gdrive="_smart_open_dir_file fuzzy_ls '${work_gdrive_dirpath}'"
 
 alias til="vim ${gref_dirpath}/today-i-learned.md"
 
-alias assistant="cd ${code_dirpath}/assistant && claude"
-
 alias tmp="cd /tmp"
 
 alias baliases="vim ${HOME}/.bash_aliases"
 alias vimrc="vim ${HOME}/.vimrc"
 
 alias home="cd ${HOME}"
+
+ai_factory_dirpath="${code_dirpath}/ai-work-factory"
+alias af="cd ${ai_factory_dirpath}"
+agent() {
+    local selected_dirname
+    selected_dirname="$(_fzf_select_subdir "${ai_factory_dirpath}" "${@}")" || return 1
+
+    if [ -z "${selected_dirname}" ]; then
+        return 0
+    fi
+
+    cd "${ai_factory_dirpath}/${selected_dirname}"
+    claude
+}
 
 # ======================================================================================
 #                                      Docker
@@ -1108,7 +1120,7 @@ cjn() {
     fi
 }
 
-cjtodo() {
+cjtd() {
     local client_dirname
     client_dirname="$(_fzf_select_subdir "${coaching_journals_dirpath}" "${@}")" || return 1
 
@@ -1352,6 +1364,7 @@ alias vision="vim ${self_improvement_dirpath}/2025-10/vision-board.md"
 # ======================================================================================
 
 # This is a wrapper around Claude to detect & inject 1Password secret references into Claude
+# export ANTHROPIC_LOG=debug
 claude() {
     # If stdin is being piped, use -p mode without op run
     if [ ! -t 0 ]; then
