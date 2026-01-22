@@ -154,6 +154,11 @@ set linebreak
 set autoread
 au FocusGained,BufEnter * :silent! checktime
 
+" Try to fix the issue where Google Drive will re-write the file timestmap to
+" their server time while I'm in the middle of editing, and then I get that
+" horrible "This file has changed since reading!!!!" error
+autocmd BufWritePre * silent! checktime %
+
 " Allow flashing cursor to be seen when matching parenthesis
 hi MatchParen ctermfg=white
 
