@@ -9,7 +9,7 @@
 	<key>AdjustWindowForFontSizeChange</key>
 	<true/>
 	<key>AllowClipboardAccess</key>
-	<false/>
+	<true/>
 	<key>AnimateDimming</key>
 	<false/>
 	<key>AutoHideTmuxClientSession</key>
@@ -44,6 +44,19 @@
 	<real>1</real>
 	<key>GlobalKeyMap</key>
 	<dict>
+		<key>0x31-0x40000-0x12</key>
+		<dict>
+			<key>Action</key>
+			<integer>38</integer>
+			<key>Apply Mode</key>
+			<integer>0</integer>
+			<key>Escaping</key>
+			<integer>2</integer>
+			<key>Text</key>
+			<string>\&lt;C-a&gt;1</string>
+			<key>Version</key>
+			<integer>2</integer>
+		</dict>
 		<key>0x48-0x60000</key>
 		<dict>
 			<key>Action</key>
@@ -58,10 +71,10 @@
 			<key>Text</key>
 			<string></string>
 		</dict>
-		<key>0x62-0x40000-0xb</key>
+		<key>0x5b-0x100000-0x21</key>
 		<dict>
 			<key>Action</key>
-			<integer>9</integer>
+			<integer>2</integer>
 			<key>Apply Mode</key>
 			<integer>0</integer>
 			<key>Escaping</key>
@@ -71,10 +84,10 @@
 			<key>Version</key>
 			<integer>2</integer>
 		</dict>
-		<key>0x66-0x40000-0x3</key>
+		<key>0x5d-0x100000-0x1e</key>
 		<dict>
 			<key>Action</key>
-			<integer>8</integer>
+			<integer>0</integer>
 			<key>Apply Mode</key>
 			<integer>0</integer>
 			<key>Escaping</key>
@@ -91,12 +104,18 @@
 			<key>Text</key>
 			<string></string>
 		</dict>
-		<key>0x68-0x40000</key>
+		<key>0x68-0x40000-0x4</key>
 		<dict>
 			<key>Action</key>
+			<integer>38</integer>
+			<key>Apply Mode</key>
+			<integer>0</integer>
+			<key>Escaping</key>
 			<integer>2</integer>
 			<key>Text</key>
-			<string></string>
+			<string>\&lt;C-a&gt;p</string>
+			<key>Version</key>
+			<integer>2</integer>
 		</dict>
 		<key>0x6c-0x140000</key>
 		<dict>
@@ -105,12 +124,44 @@
 			<key>Text</key>
 			<string></string>
 		</dict>
-		<key>0x6c-0x40000</key>
+		<key>0x6c-0x40000-0x25</key>
 		<dict>
 			<key>Action</key>
+			<integer>38</integer>
+			<key>Apply Mode</key>
 			<integer>0</integer>
+			<key>Escaping</key>
+			<integer>2</integer>
 			<key>Text</key>
-			<string></string>
+			<string>\&lt;C-a&gt;n</string>
+			<key>Version</key>
+			<integer>2</integer>
+		</dict>
+		<key>0x74-0x100000-0x11</key>
+		<dict>
+			<key>Action</key>
+			<integer>38</integer>
+			<key>Apply Mode</key>
+			<integer>0</integer>
+			<key>Escaping</key>
+			<integer>2</integer>
+			<key>Text</key>
+			<string>\&lt;C-a&gt;c</string>
+			<key>Version</key>
+			<integer>2</integer>
+		</dict>
+		<key>0x79-0x40000-0x10</key>
+		<dict>
+			<key>Action</key>
+			<integer>38</integer>
+			<key>Apply Mode</key>
+			<integer>0</integer>
+			<key>Escaping</key>
+			<integer>2</integer>
+			<key>Text</key>
+			<string>\&lt;C-a&gt;w</string>
+			<key>Version</key>
+			<integer>2</integer>
 		</dict>
 		<key>0xd-0x100000</key>
 		<dict>
@@ -494,62 +545,6 @@
 			</array>
 			<key>Keyboard Map</key>
 			<dict>
-				<key>0x2d-0x40000</key>
-				<dict>
-					<key>Action</key>
-					<integer>11</integer>
-					<key>Text</key>
-					<string>0x1f</string>
-				</dict>
-				<key>0x32-0x40000</key>
-				<dict>
-					<key>Action</key>
-					<integer>11</integer>
-					<key>Text</key>
-					<string>0x00</string>
-				</dict>
-				<key>0x33-0x40000</key>
-				<dict>
-					<key>Action</key>
-					<integer>11</integer>
-					<key>Text</key>
-					<string>0x1b</string>
-				</dict>
-				<key>0x34-0x40000</key>
-				<dict>
-					<key>Action</key>
-					<integer>11</integer>
-					<key>Text</key>
-					<string>0x1c</string>
-				</dict>
-				<key>0x35-0x40000</key>
-				<dict>
-					<key>Action</key>
-					<integer>11</integer>
-					<key>Text</key>
-					<string>0x1d</string>
-				</dict>
-				<key>0x36-0x40000</key>
-				<dict>
-					<key>Action</key>
-					<integer>11</integer>
-					<key>Text</key>
-					<string>0x1e</string>
-				</dict>
-				<key>0x37-0x40000</key>
-				<dict>
-					<key>Action</key>
-					<integer>11</integer>
-					<key>Text</key>
-					<string>0x1f</string>
-				</dict>
-				<key>0x38-0x40000</key>
-				<dict>
-					<key>Action</key>
-					<integer>11</integer>
-					<key>Text</key>
-					<string>0x7f</string>
-				</dict>
 				<key>0x4b-0x120000-0x28</key>
 				<dict>
 					<key>Action</key>
@@ -559,7 +554,7 @@
 					<key>Escaping</key>
 					<integer>2</integer>
 					<key>Text</key>
-					<string>cmdk -s\n</string>
+					<string>cmdk\n</string>
 					<key>Version</key>
 					<integer>2</integer>
 				</dict>
@@ -579,7 +574,7 @@
 					<key>Escaping</key>
 					<integer>2</integer>
 					<key>Text</key>
-					<string>cmdk\n</string>
+					<string>cmdk -s\n</string>
 					<key>Version</key>
 					<integer>2</integer>
 				</dict>
@@ -1075,6 +1070,8 @@
 	<key>RightOption</key>
 	<integer>3</integer>
 	<key>SavePasteHistory</key>
+	<false/>
+	<key>Selection Respects Soft Boundaries</key>
 	<false/>
 	<key>ShowBookmarkName</key>
 	<false/>
