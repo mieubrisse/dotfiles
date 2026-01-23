@@ -111,9 +111,70 @@ alias prettify-json="python -mjson.tool"
 alias eject="diskutil unmount"
 
 
-# Easily copy the contents of one or more file
+# Easily copy file contents, paths, or names to clipboard
 function clip() {
-    pbcopy < "${@}"
+    if [[ ${#} -eq 0 ]]; then
+        echo "Usage: clip [OPTIONS] <file>"
+        echo ""
+        echo "Copy file contents, paths, or names to the clipboard."
+        echo ""
+        echo "Options:"
+        echo "  -p    Copy the full absolute path to the file"
+        echo "  -n    Copy just the filename"
+        echo "  (no option) Copy the contents of the file"
+        return 0
+    fi
+
+    local copy_path=false
+    local copy_name=false
+
+    while getopts "pn" opt; do
+        case "${opt}" in
+            p)
+                copy_path=true
+                ;;
+            n)
+                copy_name=true
+                ;;
+            *)
+                echo "Unknown option: -${OPTARG}" >&2
+                return 1
+                ;;
+        esac
+    done
+    shift $((OPTIND - 1))
+    OPTIND=1  # Reset OPTIND for future getopts calls
+
+    if [[ "${copy_path}" == true ]] && [[ "${copy_name}" == true ]]; then
+        echo "Error: Cannot use both -p and -n flags together" >&2
+        return 1
+    fi
+
+    if [[ ${#} -eq 0 ]]; then
+        echo "Error: No file specified" >&2
+        return 1
+    fi
+
+    local file="${1}"
+
+    if [[ "${copy_path}" == true ]]; then
+        local abs_filepath
+        abs_filepath="$(cd "$(dirname "${file}")" && pwd)/$(basename "${file}")"
+        echo -n "${abs_filepath}" | pbcopy
+        echo "Copied path: ${abs_filepath}"
+    elif [[ "${copy_name}" == true ]]; then
+        local filename
+        filename="$(basename "${file}")"
+        echo -n "${filename}" | pbcopy
+        echo "Copied name: ${filename}"
+    else
+        if [[ ! -f "${file}" ]]; then
+            echo "Error: File not found: ${file}" >&2
+            return 1
+        fi
+        pbcopy < "${file}"
+        echo "Copied contents of: ${file}"
+    fi
 }
 
 # Adds a `chrome` command that I use for rendering Markdown files, with completion
@@ -544,6 +605,10 @@ alias virtualenv="pyenv virtualenv"
 # Make following a file much easier
 alias lsf="less +F"
 
+# ======================================================================================
+#                                      Navigation
+# ======================================================================================
+
 # Call this script and pass a text file with a list of servers. You will ssh to the servers as the current user.
 # Once connected use Ctrl + a to enter commands
 # de/syncronize panes = Ctrl + a + s
@@ -565,6 +630,132 @@ function parallel-tmux() {
     tmux attach
 }
 
+# Workspace session configuration
+_workspace_session_name="workspace"
+
+# Window configuration: "name<tab>working_dir<tab>command<tab>args..."
+_workspace_get_windows() {
+    # Static windows
+    local windows=(
+        "baliases	${HOME}	vim	${HOME}/.bash_aliases"
+        "vimrc	${HOME}	vim	${HOME}/.vimrc"
+        "claude	${dotfiles_dirpath}	claude	-c"
+        "dotfiles	${dotfiles_dirpath}	claude	-c"
+    )
+    printf '%s\n' "${windows[@]}"
+
+    # Dynamic ai-factory windows (all subdirectories)
+    for dirpath in "${ai_factory_dirpath}"/*/; do
+        [ -d "${dirpath}" ] || continue
+        local dirname
+        dirname=$(basename "${dirpath}")
+        printf '%s\t%s\t%s\t%s\n' "${dirname}" "${dirpath%/}" "claude" "-c"
+    done
+}
+
+# Get list of Claude window names
+_workspace_get_claude_window_names() {
+    while IFS=$'\t' read -r name working_dir cmd _rest; do
+        if [ "${cmd}" = "claude" ]; then
+            echo "${name}"
+        fi
+    done < <(_workspace_get_windows)
+}
+
+# Upgrade Claude in all workspace windows
+_workspace_upgrade() {
+    if ! tmux has-session -t "${_workspace_session_name}" 2>/dev/null; then
+        echo "No workspace session found"
+        return 1
+    fi
+
+    echo "Closing Claude windows..."
+    while read -r window; do
+        tmux kill-window -t "${_workspace_session_name}:${window}" 2>/dev/null || true
+    done < <(_workspace_get_claude_window_names)
+
+    echo "Upgrading claude-code..."
+    brew upgrade claude-code
+
+    echo "Reopening Claude windows..."
+    while IFS=$'\t' read -r name working_dir cmd args; do
+        if [ "${cmd}" = "claude" ]; then
+            tmux new-window -t "${_workspace_session_name}" -n "${name}" -c "${working_dir}"
+            tmux send-keys -t "${_workspace_session_name}:${name}" "${cmd} ${args}" Enter
+        fi
+    done < <(_workspace_get_windows)
+
+    echo "Upgrade complete"
+}
+
+workspace() {
+    local upgrade=false
+
+    # Parse flags
+    while getopts "u" opt; do
+        case "${opt}" in
+            u)
+                upgrade=true
+                ;;
+            *)
+                echo "Usage: workspace [-u]" >&2
+                return 1
+                ;;
+        esac
+    done
+    shift $((OPTIND - 1))
+    OPTIND=1  # Reset for future getopts calls
+
+    # Handle upgrade
+    if [ "${upgrade}" = true ]; then
+        _workspace_upgrade
+        return $?
+    fi
+
+    # Attach to the session if it exists
+    if tmux has-session -t "${_workspace_session_name}" 2>/dev/null; then
+        if [ -n "${TMUX}" ]; then
+            tmux switch-client -t "${_workspace_session_name}"
+        else
+            tmux attach-session -t "${_workspace_session_name}"
+        fi
+        return 0
+    fi
+
+    # Create new session
+    tmux new-session -d -s "${_workspace_session_name}"
+
+    # Create windows from configuration
+    local first_window=""
+    while IFS=$'\t' read -r name working_dir cmd args; do
+        if [ -z "${first_window}" ]; then
+            first_window="${name}"
+        fi
+
+        tmux new-window -t "${_workspace_session_name}" -n "${name}" -c "${working_dir}"
+        tmux send-keys -t "${_workspace_session_name}:${name}" "${cmd} ${args}" Enter
+    done < <(_workspace_get_windows)
+
+    # Select the first window and attach
+    tmux select-window -t "${_workspace_session_name}:${first_window}"
+    if [ -n "${TMUX}" ]; then
+        tmux switch-client -t "${_workspace_session_name}"
+    else
+        tmux attach-session -t "${_workspace_session_name}"
+    fi
+}
+
+exit_workspace() {
+    if ! tmux has-session -t "${_workspace_session_name}" 2>/dev/null; then
+        echo "No workspace session found"
+        return 1
+    fi
+
+    # tmux kill-session sends SIGHUP to all process groups in the session
+    # With 'set noswapfile' in vimrc, Vim exits cleanly without leaving .swp files
+    tmux kill-session -t "${_workspace_session_name}"
+    echo "Workspace session closed"
+}
 
 
 # ======================================================================================
