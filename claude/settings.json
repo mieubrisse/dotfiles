@@ -258,6 +258,17 @@
     "lua-lsp@claude-plugins-official": true
   },
   "hooks": {
+    "PreCompact": [
+      {
+        "matcher": "auto",
+        "hooks": [
+          {
+            "type": "prompt",
+            "prompt": "Context is about to be auto-compacted. Return {\"ok\": false} to stop and let the user choose /clear or /compact manually."
+          }
+        ]
+      }
+    ],
     "Stop": [
       {
         "hooks": [

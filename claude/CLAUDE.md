@@ -1,3 +1,11 @@
+About This Repo
+===============
+This repository contains the user's dotfiles. Each tool's configuration files live in their own subdirectory (e.g., `bash/`, `git/`, `vim/`, `tmux/`).
+
+The `init.sh` script symlinks these dotfiles into their correct locations in the home directory. This script is idempotent and can be run multiple times safely.
+
+---
+
 **IMPORTANT:** When asked to fix a problem, your solution is NOT to just comment out the code, removing the problem! You must fix the problem, not ignore it.
 
 General Principles

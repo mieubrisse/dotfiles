@@ -113,28 +113,37 @@ alias eject="diskutil unmount"
 
 # Easily copy file contents, paths, or names to clipboard
 function clip() {
-    if [[ ${#} -eq 0 ]]; then
-        echo "Usage: clip [OPTIONS] <file>"
+    _clip_help() {
+        echo "Usage: clip [OPTIONS] [file]"
         echo ""
-        echo "Copy file contents, paths, or names to the clipboard."
+        echo "Copy file contents, paths, or directories to the clipboard."
         echo ""
         echo "Options:"
         echo "  -p    Copy the full absolute path to the file"
         echo "  -n    Copy just the filename"
+        echo "  -d    Copy the current directory path"
+        echo "  -h    Show this help message"
         echo "  (no option) Copy the contents of the file"
-        return 0
-    fi
+    }
 
     local copy_path=false
     local copy_name=false
+    local copy_dir=false
 
-    while getopts "pn" opt; do
+    while getopts "pndh" opt; do
         case "${opt}" in
             p)
                 copy_path=true
                 ;;
             n)
                 copy_name=true
+                ;;
+            d)
+                copy_dir=true
+                ;;
+            h)
+                _clip_help
+                return 0
                 ;;
             *)
                 echo "Unknown option: -${OPTARG}" >&2
@@ -145,13 +154,21 @@ function clip() {
     shift $((OPTIND - 1))
     OPTIND=1  # Reset OPTIND for future getopts calls
 
-    if [[ "${copy_path}" == true ]] && [[ "${copy_name}" == true ]]; then
-        echo "Error: Cannot use both -p and -n flags together" >&2
-        return 1
+    if [[ "${copy_dir}" == true ]]; then
+        local current_dirpath
+        current_dirpath="$(pwd)"
+        echo -n "${current_dirpath}" | pbcopy
+        echo "Copied directory: ${current_dirpath}"
+        return 0
     fi
 
     if [[ ${#} -eq 0 ]]; then
-        echo "Error: No file specified" >&2
+        _clip_help
+        return 0
+    fi
+
+    if [[ "${copy_path}" == true ]] && [[ "${copy_name}" == true ]]; then
+        echo "Error: Cannot use both -p and -n flags together" >&2
         return 1
     fi
 
@@ -495,7 +512,8 @@ ga() {   # Use fzf to select files if no arguments are provided
         fi
 
         local selection
-        selection=$(echo -e "[ALL]\n$candidates" | fzf -m --prompt="Add files: ")
+        selection=$(echo -e "[ALL]\n$candidates" | fzf -m --prompt="Add files: " \
+            --preview='[[ {} != "[ALL]" ]] && git diff --color=always -- {} | diff-so-fancy || echo "Stage all modified files"')
 
         if [[ "$selection" == *"[ALL]"* ]]; then
             echo "$candidates" | xargs git add --
@@ -635,22 +653,11 @@ _workspace_session_name="workspace"
 
 # Window configuration: "name<tab>working_dir<tab>command<tab>args..."
 _workspace_get_windows() {
-    # Static windows
-    local windows=(
-        "baliases	${HOME}	vim	${HOME}/.bash_aliases"
-        "vimrc	${HOME}	vim	${HOME}/.vimrc"
-        "claude	${dotfiles_dirpath}	claude	-c"
-        "dotfiles	${dotfiles_dirpath}	claude	-c"
-    )
-    printf '%s\n' "${windows[@]}"
-
-    # Dynamic ai-factory windows (all subdirectories)
-    for dirpath in "${ai_factory_dirpath}"/*/; do
-        [ -d "${dirpath}" ] || continue
-        local dirname
-        dirname=$(basename "${dirpath}")
-        printf '%s\t%s\t%s\t%s\n' "${dirname}" "${dirpath%/}" "claude" "-c"
-    done
+    printf '%s\t%s\t%s\t%s\n' "baliases" "${HOME}" "vim" "${HOME}/.bash_aliases"
+    printf '%s\t%s\t%s\t%s\n' "dotfiles" "${dotfiles_dirpath}" "claude" "-c"
+    printf '%s\t%s\t%s\t%s\n' "calendar-manager" "${ai_factory_dirpath}/calendar-manager" "claude" "-c"
+    printf '%s\t%s\t%s\t%s\n' "todoist-manager" "${ai_factory_dirpath}/todoist-manager" "claude" "-c"
+    printf '%s\t%s\t%s\t%s\n' "prompt-engineer" "${ai_factory_dirpath}/prompt-engineer" "claude" "-c"
 }
 
 # Get list of Claude window names
@@ -678,9 +685,12 @@ _workspace_upgrade() {
     brew upgrade claude-code
 
     echo "Reopening Claude windows..."
+    local idx=0
     while IFS=$'\t' read -r name working_dir cmd args; do
+        ((idx++))
         if [ "${cmd}" = "claude" ]; then
-            tmux new-window -t "${_workspace_session_name}" -n "${name}" -c "${working_dir}"
+            tmux new-window -t "${_workspace_session_name}:${idx}" -n "${name}" -c "${working_dir}"
+            tmux set-window-option -t "${_workspace_session_name}:${name}" automatic-rename off
             tmux send-keys -t "${_workspace_session_name}:${name}" "${cmd} ${args}" Enter
         fi
     done < <(_workspace_get_windows)
@@ -688,17 +698,28 @@ _workspace_upgrade() {
     echo "Upgrade complete"
 }
 
-workspace() {
-    local upgrade=false
+work() {
+    local action="attach"
 
     # Parse flags
-    while getopts "u" opt; do
+    while getopts "ueh" opt; do
         case "${opt}" in
             u)
-                upgrade=true
+                action="upgrade"
+                ;;
+            e)
+                action="exit"
+                ;;
+            h)
+                echo "Usage: work [-u|-e|-h]"
+                echo "  (no args)  Create or attach to workspace"
+                echo "  -u         Upgrade Claude in all windows"
+                echo "  -e         Exit workspace session"
+                echo "  -h         Show this help"
+                return 0
                 ;;
             *)
-                echo "Usage: workspace [-u]" >&2
+                echo "Usage: work [-u|-e|-h]" >&2
                 return 1
                 ;;
         esac
@@ -707,12 +728,28 @@ workspace() {
     OPTIND=1  # Reset for future getopts calls
 
     # Handle upgrade
-    if [ "${upgrade}" = true ]; then
+    if [ "${action}" = "upgrade" ]; then
         _workspace_upgrade
         return $?
     fi
 
-    # Attach to the session if it exists
+    # Handle exit
+    if [ "${action}" = "exit" ]; then
+        if ! tmux has-session -t "${_workspace_session_name}" 2>/dev/null; then
+            echo "No workspace session found"
+            return 1
+        fi
+        # tmux kill-session sends SIGHUP to all process groups in the session
+        # With 'set noswapfile' in vimrc, Vim exits cleanly without leaving .swp files
+        tmux kill-session -t "${_workspace_session_name}"
+        echo "Workspace session closed"
+        # Reload bash aliases in case they were modified during the session
+        source "${HOME}/.bash_aliases"
+        echo "Bash aliases reloaded"
+        return 0
+    fi
+
+    # Default: attach to the session if it exists
     if tmux has-session -t "${_workspace_session_name}" 2>/dev/null; then
         if [ -n "${TMUX}" ]; then
             tmux switch-client -t "${_workspace_session_name}"
@@ -722,39 +759,29 @@ workspace() {
         return 0
     fi
 
-    # Create new session
-    tmux new-session -d -s "${_workspace_session_name}"
+    # Read first window config
+    local first_name first_dir first_cmd first_args
+    IFS=$'\t' read -r first_name first_dir first_cmd first_args < <(_workspace_get_windows | head -1)
 
-    # Create windows from configuration
-    local first_window=""
-    while IFS=$'\t' read -r name working_dir cmd args; do
-        if [ -z "${first_window}" ]; then
-            first_window="${name}"
-        fi
+    # Create session with first window already configured (avoids default bash window)
+    tmux new-session -d -s "${_workspace_session_name}" -n "${first_name}" -c "${first_dir}"
+    tmux set-window-option -t "${_workspace_session_name}:${first_name}" automatic-rename off
+    tmux send-keys -t "${_workspace_session_name}:${first_name}" "${first_cmd} ${first_args}" Enter
 
+    # Create remaining windows
+    _workspace_get_windows | tail -n +2 | while IFS=$'\t' read -r name working_dir cmd args; do
         tmux new-window -t "${_workspace_session_name}" -n "${name}" -c "${working_dir}"
+        tmux set-window-option -t "${_workspace_session_name}:${name}" automatic-rename off
         tmux send-keys -t "${_workspace_session_name}:${name}" "${cmd} ${args}" Enter
-    done < <(_workspace_get_windows)
+    done
 
     # Select the first window and attach
-    tmux select-window -t "${_workspace_session_name}:${first_window}"
+    tmux select-window -t "${_workspace_session_name}:${first_name}"
     if [ -n "${TMUX}" ]; then
         tmux switch-client -t "${_workspace_session_name}"
     else
         tmux attach-session -t "${_workspace_session_name}"
     fi
-}
-
-exit_workspace() {
-    if ! tmux has-session -t "${_workspace_session_name}" 2>/dev/null; then
-        echo "No workspace session found"
-        return 1
-    fi
-
-    # tmux kill-session sends SIGHUP to all process groups in the session
-    # With 'set noswapfile' in vimrc, Vim exits cleanly without leaving .swp files
-    tmux kill-session -t "${_workspace_session_name}"
-    echo "Workspace session closed"
 }
 
 
@@ -877,6 +904,7 @@ alias tmp="cd /tmp"
 
 alias baliases="vim ${HOME}/.bash_aliases"
 alias vimrc="vim ${HOME}/.vimrc"
+alias bashrc="vim ${HOME}/.bashrc"
 
 alias home="cd ${HOME}"
 

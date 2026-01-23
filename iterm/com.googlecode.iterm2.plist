@@ -201,6 +201,19 @@
 			<key>Version</key>
 			<integer>2</integer>
 		</dict>
+		<key>0x5b-0x40000-0x21</key>
+		<dict>
+			<key>Action</key>
+			<integer>38</integer>
+			<key>Apply Mode</key>
+			<integer>0</integer>
+			<key>Escaping</key>
+			<integer>2</integer>
+			<key>Text</key>
+			<string>\&lt;C-a&gt;[</string>
+			<key>Version</key>
+			<integer>2</integer>
+		</dict>
 		<key>0x5d-0x100000-0x1e</key>
 		<dict>
 			<key>Action</key>
@@ -409,6 +422,8 @@
 			<key>Allow Title Reporting</key>
 			<false/>
 			<key>Ambiguous Double Width</key>
+			<false/>
+			<key>Animate Movement</key>
 			<false/>
 			<key>Ansi 0 Color</key>
 			<dict>
@@ -623,7 +638,7 @@
 			<key>Custom Command</key>
 			<string>No</string>
 			<key>Custom Directory</key>
-			<string>Recycle</string>
+			<string>No</string>
 			<key>Default Bookmark</key>
 			<string>No</string>
 			<key>Disable Printing</key>
@@ -652,7 +667,7 @@
 			<key>Idle Code</key>
 			<integer>0</integer>
 			<key>Initial Text</key>
-			<string></string>
+			<string>source ~/.bash_aliases &amp;&amp; work</string>
 			<key>Jobs to Ignore</key>
 			<array>
 				<string>rlogin</string>
@@ -1175,7 +1190,7 @@
 	<key>Print In Black And White</key>
 	<true/>
 	<key>PromptOnQuit</key>
-	<true/>
+	<false/>
 	<key>QuickPasteBytesPerCall</key>
 	<integer>1152</integer>
 	<key>QuickPasteDelayBetweenCalls</key>
