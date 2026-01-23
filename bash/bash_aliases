@@ -690,8 +690,17 @@ alias vimrc="vim ${HOME}/.vimrc"
 alias home="cd ${HOME}"
 
 ai_factory_dirpath="${code_dirpath}/ai-work-factory"
-alias af="cd ${ai_factory_dirpath}"
-agent() {
+
+
+# ======================================================================================
+#                                      AI Factory
+# ======================================================================================
+af() {
+    if [ "${#}" -eq 0 ]; then
+        cd "${ai_factory_dirpath}"
+        return
+    fi
+
     local selected_dirname
     selected_dirname="$(_fzf_select_subdir "${ai_factory_dirpath}" "${@}")" || return 1
 
@@ -700,7 +709,21 @@ agent() {
     fi
 
     cd "${ai_factory_dirpath}/${selected_dirname}"
-    claude
+
+    # Create a tempfile for the prompt
+    local prompt_tempfile
+    prompt_tempfile="$(mktemp)"
+
+    # Open vim to edit the prompt (start in insert mode)
+    vim -c "startinsert" "${prompt_tempfile}"
+
+    # Only run claude if the file has content
+    if [ -s "${prompt_tempfile}" ]; then
+        claude "$(cat "${prompt_tempfile}")"
+    fi
+
+    # Clean up
+    rm -f "${prompt_tempfile}"
 }
 
 # ======================================================================================
@@ -809,6 +832,7 @@ function wealthdraft() {
 #                                    CLI Journal
 # ======================================================================================
 export journal_dirpath="${gdrive_dirpath}/journal"   # Must be exported so fzf can use this
+alias journal="cd ${journal_dirpath}"
 
 # Helper function to sanitize journal names from arguments
 _sanitize_journal_name() {
@@ -855,8 +879,6 @@ _fzf_journal_find_cmd() {
     sort -t $'\t' -k4,4r
 }
 export -f _fzf_journal_find_cmd  # Need to export this so fzf can use it
-
-alias journal="activate_jenv_and_java_home && java -jar ${HOME}/app/cli-journal/*.jar"
 
 # This is a helper function for creating files from templates.
 #
@@ -1209,9 +1231,16 @@ alias health="vim ${gref_dirpath}/health/health-journal.md"
 
 
 # ======================================================================================
-#                                    Health Journal
+#                                    Musings Journal
 # ======================================================================================
 alias musings="vim ${gref_dirpath}/musings/one-off-musings.md"
+
+# ======================================================================================
+#                                  Portuguese Journal
+# ======================================================================================
+portuguese() {
+    vim "${journal_dirpath}/portuguese-journal~$(now)~.md"
+}
 
 # ======================================================================================
 #                             Daily/Weekly/Monthly Reflections
