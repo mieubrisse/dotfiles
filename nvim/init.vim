@@ -154,6 +154,12 @@ set linebreak
 set autoread
 au FocusGained,BufEnter * :silent! checktime
 
+" Disable swap files. The main benefits of swap files are:
+" 1. Warning when multiple Vim instances edit the same file (handled by autoread above)
+" 2. Crash recovery (acceptable tradeoff - save frequently instead)
+" Without swap files, processes can SIGTERM Vim for clean exits without leaving .swp files.
+set noswapfile
+
 " Try to fix the issue where Google Drive will re-write the file timestmap to
 " their server time while I'm in the middle of editing, and then I get that
 " horrible "This file has changed since reading!!!!" error
