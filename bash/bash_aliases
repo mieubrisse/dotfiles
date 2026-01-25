@@ -653,13 +653,21 @@ function parallel-tmux() {
 # Workspace session configuration
 _workspace_session_name="workspace"
 
+# Directory paths needed by workspace (defined here to ensure availability)
+code_dirpath="${HOME}/code"
+dotfiles_dirpath="${HOME}/app/dotfiles"
+ai_factory_dirpath="${code_dirpath}/ai-work-factory"
+lifeops_dirpath="${code_dirpath}/lifeops-toolkit"
+
 # Window configuration: "type<tab>name<tab>working_dir<tab>command"
 # Special entry: "pane" type creates a vertical split in the previous window
 _workspace_get_windows() {
     printf '%s\t%s\t%s\t%s\n' "window" "dotfiles" "${dotfiles_dirpath}" ""
-    printf '%s\t%s\t%s\t%s\n' "pane" "" "${dotfiles_dirpath}" "claude -c"
+    printf '%s\t%s\t%s\t%s\n' "pane" "-" "${dotfiles_dirpath}" "claude -c"
     printf '%s\t%s\t%s\t%s\n' "window" "lifeops" "${lifeops_dirpath}" ""
-    printf '%s\t%s\t%s\t%s\n' "pane" "" "${lifeops_dirpath}" "claude -c"
+    printf '%s\t%s\t%s\t%s\n' "pane" "-" "${lifeops_dirpath}" "claude -c"
+    printf '%s\t%s\t%s\t%s\n' "window" "ai-factory" "${ai_factory_dirpath}" ""
+    printf '%s\t%s\t%s\t%s\n' "pane" "-" "${ai_factory_dirpath}" "claude -c"
     printf '%s\t%s\t%s\t%s\n' "window" "calendar-manager" "${ai_factory_dirpath}/calendar-manager" "claude -c"
     printf '%s\t%s\t%s\t%s\n' "window" "todoist-manager" "${ai_factory_dirpath}/todoist-manager" "claude -c"
     printf '%s\t%s\t%s\t%s\n' "window" "prompt-engineer" "${ai_factory_dirpath}/prompt-engineer" "claude -c"
@@ -703,9 +711,8 @@ _workspace_upgrade() {
             fi
         elif [ "${entry_type}" = "pane" ] && [[ "${full_cmd}" == claude* ]]; then
             # Add pane to current window
-            local new_pane_id
-            new_pane_id=$(tmux split-window -h -t "${_workspace_session_name}:${current_window}" -c "${working_dir}" -P -F "#{pane_id}")
-            tmux send-keys -t "${new_pane_id}" "${full_cmd}" Enter
+            tmux split-window -h -c "${working_dir}" -t "${_workspace_session_name}:${current_window}"
+            tmux send-keys -t "${_workspace_session_name}:${current_window}.1" "${full_cmd}" Enter
         fi
     done < <(_workspace_get_windows)
 
@@ -812,9 +819,8 @@ work() {
             tmux send-keys -t "${_workspace_session_name}:${name}" "${full_cmd}" Enter
         elif [ "${entry_type}" = "pane" ]; then
             # Split the current window horizontally (side-by-side panes)
-            local new_pane_id
-            new_pane_id=$(tmux split-window -h -t "${_workspace_session_name}:${current_window}" -c "${working_dir}" -P -F "#{pane_id}")
-            tmux send-keys -t "${new_pane_id}" "${full_cmd}" Enter
+            tmux split-window -h -c "${working_dir}" -t "${_workspace_session_name}:${current_window}"
+            tmux send-keys -t "${_workspace_session_name}:${current_window}.1" "${full_cmd}" Enter
         fi
     done < <(_workspace_get_windows | tail -n +2)
 
