@@ -770,6 +770,14 @@ work() {
         return 0
     fi
 
+    # Pre-authenticate with 1Password before creating tmux session
+    # Biometric auth doesn't work properly inside tmux, so do it here first
+    echo "Authenticating with 1Password..."
+    if ! op whoami &>/dev/null; then
+        echo "WARNING: Could not pre-authenticate with 1Password"
+        echo "You may need to authenticate manually in each window"
+    fi
+
     # Read first window config
     local first_entry_type first_name first_dir first_cmd
     IFS=$'\t' read -r first_entry_type first_name first_dir first_cmd < <(_workspace_get_windows | head -1)
@@ -1638,23 +1646,9 @@ claude() {
     if [ ! -t 0 ]; then
         ${BREW_PREFIX}/bin/claude -p "${@}"
     elif [ -f ".claude/secrets.env" ]; then
-        # Retry loop for 1Password connection issues (common in tmux)
-        local max_attempts=5
-        local attempt=1
-        while [ ${attempt} -le ${max_attempts} ]; do
-            # Test 1Password connection first
-            if op account list &>/dev/null; then
-                # We have to add the 'script -q /dev/null' due to a Claude bug: https://github.com/anthropics/claude-code/issues/4930
-                op run --env-file ".claude/secrets.env" -- script -q /dev/null "${BREW_PREFIX}/bin/claude" "${@}"
-                return $?
-            fi
-            echo "1Password connection failed (attempt ${attempt}/${max_attempts}), retrying in 2s..."
-            sleep 2
-            ((attempt++))
-        done
-        echo "ERROR: Could not connect to 1Password after ${max_attempts} attempts"
-        echo "Make sure 1Password desktop app is running and CLI integration is enabled"
-        return 1
+        # We have to add the 'script -q /dev/null' due to a Claude bug: https://github.com/anthropics/claude-code/issues/4930
+        # Note: 1Password biometric auth should be done before entering tmux (see `work` function)
+        op run --env-file ".claude/secrets.env" -- script -q /dev/null "${BREW_PREFIX}/bin/claude" "${@}"
     else
         ${BREW_PREFIX}/bin/claude "${@}"
     fi
