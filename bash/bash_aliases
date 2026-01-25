@@ -656,8 +656,10 @@ _workspace_session_name="workspace"
 # Window configuration: "type<tab>name<tab>working_dir<tab>command"
 # Special entry: "pane" type creates a vertical split in the previous window
 _workspace_get_windows() {
-    printf '%s\t%s\t%s\t%s\n' "window" "baliases" "${HOME}" "vim ${HOME}/.bash_aliases"
+    printf '%s\t%s\t%s\t%s\n' "window" "dotfiles" "${dotfiles_dirpath}" ""
     printf '%s\t%s\t%s\t%s\n' "pane" "" "${dotfiles_dirpath}" "claude -c"
+    printf '%s\t%s\t%s\t%s\n' "window" "lifeops" "${lifeops_dirpath}" ""
+    printf '%s\t%s\t%s\t%s\n' "pane" "" "${lifeops_dirpath}" "claude -c"
     printf '%s\t%s\t%s\t%s\n' "window" "calendar-manager" "${ai_factory_dirpath}/calendar-manager" "claude -c"
     printf '%s\t%s\t%s\t%s\n' "window" "todoist-manager" "${ai_factory_dirpath}/todoist-manager" "claude -c"
     printf '%s\t%s\t%s\t%s\n' "window" "prompt-engineer" "${ai_factory_dirpath}/prompt-engineer" "claude -c"
@@ -701,8 +703,9 @@ _workspace_upgrade() {
             fi
         elif [ "${entry_type}" = "pane" ] && [[ "${full_cmd}" == claude* ]]; then
             # Add pane to current window
-            tmux split-window -h -t "${_workspace_session_name}:${current_window}" -c "${working_dir}"
-            tmux send-keys -t "${_workspace_session_name}:${current_window}" "${full_cmd}" Enter
+            local new_pane_id
+            new_pane_id=$(tmux split-window -h -t "${_workspace_session_name}:${current_window}" -c "${working_dir}" -P -F "#{pane_id}")
+            tmux send-keys -t "${new_pane_id}" "${full_cmd}" Enter
         fi
     done < <(_workspace_get_windows)
 
@@ -713,24 +716,28 @@ work() {
     local action="attach"
 
     # Parse flags
-    while getopts "ueh" opt; do
+    while getopts "ureh" opt; do
         case "${opt}" in
             u)
                 action="upgrade"
+                ;;
+            r)
+                action="restart"
                 ;;
             e)
                 action="exit"
                 ;;
             h)
-                echo "Usage: work [-u|-e|-h]"
+                echo "Usage: work [-u|-r|-e|-h]"
                 echo "  (no args)  Create or attach to workspace"
                 echo "  -u         Upgrade Claude in all windows"
+                echo "  -r         Restart: exit, reload aliases, and re-enter"
                 echo "  -e         Exit workspace session"
                 echo "  -h         Show this help"
                 return 0
                 ;;
             *)
-                echo "Usage: work [-u|-e|-h]" >&2
+                echo "Usage: work [-u|-r|-e|-h]" >&2
                 return 1
                 ;;
         esac
@@ -741,6 +748,14 @@ work() {
     # Handle upgrade
     if [ "${action}" = "upgrade" ]; then
         _workspace_upgrade
+        return $?
+    fi
+
+    # Handle restart
+    if [ "${action}" = "restart" ]; then
+        work -e
+        source "${HOME}/.bash_aliases"
+        work
         return $?
     fi
 
@@ -797,8 +812,9 @@ work() {
             tmux send-keys -t "${_workspace_session_name}:${name}" "${full_cmd}" Enter
         elif [ "${entry_type}" = "pane" ]; then
             # Split the current window horizontally (side-by-side panes)
-            tmux split-window -h -t "${_workspace_session_name}:${current_window}" -c "${working_dir}"
-            tmux send-keys -t "${_workspace_session_name}:${current_window}" "${full_cmd}" Enter
+            local new_pane_id
+            new_pane_id=$(tmux split-window -h -t "${_workspace_session_name}:${current_window}" -c "${working_dir}" -P -F "#{pane_id}")
+            tmux send-keys -t "${new_pane_id}" "${full_cmd}" Enter
         fi
     done < <(_workspace_get_windows | tail -n +2)
 
@@ -1638,9 +1654,10 @@ alias vision="vim ${self_improvement_dirpath}/2025-10/vision-board.md"
 #                                     Claude
 # ======================================================================================
 
+# export ANTHROPIC_LOG=debug
+# export ANTHROPIC_DEFAULT_HAIKU_MODEL=claude-haiku-4-5-20251001
+
 # This is a wrapper around Claude to detect & inject 1Password secret references into Claude
-export ANTHROPIC_LOG=debug
-export ANTHROPIC_DEFAULT_HAIKU_MODEL=claude-haiku-4-5-20251001
 claude() {
     # If stdin is being piped, use -p mode without op run
     if [ ! -t 0 ]; then
