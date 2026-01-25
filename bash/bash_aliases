@@ -430,6 +430,9 @@ alias vsp="vim -O"
 # ======================================================================================
 #                                      Git
 # ======================================================================================
+
+alias lg=lazygit
+
 # Viewing changes
 alias gs="git status -sb"
 alias gsh="git show"
@@ -573,7 +576,6 @@ function gp() {	# Push the branch upstream if it doesn't exist; otherwise just g
 }
 alias gprune-local-dry-run="git branch --merged | grep -v '\*' | grep -v 'master' | grep -v 'develop'"
 alias gprune-local="git branch --merged | grep -v '\*' | grep -v 'master' | grep -v 'develop' | xargs -n 1 git branch -d"
-
 
 # ======================================================================================
 #                                      Github
