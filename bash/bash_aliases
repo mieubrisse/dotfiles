@@ -651,19 +651,20 @@ function parallel-tmux() {
 # Workspace session configuration
 _workspace_session_name="workspace"
 
-# Window configuration: "name<tab>working_dir<tab>command<tab>args..."
+# Window configuration: "type<tab>name<tab>working_dir<tab>command"
+# Special entry: "pane" type creates a vertical split in the previous window
 _workspace_get_windows() {
-    printf '%s\t%s\t%s\t%s\n' "baliases" "${HOME}" "vim" "${HOME}/.bash_aliases"
-    printf '%s\t%s\t%s\t%s\n' "dotfiles" "${dotfiles_dirpath}" "claude" "-c"
-    printf '%s\t%s\t%s\t%s\n' "calendar-manager" "${ai_factory_dirpath}/calendar-manager" "claude" "-c"
-    printf '%s\t%s\t%s\t%s\n' "todoist-manager" "${ai_factory_dirpath}/todoist-manager" "claude" "-c"
-    printf '%s\t%s\t%s\t%s\n' "prompt-engineer" "${ai_factory_dirpath}/prompt-engineer" "claude" "-c"
+    printf '%s\t%s\t%s\t%s\n' "window" "baliases" "${HOME}" "vim ${HOME}/.bash_aliases"
+    printf '%s\t%s\t%s\t%s\n' "pane" "" "${dotfiles_dirpath}" "claude -c"
+    printf '%s\t%s\t%s\t%s\n' "window" "calendar-manager" "${ai_factory_dirpath}/calendar-manager" "claude -c"
+    printf '%s\t%s\t%s\t%s\n' "window" "todoist-manager" "${ai_factory_dirpath}/todoist-manager" "claude -c"
+    printf '%s\t%s\t%s\t%s\n' "window" "prompt-engineer" "${ai_factory_dirpath}/prompt-engineer" "claude -c"
 }
 
 # Get list of Claude window names
 _workspace_get_claude_window_names() {
-    while IFS=$'\t' read -r name working_dir cmd _rest; do
-        if [ "${cmd}" = "claude" ]; then
+    while IFS=$'\t' read -r entry_type name working_dir full_cmd; do
+        if [ "${entry_type}" = "window" ] && [[ "${full_cmd}" == claude* ]]; then
             echo "${name}"
         fi
     done < <(_workspace_get_windows)
@@ -686,12 +687,20 @@ _workspace_upgrade() {
 
     echo "Reopening Claude windows..."
     local idx=0
-    while IFS=$'\t' read -r name working_dir cmd args; do
-        ((idx++))
-        if [ "${cmd}" = "claude" ]; then
-            tmux new-window -t "${_workspace_session_name}:${idx}" -n "${name}" -c "${working_dir}"
-            tmux set-window-option -t "${_workspace_session_name}:${name}" automatic-rename off
-            tmux send-keys -t "${_workspace_session_name}:${name}" "${cmd} ${args}" Enter
+    local current_window=""
+    while IFS=$'\t' read -r entry_type name working_dir full_cmd; do
+        if [ "${entry_type}" = "window" ]; then
+            ((idx++))
+            current_window="${name}"
+            if [[ "${full_cmd}" == claude* ]]; then
+                tmux new-window -t "${_workspace_session_name}:${idx}" -n "${name}" -c "${working_dir}"
+                tmux set-window-option -t "${_workspace_session_name}:${name}" automatic-rename off
+                tmux send-keys -t "${_workspace_session_name}:${name}" "${full_cmd}" Enter
+            fi
+        elif [ "${entry_type}" = "pane" ] && [[ "${full_cmd}" == claude* ]]; then
+            # Add pane to current window
+            tmux split-window -h -t "${_workspace_session_name}:${current_window}" -c "${working_dir}"
+            tmux send-keys -t "${_workspace_session_name}:${current_window}" "${full_cmd}" Enter
         fi
     done < <(_workspace_get_windows)
 
@@ -760,20 +769,28 @@ work() {
     fi
 
     # Read first window config
-    local first_name first_dir first_cmd first_args
-    IFS=$'\t' read -r first_name first_dir first_cmd first_args < <(_workspace_get_windows | head -1)
+    local first_entry_type first_name first_dir first_cmd
+    IFS=$'\t' read -r first_entry_type first_name first_dir first_cmd < <(_workspace_get_windows | head -1)
 
     # Create session with first window already configured (avoids default bash window)
     tmux new-session -d -s "${_workspace_session_name}" -n "${first_name}" -c "${first_dir}"
     tmux set-window-option -t "${_workspace_session_name}:${first_name}" automatic-rename off
-    tmux send-keys -t "${_workspace_session_name}:${first_name}" "${first_cmd} ${first_args}" Enter
+    tmux send-keys -t "${_workspace_session_name}:${first_name}" "${first_cmd}" Enter
 
-    # Create remaining windows
-    _workspace_get_windows | tail -n +2 | while IFS=$'\t' read -r name working_dir cmd args; do
-        tmux new-window -t "${_workspace_session_name}" -n "${name}" -c "${working_dir}"
-        tmux set-window-option -t "${_workspace_session_name}:${name}" automatic-rename off
-        tmux send-keys -t "${_workspace_session_name}:${name}" "${cmd} ${args}" Enter
-    done
+    # Create remaining windows and panes
+    local current_window="${first_name}"
+    while IFS=$'\t' read -r entry_type name working_dir full_cmd; do
+        if [ "${entry_type}" = "window" ]; then
+            current_window="${name}"
+            tmux new-window -t "${_workspace_session_name}" -n "${name}" -c "${working_dir}"
+            tmux set-window-option -t "${_workspace_session_name}:${name}" automatic-rename off
+            tmux send-keys -t "${_workspace_session_name}:${name}" "${full_cmd}" Enter
+        elif [ "${entry_type}" = "pane" ]; then
+            # Split the current window horizontally (side-by-side panes)
+            tmux split-window -h -t "${_workspace_session_name}:${current_window}" -c "${working_dir}"
+            tmux send-keys -t "${_workspace_session_name}:${current_window}" "${full_cmd}" Enter
+        fi
+    done < <(_workspace_get_windows | tail -n +2)
 
     # Select the first window and attach
     tmux select-window -t "${_workspace_session_name}:${first_name}"
@@ -1612,7 +1629,8 @@ alias vision="vim ${self_improvement_dirpath}/2025-10/vision-board.md"
 # ======================================================================================
 
 # This is a wrapper around Claude to detect & inject 1Password secret references into Claude
-# export ANTHROPIC_LOG=debug
+export ANTHROPIC_LOG=debug
+export ANTHROPIC_DEFAULT_HAIKU_MODEL=claude-haiku-4-5-20251001
 claude() {
     # If stdin is being piped, use -p mode without op run
     if [ ! -t 0 ]; then
