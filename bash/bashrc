@@ -1,3 +1,4 @@
+
 # vvvvvvvvvvvvvvvv KEEP THIS FIRST vvvvvvvvvvvvvvvvvvvvvvvvv
 # NOTE: This is used pretty much everywhere; grab it once and reuse so we're not doing a bunch of subshells
 if [ -d "/opt/homebrew" ]; then
@@ -7,6 +8,12 @@ else
 fi
 export PATH="${BREW_PREFIX}/bin:${PATH}"
 # ^^^^^^^^^^^^^^^^ KEEP THIS FIRST ^^^^^^^^^^^^^^^^^^^^^^^^^
+#
+# Skip all this init for non-interactive shells, as Claude was
+# choking on this
+if [[ "${-}" != *i* ]]; then
+    return
+fi
 
 # Used for debugging slow .bashrc load times.. 
 # echo "Started loading .bashrc..."
