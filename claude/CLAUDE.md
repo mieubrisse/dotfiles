@@ -80,12 +80,17 @@ My h2 Text
 When modifying Git repositories
 ===============================
 ### Commit Often
-When you're about to finish completing a task and return control to the user, propose a `git` command that will...
-1. Add the files you changed
-2. Commit them with a succinct but descriptive commit message explaining what changes were made. The commit message MUST be a single line - no multi-line messages, no commit body, no "Generated With Claude Code".
+When you're about to finish completing a task and return control to the user, propose git commands that will add the changed files and commit them with a succinct but descriptive single-line commit message.
 
 ### Separate Git Operations
-When running `git add`, `git commit`, and `git push`, execute these as separate Bash tool calls rather than chaining them with `&&`. The `git` command has blanket permissions, but chained commands with `&&` do not. Run each git operation independently to avoid permission prompts.
+**NEVER chain git commands with `&&`.** Whether executing commands yourself OR proposing commands to the user, always keep `git add`, `git commit`, and `git push` as separate commands.
+
+Bad: `git add file.txt && git commit -m "message"`
+Good:
+```
+git add file.txt
+git commit -m "message"
+```
 
 Dependencies
 ============
