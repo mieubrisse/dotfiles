@@ -122,7 +122,8 @@ set cmdheight=2
 set number
 
 " Quickly time out on keycodes, but never time out on mappings
-set notimeout ttimeout ttimeoutlen=200
+" Lower values = faster Escape response, but may break special keys over slow SSH
+set notimeout ttimeout ttimeoutlen=20
 
 " Lazy redraw, from sensible.vim
 set lazyredraw
