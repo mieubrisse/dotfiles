@@ -94,6 +94,7 @@ history() {
 alias vim="nvim"
 alias v="vim"
 alias vi="vim"
+alias vimdiff="nvim -d -c 'set wrap'"
 
 # Jobs should show PID by default
 alias jobs="jobs -l"
@@ -679,9 +680,6 @@ _workspace_get_windows() {
 
     # Todoist Manager
     printf '%s\t%s\t%s\t%s\n' "window" "✅ todoist" "${ai_factory_dirpath}/todoist-manager" "claude -c"
-
-    # Prompt Engineer
-    printf '%s\t%s\t%s\t%s\n' "window" "prompt-engineer" "${ai_factory_dirpath}/prompt-engineer" "claude -c"
 }
 
 # Get list of Claude window names
