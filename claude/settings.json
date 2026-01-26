@@ -88,7 +88,8 @@
       "WebFetch(domain:nextjs.org)",
       "WebFetch(domain:nodejs.org)",
       "WebFetch(domain:docs.npmjs.com)",
-      "Skill(google-doc-image-transcription)"
+      "Skill(google-doc-image-transcription)",
+      "Skill(prompt-engineer)"
     ],
     "deny": [
       "Read(*.env)",
