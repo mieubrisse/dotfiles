@@ -72,11 +72,6 @@ Convert extracted content to GitHub-flavored Markdown, preserving the original d
 
 **Google Docs-Specific Elements:**
 
-- **Comments:** Format as blockquote with attribution:
-  ```
-  > **[Commenter Name]:** Comment text goes here
-  ```
-
 - **Suggestions (tracked changes):**
   - Additions: `{++added text++}`
   - Deletions: `{--deleted text--}`
