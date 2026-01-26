@@ -80,7 +80,12 @@ My h2 Text
 When modifying Git repositories
 ===============================
 ### Commit Automatically
-When working in a Git repository and you're about to finish a task and return control to the user, automatically `git add` and `git commit` your changes with a succinct but descriptive single-line commit message. Do not ask for permission or propose the commands—just commit. The user can always amend, reset, or revert if needed.
+When working in a Git repository and you're about to finish a task and return control to the user, automatically `git add` and `git commit` your changes. Do not ask for permission or propose the commands—just commit. The user can always amend, reset, or revert if needed.
+
+**IMPORTANT - Commit Message Format:** Use a single-line commit message only. Do NOT use multi-line commit messages. Do NOT add "Co-Authored-By", "Authored-by", or any attribution lines. Just a simple `-m "message"` with a succinct, descriptive message.
+
+Good: `git commit -m "Add user authentication to login flow"`
+Bad: `git commit -m "Add user authentication" -m "Co-Authored-By: ..."`
 
 ### Separate Git Operations
 **NEVER chain git commands with `&&`.** Whether executing commands yourself OR proposing commands to the user, always keep `git add`, `git commit`, and `git push` as separate commands.
