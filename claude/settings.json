@@ -6,7 +6,6 @@
       "Write(./**)",
       "Glob(./**)",
       "Grep(./**)",
-
       "Bash(cd *)",
       "Bash(grep *)",
       "Bash(ls *)",
@@ -14,8 +13,27 @@
       "Bash(pwd *)",
       "Bash(mkdir *)",
       "Bash(gh issue view *)",
+      "Bash(gh issue list *)",
+      "Bash(gh issue status *)",
+      "Bash(gh pr view *)",
+      "Bash(gh pr list *)",
+      "Bash(gh pr status *)",
+      "Bash(gh pr checks *)",
+      "Bash(gh pr diff *)",
+      "Bash(gh repo view *)",
+      "Bash(gh repo list *)",
+      "Bash(gh release view *)",
+      "Bash(gh release list *)",
+      "Bash(gh run view *)",
+      "Bash(gh run list *)",
+      "Bash(gh workflow view *)",
+      "Bash(gh workflow list *)",
+      "Bash(gh search *)",
+      "Bash(gh status *)",
+      "Bash(gh gist view *)",
+      "Bash(gh gist list *)",
+      "Bash(gh list *)",
       "Bash(echo *)",
-
       "Bash(git status *)",
       "Bash(git diff *)",
       "Bash(git log *)",
@@ -26,7 +44,6 @@
       "Bash(git commit -m *)",
       "Bash(git push)",
       "Bash(git push *)",
-
       "Read(${HOME}/.claude/*)",
       "Read(${HOME}/.vim/*)",
       "Read(${HOME}/.nvim/*)",
@@ -37,19 +54,15 @@
       "Read(${HOME}/.gitconfig)",
       "Read(${HOME}/.vimrc)",
       "Read(${HOME}/.tmux.conf)",
-
       "Read(~/code/*.md)",
       "Read(~/code/*.txt)",
-
       "WebSearch",
-
       "WebFetch(domain:anthropic.com)",
       "WebFetch(domain:github.com)",
       "WebFetch(domain:api.github.com)",
       "WebFetch(domain:raw.githubusercontent.com)",
       "WebFetch(domain:notion.com)",
       "WebFetch(domain:todoist.com)",
-
       "WebFetch(domain:npmjs.org)",
       "WebFetch(domain:npmjs.com)",
       "WebFetch(domain:pypi.org)",
@@ -59,7 +72,6 @@
       "WebFetch(domain:nuget.org)",
       "WebFetch(domain:maven.org)",
       "WebFetch(domain:mvnrepository.com)",
-
       "WebFetch(domain:developer.mozilla.org)",
       "WebFetch(domain:docs.python.org)",
       "WebFetch(domain:doc.rust-lang.org)",
@@ -68,7 +80,6 @@
       "WebFetch(domain:php.net)",
       "WebFetch(domain:ruby-doc.org)",
       "WebFetch(domain:docs.oracle.com)",
-
       "WebFetch(domain:reactjs.org)",
       "WebFetch(domain:react.dev)",
       "WebFetch(domain:vuejs.org)",
@@ -78,11 +89,8 @@
       "WebFetch(domain:nodejs.org)",
       "WebFetch(domain:docs.npmjs.com)"
     ],
-
-    "//": "Started from https://github.com/dwillitzer/claude-settings/blob/main/settings.jsonc",
     "deny": [
       "Read(*.env)",
-
       "Bash(rm -rf /*)",
       "Bash(rm -rf /)",
       "Bash(sudo rm -rf /*)",
@@ -92,14 +100,11 @@
       "Bash(mkfs*)",
       "Bash(fdisk*)",
       "Bash(parted*)",
-      
       "Bash(*fork*bomb*)",
-
       "Bash(> /dev/sda*)",
       "Bash(> /dev/nvme*)",
       "Bash(> /dev/sd*)",
       "Bash(cat /dev/urandom > *)",
-      
       "Bash(* | nc -l*)",
       "Bash(* | netcat -l*)",
       "Bash(* | socat *)",
@@ -109,7 +114,6 @@
       "Bash(curl * | bash*)",
       "Bash(wget * | sh*)",
       "Bash(wget * | bash*)",
-      
       "Bash(sudo passwd*)",
       "Bash(passwd*)",
       "Bash(sudo useradd*)",
@@ -119,7 +123,6 @@
       "Bash(sudo groupdel*)",
       "Bash(sudo adduser*)",
       "Bash(sudo deluser*)",
-      
       "Bash(sudo chmod 777 /*)",
       "Bash(sudo chown * /*)",
       "Bash(sudo rm /etc/*)",
@@ -127,18 +130,15 @@
       "Bash(sudo rm /bin/*)",
       "Bash(sudo rm /usr/*)",
       "Bash(sudo > /etc/*)",
-      
       "Bash(nc -l*)",
       "Bash(netcat -l*)",
       "Bash(socat*)",
       "Bash(nmap*)",
       "Bash(masscan*)",
-      
       "Bash(*xmrig*)",
       "Bash(*monero*)",
       "Bash(*bitcoin*)",
       "Bash(*miner*)",
-      
       "Bash(git add -f *)",
       "Bash(git add --force *)",
       "Bash(git push --force origin master*)",
@@ -147,29 +147,24 @@
       "Bash(git push -f origin main*)",
       "Bash(git reset --hard origin/master*)",
       "Bash(git reset --hard origin/main*)",
-      
       "Bash(cat ~/.aws/*)",
       "Bash(cat ~/.ssh/id_*)",
       "Bash(cat /root/.ssh/*)",
-      
       "Bash(env | base64*)",
       "Bash(printenv | base64*)",
       "Bash(set | base64*)",
-      
       "Bash(bash -i >& /dev/tcp/*)",
       "Bash(sh -i >& /dev/tcp/*)",
       "Bash(python -c 'import socket*)",
       "Bash(php -r '$sock*)",
       "Bash(ruby -rsocket*)",
       "Bash(perl -e 'use Socket*)",
-      
       "Bash(docker run --privileged *)",
       "Bash(docker run --pid=host *)",
       "Bash(docker run --net=host *)",
       "Bash(docker run -v /:/host *)",
       "Bash(docker run -v /etc:/etc *)",
       "Bash(docker run -v /var/run/docker.sock:/var/run/docker.sock *)",
-      
       "Bash(history | grep -i password*)",
       "Bash(history | grep -i token*)",
       "Bash(history | grep -i secret*)",
@@ -179,7 +174,6 @@
       "Bash(find / -name id_rsa*)",
       "Bash(find / -name *.key*)",
       "Bash(find / -name *.pem*)",
-      
       "Bash(shutdown*)",
       "Bash(reboot*)",
       "Bash(halt*)",
@@ -188,81 +182,64 @@
       "Bash(init 6*)",
       "Bash(sudo shutdown*)",
       "Bash(sudo reboot*)",
-      
       "Bash(sudo ufw disable*)",
       "Bash(sudo iptables -F*)",
       "Bash(sudo iptables --flush*)",
       "Bash(sudo systemctl stop firewalld*)",
       "Bash(sudo service iptables stop*)",
-      
       "Bash(curl * | sudo *)",
       "Bash(wget * | sudo *)",
       "Bash(curl -s * | sh*)",
       "Bash(wget -qO- * | sh*)",
-      
       "Bash(rm /var/log/*)",
       "Bash(rm -rf /var/log/*)",
       "Bash(> /var/log/*)",
       "Bash(echo > /var/log/*)",
       "Bash(truncate -s 0 /var/log/*)",
-      
       "Bash(npm install -g * --unsafe-perm*)",
       "Bash(pip install * --break-system-packages*)",
       "Bash(gem install * --no-user-install*)",
-      
       "Bash(insmod *)",
       "Bash(rmmod *)",
       "Bash(modprobe *)",
       "Bash(sysctl -w *)",
-      
       "Bash(chmod -R 777 /*)",
       "Bash(chmod 777 /etc/*)",
       "Bash(chmod 777 /bin/*)",
       "Bash(chmod 777 /usr/*)",
       "Bash(chown -R * /*)",
-      
       "Bash(*bitcoin-cli*)",
       "Bash(*ethereum*)",
       "Bash(*wallet.dat*)",
       "Bash(*privatekey*)",
-      
       "Bash(find / -type f -delete*)",
       "Bash(find / -type d -delete*)",
       "Bash(rm -rf /home/*)",
       "Bash(rm -rf /var/*)",
       "Bash(rm -rf /opt/*)",
-      
       "Bash(gdb -p *)",
       "Bash(ptrace *)",
       "Bash(LD_PRELOAD=*)",
-      
       "Bash(sudo -l*)",
       "Bash(sudo -V*)",
       "Bash(sudo su*)",
       "Bash(sudo su -*)",
       "Bash(sudo -i*)",
       "Bash(pkexec *)",
-      
       "Bash(export PATH=*)",
       "Bash(export LD_LIBRARY_PATH=*)",
       "Bash(export PYTHONPATH=*)",
-      
       "Bash(nsenter *)",
       "Bash(docker run --cap-add=ALL *)",
       "Bash(docker run --security-opt *)",
-      
       "Bash(systemctl mask *)",
       "Bash(systemctl disable *)",
       "Bash(systemctl daemon-reload*)",
-      
-      
       "Bash(exec < /dev/tcp/*)",
       "Bash(exec > /dev/tcp/*)",
       "Bash(exec 3<>/dev/tcp/*)"
-    ]
-  },
-  "enabledPlugins": {
-    "lua-lsp@claude-plugins-official": true
+    ],
+    "//": "Started from https://github.com/dwillitzer/claude-settings/blob/main/settings.jsonc"
   },
   "hooks": {
     "PreCompact": [
@@ -296,5 +273,9 @@
         ]
       }
     ]
+  },
+  "enabledPlugins": {
+    "lua-lsp@claude-plugins-official": true,
+    "gopls-lsp@claude-plugins-official": true
   }
 }
