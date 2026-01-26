@@ -79,8 +79,8 @@ My h2 Text
 
 When modifying Git repositories
 ===============================
-### Commit Often
-When you're about to finish completing a task and return control to the user, propose git commands that will add the changed files and commit them with a succinct but descriptive single-line commit message.
+### Commit Automatically
+When working in a Git repository and you're about to finish a task and return control to the user, automatically `git add` and `git commit` your changes with a succinct but descriptive single-line commit message. Do not ask for permission or propose the commands—just commit. The user can always amend, reset, or revert if needed.
 
 ### Separate Git Operations
 **NEVER chain git commands with `&&`.** Whether executing commands yourself OR proposing commands to the user, always keep `git add`, `git commit`, and `git push` as separate commands.
