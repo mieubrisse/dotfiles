@@ -68,47 +68,7 @@ For each image in order:
 
 ### Step 4: Produce GitHub-Flavored Markdown
 
-Convert extracted content following these specifications:
-
-**Text Formatting:**
-- Bold: `**text**`
-- Italic: `*text*`
-- Strikethrough: `~~text~~`
-- Inline code: `` `code` ``
-- Underline: Since Markdown lacks native underline, use `<u>text</u>` only if underline carries semantic meaning; otherwise omit
-
-**Headings:**
-- Match the heading hierarchy from the original document
-- Use `#` syntax (`#` for h1, `##` for h2, etc.)
-
-**Lists:**
-- Unordered: `- item`
-- Ordered: `1. item`
-- Nested: Indent 2 spaces per level
-- Checkboxes: `- [ ]` unchecked, `- [x]` checked
-
-**Tables:**
-- Use GitHub Markdown table syntax with pipes and dashes
-- Include header row separator (`|---|---|`)
-- Align columns to match original when discernible
-
-**Links:**
-- Visible URL: `[link text](url)`
-- URL truncated/not visible: `[link text]()` with note in verification report
-- Email: `<email@example.com>`
-
-**Images and Diagrams:**
-- Describe in brackets: `[Image: description of what the image shows]`
-- Include relevant details: chart type, axis labels, data trends, diagram components
-
-**Code Blocks:**
-- Use fenced blocks with language identifier when identifiable:
-  ~~~
-  ```python
-  code here
-  ```
-  ~~~
-- Preserve exact indentation from the original
+Convert extracted content to GitHub-flavored Markdown, preserving the original document's structure and formatting.
 
 **Google Docs-Specific Elements:**
 
@@ -124,12 +84,9 @@ Convert extracted content following these specifications:
 
 - **Resolved comments:** Note in brackets: `[Resolved comment thread existed here]`
 
-- **Page breaks:** Insert horizontal rule: `---`
+- **Embedded images/diagrams:** Describe in brackets: `[Image: description of what the image shows]`
 
-- **Headers/footers:** Include at document start/end, marked as such:
-  ```
-  [Header: Document Title | Page X]
-  ```
+- **Headers/footers:** Include at document start/end: `[Header: Document Title | Page X]`
 
 ---
 
