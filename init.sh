@@ -28,7 +28,6 @@ symlink_arr=(
     "${script_dirpath}/bash/bash_logout,${HOME}/.bash_logout"
     "${script_dirpath}/bash/bashrc,${HOME}/.bashrc"
     "${script_dirpath}/git/gitconfig,${HOME}/.gitconfig"
-    "${script_dirpath}/vim,${HOME}/.vim"
     "${script_dirpath}/bash/utils,${HOME}/.bash_utils"
     "${script_dirpath}/bash/editrc,${HOME}/.editrc"
     "${script_dirpath}/tmux/tmux.conf,${HOME}/.tmux.conf"
@@ -41,6 +40,7 @@ symlink_arr=(
     "${script_dirpath}/karabiner,${karabiner_config_dirpath}" # Karabiner config
     "${script_dirpath}/claude/CLAUDE.md,${claude_dirpath}/CLAUDE.md"
     "${script_dirpath}/claude/settings.json,${claude_dirpath}/settings.json"
+    "${script_dirpath}/claude/skills,${HOME}/.claude/skills"
     "${script_dirpath}/hushlogin,${HOME}/.hushlogin"
     "${script_dirpath}/overpowered-writing/overpowered-writing.env,${HOME}/.overpowered-writing.env"
     "${script_dirpath}/nvim/init.vim,${HOME}/.vimrc"
