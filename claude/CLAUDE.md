@@ -127,3 +127,5 @@ Claude Code
 The files `~/.claude/CLAUDE.md` and `~/.claude/settings.json` are symlinks to `claude/CLAUDE.md` and `claude/settings.json` in this repo. When working in the dotfiles repository, read and update the files directly in the `claude/` directory rather than following the symlinks to the home directory.
 
 When updating Claude `settings.json` files, always use `~` instead of hardcoded absolute paths (e.g., `/Users/username/...`). This ensures the settings remain portable across different machines.
+
+When creating or updating prompts (CLAUDE.md files) or skills (SKILL.md files), use the `/prompt-engineer` skill. This skill is specifically designed to optimize AI system prompts and will produce higher-quality results than writing prompts directly.
