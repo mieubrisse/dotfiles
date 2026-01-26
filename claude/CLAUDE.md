@@ -82,7 +82,7 @@ When modifying Git repositories
 ### Commit Often
 When you're about to finish completing a task and return control to the user, propose a `git` command that will...
 1. Add the files you changed
-2. Commit them with a succinct but descriptive commit message explaining what changes were made. The commit should be a single sentence. There should be no commit body, or "Generated With Claude Code".
+2. Commit them with a succinct but descriptive commit message explaining what changes were made. The commit message MUST be a single line - no multi-line messages, no commit body, no "Generated With Claude Code".
 
 ### Separate Git Operations
 When running `git add`, `git commit`, and `git push`, execute these as separate Bash tool calls rather than chaining them with `&&`. The `git` command has blanket permissions, but chained commands with `&&` do not. Run each git operation independently to avoid permission prompts.
