@@ -931,6 +931,80 @@ function code() {
 writing_dirpath="${code_dirpath}/personal-writing"
 alias pwriting="cd ${writing_dirpath}"   # TODO upgrade this to take in a search term and optionally 'cd' to that
 
+# Start or attach to the 'author' tmux session for personal writing
+author() {
+    local session_name="author"
+    local action="attach"
+
+    # Parse flags
+    while getopts "reh" opt; do
+        case "${opt}" in
+            r)
+                action="restart"
+                ;;
+            e)
+                action="exit"
+                ;;
+            h)
+                echo "Usage: author [-r|-e|-h]"
+                echo "  (no args)  Create or attach to author session"
+                echo "  -r         Restart: exit, reload aliases, and re-enter"
+                echo "  -e         Exit author session"
+                echo "  -h         Show this help"
+                return 0
+                ;;
+            *)
+                echo "Usage: author [-r|-e|-h]" >&2
+                return 1
+                ;;
+        esac
+    done
+    shift $((OPTIND - 1))
+    OPTIND=1  # Reset for future getopts calls
+
+    # Handle restart
+    if [ "${action}" = "restart" ]; then
+        author -e
+        source "${HOME}/.bash_aliases"
+        author
+        return $?
+    fi
+
+    # Handle exit
+    if [ "${action}" = "exit" ]; then
+        if ! tmux has-session -t "${session_name}" 2>/dev/null; then
+            echo "No author session found"
+            return 1
+        fi
+        tmux kill-session -t "${session_name}"
+        echo "Author session closed"
+        source "${HOME}/.bash_aliases"
+        echo "Bash aliases reloaded"
+        return 0
+    fi
+
+    # Default: attach if session already exists
+    if tmux has-session -t "${session_name}" 2>/dev/null; then
+        if [ -n "${TMUX}" ]; then
+            tmux switch-client -t "${session_name}"
+        else
+            tmux attach-session -t "${session_name}"
+        fi
+        return 0
+    fi
+
+    # Create new session with window in writing directory
+    tmux new-session -d -s "${session_name}" -c "${writing_dirpath}"
+    tmux set-window-option -t "${session_name}" automatic-rename off
+
+    # Attach to the new session
+    if [ -n "${TMUX}" ]; then
+        tmux switch-client -t "${session_name}"
+    else
+        tmux attach-session -t "${session_name}"
+    fi
+}
+
 downloads_dirpath="${HOME}/Downloads"
 alias downloads="_smart_open_dir_file fuzzy_ls '${downloads_dirpath}'"
 
@@ -988,21 +1062,7 @@ af() {
     fi
 
     cd "${ai_factory_dirpath}/${selected_dirname}"
-
-    # Create a tempfile for the prompt
-    local prompt_tempfile
-    prompt_tempfile="$(mktemp)"
-
-    # Open vim to edit the prompt (start in insert mode)
-    vim -c "startinsert" "${prompt_tempfile}"
-
-    # Only run claude if the file has content
-    if [ -s "${prompt_tempfile}" ]; then
-        claude -c "$(cat "${prompt_tempfile}")"
-    fi
-
-    # Clean up
-    rm -f "${prompt_tempfile}"
+    claude -c
 }
 
 # ======================================================================================
@@ -1595,57 +1655,35 @@ week() {
     fi
 }
 
-# Monthly planning function - opens previous and current month side-by-side for review
-# Uses 25th as threshold: before 25th reviews last month vs current month, after 25th reviews current month vs next month
+# Monthly planning function - opens current month (left) and next month (right) side-by-side
 # Creates new month files from monthly-goals.md template in self_improvement_dirpath
 month() {
-    local current_day=$(date +%d)
     local current_month_year=$(date +%Y-%m)
+    local next_month_year=$(gdate -d "next month" +%Y-%m)
 
     local template_month_goals_filepath="${check_dirpath}/monthly-goals.md"
-    
-    # Calculate which months are "passed" and "to come" based on the 25th threshold
-    if [ "${current_day}" -gt 25 ]; then
-        # After 25th: current month is "passed", next month is "to come"
-        passed_month_year="${current_month_year}"
-        to_come_month_year=$(gdate -d "next month" +%Y-%m)
-    else
-        # Before 25th: last month is "passed", current month is "to come"
-        passed_month_year=$(gdate -d "last month" +%Y-%m)
-        to_come_month_year="${current_month_year}"
-    fi
-    
+
     # Set up file paths
-    passed_month_dirpath="${self_improvement_dirpath}/${passed_month_year}"
-    passed_month_filepath="${passed_month_dirpath}/month-goals.md"
-    
-    to_come_month_dirpath="${self_improvement_dirpath}/${to_come_month_year}"
-    to_come_month_filepath="${to_come_month_dirpath}/month-goals.md"
-    
-    # Create directory for the month to come if it doesn't exist
-    mkdir -p "${to_come_month_dirpath}"
+    local current_month_dirpath="${self_improvement_dirpath}/${current_month_year}"
+    local current_month_filepath="${current_month_dirpath}/month-goals.md"
 
-    if ! [ -f "${to_come_month_filepath}" ]; then
-        cp "${template_month_goals_filepath}" "${to_come_month_filepath}"
-    fi
-    
-    # Build vim command arguments
-    vim_args=()
-    
-    # Always add the to come month file
-    vim_args+=("${to_come_month_filepath}")
+    local next_month_dirpath="${self_improvement_dirpath}/${next_month_year}"
+    local next_month_filepath="${next_month_dirpath}/month-goals.md"
 
-    # Add passed month file if it exists
-    if [ -f "${passed_month_filepath}" ]; then
-        vim_args+=("${passed_month_filepath}")
+    # Create directories if they don't exist
+    mkdir -p "${current_month_dirpath}"
+    mkdir -p "${next_month_dirpath}"
+
+    # Create month files from template if they don't exist
+    if ! [ -f "${current_month_filepath}" ]; then
+        cp "${template_month_goals_filepath}" "${current_month_filepath}"
     fi
-    
-    # Open in vertical split if we have both files, otherwise just open the single file
-    if [ ${#vim_args[@]} -eq 2 ]; then
-        vim -O "${vim_args[@]}"
-    else
-        vim "${vim_args[@]}"
+    if ! [ -f "${next_month_filepath}" ]; then
+        cp "${template_month_goals_filepath}" "${next_month_filepath}"
     fi
+
+    # Open with current month on left, next month on right
+    vim -O "${current_month_filepath}" "${next_month_filepath}"
 }
 
 # ======================================================================================
