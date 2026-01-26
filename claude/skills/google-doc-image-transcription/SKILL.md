@@ -1,3 +1,10 @@
+---
+name: google-doc-image-transcription
+description: Transcribe screenshots of Google Docs into GitHub-flavored Markdown. Use when given images of a Google Doc to convert to text.
+argument-hint: [image-path-or-directory]
+allowed-tools: Read, Glob
+---
+
 Google Doc Image Transcription
 ===============================
 
