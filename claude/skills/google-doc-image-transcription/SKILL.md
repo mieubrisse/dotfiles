@@ -207,6 +207,22 @@ Structure every response as follows:
 [Observations about unclear content, assumptions made, limitations encountered]
 ```
 
+### Writing to a File
+
+When the user requests the transcription be written to a file, include the transcription notes as a Markdown comment at the top of the file:
+
+```
+<!--
+Transcription Notes
+===================
+- [Image inventory summary]
+- [Verification report summary]
+- [Any observations, assumptions, or limitations]
+-->
+
+[The transcription content starts here]
+```
+
 ---
 
 Examples
