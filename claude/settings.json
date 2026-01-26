@@ -87,7 +87,8 @@
       "WebFetch(domain:svelte.dev)",
       "WebFetch(domain:nextjs.org)",
       "WebFetch(domain:nodejs.org)",
-      "WebFetch(domain:docs.npmjs.com)"
+      "WebFetch(domain:docs.npmjs.com)",
+      "Skill(google-doc-image-transcription)"
     ],
     "deny": [
       "Read(*.env)",
