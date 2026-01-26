@@ -8,6 +8,23 @@ The `init.sh` script symlinks these dotfiles into their correct locations in the
 
 **IMPORTANT:** When asked to fix a problem, your solution is NOT to just comment out the code, removing the problem! You must fix the problem, not ignore it.
 
+**IMPORTANT:** Before proposing any fix, critically reflect: "Will this change actually fix the problem?" If you find yourself reasoning that something "should work" or "shouldn't be the issue" while simultaneously proposing a change to it, STOP. That's a signal you don't understand the root cause. Do not propose changes you know won't address the actual problem. Instead:
+
+1. State clearly what you believe the root cause is
+2. Explain why your proposed change addresses that root cause
+3. If you're uncertain about the root cause, say so and investigate further before making changes
+
+**IMPORTANT:** When you need the user to run a command manually, make it visually obvious. Use attention-grabbing formatting like:
+
+🚨 **ACTION REQUIRED** 🚨
+
+Please run the following command:
+```
+your-command-here
+```
+
+Do not bury required user actions in paragraphs of text. The user may be skimming your output, so make manual steps impossible to miss.
+
 General Principles
 ==================
 - You should write code that is clear, well-factored, and easy to maintain. When a function, class, or file gets long, break it into smaller pieces.
@@ -67,6 +84,9 @@ When you're about to finish completing a task and return control to the user, pr
 1. Add the files you changed
 2. Commit them with a succinct but descriptive commit message explaining what changes were made. The commit should be a single sentence. There should be no commit body, or "Generated With Claude Code".
 
+### Separate Git Operations
+When running `git add`, `git commit`, and `git push`, execute these as separate Bash tool calls rather than chaining them with `&&`. The `git` command has blanket permissions, but chained commands with `&&` do not. Run each git operation independently to avoid permission prompts.
+
 Dependencies
 ============
 When choosing dependencies, use the latest stable released version unless you have a compelling reason to do otherwise.
@@ -91,3 +111,9 @@ When you add or update Go dependencies to a Go project, use `go install`. Do not
 When starting a new project from scratch, use this error-handling library: https://github.com/kurtosis-tech/stacktrace . It provides good stacktrace support that makes debugging easier.
 
 When writing CLI tools, use the Cobra CLI tool library: https://github.com/spf13/cobra
+
+Claude Code
+===========
+The files `~/.claude/CLAUDE.md` and `~/.claude/settings.json` are symlinks to `claude/CLAUDE.md` and `claude/settings.json` in this repo. When working in the dotfiles repository, read and update the files directly in the `claude/` directory rather than following the symlinks to the home directory.
+
+When updating Claude `settings.json` files, always use `~` instead of hardcoded absolute paths (e.g., `/Users/username/...`). This ensures the settings remain portable across different machines.

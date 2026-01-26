@@ -662,14 +662,25 @@ lifeops_dirpath="${code_dirpath}/lifeops-toolkit"
 # Window configuration: "type<tab>name<tab>working_dir<tab>command"
 # Special entry: "pane" type creates a vertical split in the previous window
 _workspace_get_windows() {
-    printf '%s\t%s\t%s\t%s\n' "window" "dotfiles" "${dotfiles_dirpath}" ""
+    # Dotfiles
+    printf '%s\t%s\t%s\t%s\n' "window" "🛠️  dotfiles" "${dotfiles_dirpath}" ""
     printf '%s\t%s\t%s\t%s\n' "pane" "-" "${dotfiles_dirpath}" "claude -c"
-    printf '%s\t%s\t%s\t%s\n' "window" "lifeops" "${lifeops_dirpath}" ""
+
+    # Lifeops
+    printf '%s\t%s\t%s\t%s\n' "window" "🎓 lifeops" "${lifeops_dirpath}" ""
     printf '%s\t%s\t%s\t%s\n' "pane" "-" "${lifeops_dirpath}" "claude -c"
-    printf '%s\t%s\t%s\t%s\n' "window" "ai-factory" "${ai_factory_dirpath}" ""
+
+    # AI factory
+    printf '%s\t%s\t%s\t%s\n' "window" "🏭 ai-factory" "${ai_factory_dirpath}" ""
     printf '%s\t%s\t%s\t%s\n' "pane" "-" "${ai_factory_dirpath}" "claude -c"
-    printf '%s\t%s\t%s\t%s\n' "window" "calendar-manager" "${ai_factory_dirpath}/calendar-manager" "claude -c"
-    printf '%s\t%s\t%s\t%s\n' "window" "todoist-manager" "${ai_factory_dirpath}/todoist-manager" "claude -c"
+
+    # Calendar Manager
+    printf '%s\t%s\t%s\t%s\n' "window" "🗓️  calendar" "${ai_factory_dirpath}/calendar-manager" "claude -c"
+
+    # Todoist Manager
+    printf '%s\t%s\t%s\t%s\n' "window" "✅ todoist" "${ai_factory_dirpath}/todoist-manager" "claude -c"
+
+    # Prompt Engineer
     printf '%s\t%s\t%s\t%s\n' "window" "prompt-engineer" "${ai_factory_dirpath}/prompt-engineer" "claude -c"
 }
 
@@ -987,7 +998,7 @@ af() {
 
     # Only run claude if the file has content
     if [ -s "${prompt_tempfile}" ]; then
-        claude "$(cat "${prompt_tempfile}")"
+        claude -c "$(cat "${prompt_tempfile}")"
     fi
 
     # Clean up

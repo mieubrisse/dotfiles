@@ -174,19 +174,31 @@
 			<key>Version</key>
 			<integer>2</integer>
 		</dict>
-		<key>0x48-0x60000</key>
+		<key>0x48-0x60000-0x4</key>
 		<dict>
 			<key>Action</key>
-			<integer>33</integer>
+			<integer>10</integer>
+			<key>Apply Mode</key>
+			<integer>0</integer>
+			<key>Escaping</key>
+			<integer>2</integer>
 			<key>Text</key>
-			<string></string>
+			<string>[104;6u</string>
+			<key>Version</key>
+			<integer>2</integer>
 		</dict>
-		<key>0x4c-0x60000</key>
+		<key>0x4c-0x60000-0x25</key>
 		<dict>
 			<key>Action</key>
-			<integer>34</integer>
+			<integer>10</integer>
+			<key>Apply Mode</key>
+			<integer>0</integer>
+			<key>Escaping</key>
+			<integer>2</integer>
 			<key>Text</key>
-			<string></string>
+			<string>[108;6u</string>
+			<key>Version</key>
+			<integer>2</integer>
 		</dict>
 		<key>0x5b-0x100000-0x21</key>
 		<dict>
@@ -277,6 +289,19 @@
 			<integer>2</integer>
 			<key>Text</key>
 			<string>\&lt;C-a&gt;n</string>
+			<key>Version</key>
+			<integer>2</integer>
+		</dict>
+		<key>0x6f-0x40000-0x1f</key>
+		<dict>
+			<key>Action</key>
+			<integer>38</integer>
+			<key>Apply Mode</key>
+			<integer>0</integer>
+			<key>Escaping</key>
+			<integer>2</integer>
+			<key>Text</key>
+			<string>\&lt;C-a&gt;o</string>
 			<key>Version</key>
 			<integer>2</integer>
 		</dict>
@@ -680,7 +705,7 @@
 			<key>Idle Code</key>
 			<integer>0</integer>
 			<key>Initial Text</key>
-			<string></string>
+			<string>source ~/.bash_aliases &amp;&amp; work</string>
 			<key>Jobs to Ignore</key>
 			<array>
 				<string>rlogin</string>

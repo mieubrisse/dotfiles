@@ -21,6 +21,8 @@
       "Bash(git log *)",
       "Bash(git add)",
       "Bash(git add *)",
+      "Bash(git checkout)",
+      "Bash(git checkout *)",
       "Bash(git commit -m *)",
       "Bash(git push)",
       "Bash(git push *)",
