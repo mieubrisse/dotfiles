@@ -97,6 +97,12 @@ git add file.txt
 git commit -m "message"
 ```
 
+### Avoid Unnecessary `git -C`
+Never use `git -C <path>` when a simple `git` command would suffice. If you're already in the target directory, just use `git` directly.
+
+Bad: `git -C /Users/odyssey/app/dotfiles status`  (when already in that directory)
+Good: `git status`
+
 Dependencies
 ============
 When choosing dependencies, use the latest stable released version unless you have a compelling reason to do otherwise.
