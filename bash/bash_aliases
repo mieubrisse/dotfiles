@@ -680,6 +680,9 @@ _workspace_get_windows() {
 
     # Todoist Manager
     printf '%s\t%s\t%s\t%s\n' "window" "✅ todoist" "${ai_factory_dirpath}/todoist-manager" "claude -c"
+
+    # Researcher
+    printf '%s\t%s\t%s\t%s\n' "window" "🔍 researcher" "${ai_factory_dirpath}/researcher" "claude -c"
 }
 
 # Get list of Claude window names
