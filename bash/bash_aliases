@@ -1423,6 +1423,9 @@ cj() {
     cd "${coaching_journals_dirpath}/${client_dirname}"
 }
 
+# "coaching journal find"
+alias cjf="jf"
+
 # "coaching journal new"
 cjn() {
     local template_filepath="${check_dirpath}/lifeops/coaching-session.md"
