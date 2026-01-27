@@ -128,4 +128,11 @@ The files `~/.claude/CLAUDE.md` and `~/.claude/settings.json` are symlinks to `c
 
 When updating Claude `settings.json` files, always use `~` instead of hardcoded absolute paths (e.g., `/Users/username/...`). This ensures the settings remain portable across different machines.
 
-When creating or updating prompts (CLAUDE.md files) or skills (SKILL.md files), use the `/prompt-engineer` skill. This skill is specifically designed to optimize AI system prompts and will produce higher-quality results than writing prompts directly.
+🚨 **MANDATORY: USE /prompt-engineer FOR ALL PROMPT FILES** 🚨
+
+When creating or updating CLAUDE.md or SKILL.md files, you **MUST** use the `/prompt-engineer` skill. Do NOT write these files directly. The prompt-engineer skill is specifically designed to optimize AI system prompts and produces significantly higher-quality results.
+
+**This is not optional.** Before writing any content to a CLAUDE.md or SKILL.md file:
+1. Invoke `/prompt-engineer`
+2. Let it generate or refine the prompt
+3. Only then write the result to the file
