@@ -116,15 +116,16 @@ alias eject="diskutil unmount"
 function clip() {
     _clip_help() {
         echo "Usage: clip [OPTIONS] [file]"
+        echo "       command | clip"
         echo ""
-        echo "Copy file contents, paths, or directories to the clipboard."
+        echo "Copy file contents, paths, directories, or piped input to the clipboard."
         echo ""
         echo "Options:"
         echo "  -p    Copy the full absolute path to the file"
         echo "  -n    Copy just the filename"
         echo "  -d    Copy the current directory path"
         echo "  -h    Show this help message"
-        echo "  (no option) Copy the contents of the file"
+        echo "  (no option) Copy the contents of the file, or STDIN if piped"
     }
 
     local copy_path=false
@@ -164,6 +165,12 @@ function clip() {
     fi
 
     if [[ ${#} -eq 0 ]]; then
+        # Check if STDIN has data (not a terminal)
+        if [[ ! -t 0 ]]; then
+            pbcopy
+            echo "Copied from STDIN"
+            return 0
+        fi
         _clip_help
         return 0
     fi
