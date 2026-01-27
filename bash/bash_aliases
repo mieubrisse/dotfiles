@@ -1170,38 +1170,7 @@ function wealthdraft() {
 # ======================================================================================
 export journal_dirpath="${gdrive_dirpath}/journal"   # Must be exported so fzf can use this
 
-# Journal command with subcommands
-# Usage:
-#   journal         - cd to journal directory
-#   journal new X   - create new journal entry named X~timestamp~.md
-journal() {
-    local subcommand="${1:-}"
-
-    if [ -z "${subcommand}" ]; then
-        cd "${journal_dirpath}"
-        return
-    fi
-
-    case "${subcommand}" in
-        new)
-            shift
-            local name="${*}"
-            if [ -z "${name}" ]; then
-                echo "Error: Provide name for journal entry: journal new <name>" >&2
-                return 1
-            fi
-            # Strip .md extension if present
-            name="${name%.md}"
-            local filepath="${journal_dirpath}/${name}~$(now)~.md"
-            vim "${filepath}"
-            ;;
-        *)
-            echo "Error: Unknown journal subcommand '${subcommand}'" >&2
-            echo "Usage: journal [new <name>]" >&2
-            return 1
-            ;;
-    esac
-}
+alias journal="cd ${journal_dirpath}"
 
 # Helper function to sanitize journal names from arguments
 _sanitize_journal_name() {
@@ -1298,8 +1267,9 @@ jn() {
         echo "Error: Provide name for journal entry: jn [name_fragments...]" >&2
         return 1
     fi
-    
-    journal new "${sanitized_name}.md"
+
+    local filepath="${journal_dirpath}/${sanitized_name}~$(now)~.md"
+    vim "${filepath}"
 }
 
 # Create a journal entry from template
@@ -1583,7 +1553,7 @@ cjcat() {
 }
 
 
-alias todays-goals="journal new todays-goals.md"
+alias todays-goals="jn todays-goals"
 
 # ======================================================================================
 #                                Overpowered Writing Tools
