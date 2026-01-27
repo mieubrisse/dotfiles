@@ -89,7 +89,8 @@
       "WebFetch(domain:nodejs.org)",
       "WebFetch(domain:docs.npmjs.com)",
       "Skill(google-doc-image-transcription)",
-      "Skill(prompt-engineer)"
+      "Skill(prompt-engineer)",
+      "Skill(claude-settings-editing)"
     ],
     "deny": [
       "Read(*.env)",
