@@ -1711,6 +1711,7 @@ alias myopia="vim ${myopia_planning_filepath}"
 founderos_dirpath="${gref_dirpath}/2025_founderos"
 alias founderos="cd ${founderos_dirpath}"
 alias compounding-sow="vim ${founderos_dirpath}/state-of-the-world-journal.md"
+alias producthunt='open "https://www.producthunt.com/leaderboard/monthly/$(date +%Y)/$(date +%-m)"'
 
 lifeops_dirpath="${code_dirpath}/lifeops-toolkit"
 alias lifeops="cd ${lifeops_dirpath}"
