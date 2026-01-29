@@ -1022,6 +1022,35 @@ alias gdrive="_smart_open_dir_file fuzzy_ls '${gdrive_dirpath}'"
 check_dirpath="${gdrive_dirpath}/checklists-and-templates"
 alias check="_smart_open_dir_file fuzzy_find '${check_dirpath}'"
 
+# Create a file from a template
+template() {
+    local dest_filepath="${1:-}"
+    local template_filepath="${2:-}"
+
+    if [ -z "${dest_filepath}" ]; then
+        echo "Usage: template <dest_filepath> [template_filepath]" >&2
+        return 1
+    fi
+
+    # If no template provided, use fzf to select one
+    if [ -z "${template_filepath}" ]; then
+        template_filepath=$(fd -e md -t f -t l -E ARCHIVE . "${check_dirpath}" | fzf --prompt="Select template: ")
+
+        if [ -z "${template_filepath}" ]; then
+            echo "No template selected" >&2
+            return 1
+        fi
+    fi
+
+    if [ ! -f "${template_filepath}" ]; then
+        echo "Error: Template not found: ${template_filepath}" >&2
+        return 1
+    fi
+
+    cp "${template_filepath}" "${dest_filepath}"
+    echo "Created ${dest_filepath} from template"
+}
+
 gref_dirpath="${gdrive_dirpath}/general-reference"
 alias gref="_smart_open_dir_file fuzzy_find '${gref_dirpath}'"
 
