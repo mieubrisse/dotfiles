@@ -939,9 +939,9 @@ function code() {
 writing_dirpath="${code_dirpath}/personal-writing"
 alias pwriting="cd ${writing_dirpath}"   # TODO upgrade this to take in a search term and optionally 'cd' to that
 
-# Start or attach to the 'author' tmux session for personal writing
-author() {
-    local session_name="author"
+# Start or attach to the 'deepwork' tmux session for personal writing
+deepwork() {
+    local session_name="deepwork"
     local action="attach"
 
     # Parse flags
@@ -954,15 +954,15 @@ author() {
                 action="exit"
                 ;;
             h)
-                echo "Usage: author [-r|-e|-h]"
-                echo "  (no args)  Create or attach to author session"
+                echo "Usage: deepwork [-r|-e|-h]"
+                echo "  (no args)  Create or attach to deepwork session"
                 echo "  -r         Restart: exit, reload aliases, and re-enter"
-                echo "  -e         Exit author session"
+                echo "  -e         Exit deepwork session"
                 echo "  -h         Show this help"
                 return 0
                 ;;
             *)
-                echo "Usage: author [-r|-e|-h]" >&2
+                echo "Usage: deepwork [-r|-e|-h]" >&2
                 return 1
                 ;;
         esac
@@ -972,20 +972,20 @@ author() {
 
     # Handle restart
     if [ "${action}" = "restart" ]; then
-        author -e
+        deepwork -e
         source "${HOME}/.bash_aliases"
-        author
+        deepwork
         return $?
     fi
 
     # Handle exit
     if [ "${action}" = "exit" ]; then
         if ! tmux has-session -t "${session_name}" 2>/dev/null; then
-            echo "No author session found"
+            echo "No deepwork session found"
             return 1
         fi
         tmux kill-session -t "${session_name}"
-        echo "Author session closed"
+        echo "Deepwork session closed"
         source "${HOME}/.bash_aliases"
         echo "Bash aliases reloaded"
         return 0
