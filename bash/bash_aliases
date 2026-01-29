@@ -1034,7 +1034,7 @@ template() {
 
     # If no template provided, use fzf to select one
     if [ -z "${template_filepath}" ]; then
-        template_filepath=$(fd -e md -t f -t l -E ARCHIVE . "${check_dirpath}" | fzf --prompt="Select template: ")
+        template_filepath=$(fd -t f -t l -E ARCHIVE . "${check_dirpath}" | fzf --prompt="Select template: ")
 
         if [ -z "${template_filepath}" ]; then
             echo "No template selected" >&2
