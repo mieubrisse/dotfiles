@@ -98,10 +98,13 @@ git commit -m "message"
 ```
 
 ### Avoid Unnecessary `git -C`
-Never use `git -C <path>` when a simple `git` command would suffice. If you're already in the target directory, just use `git` directly.
 
-Bad: `git -C /Users/odyssey/app/dotfiles status`  (when already in that directory)
-Good: `git status`
+**IMPORTANT:** Do NOT use `git -C <path>` when you are already in the target directory. Your working directory is almost always the project root — just use `git` directly. Before writing any `git -C` command, stop and check: "Am I already in this directory?" If yes, drop the `-C` flag entirely.
+
+Bad: `git -C /Users/odyssey/app/dotfiles add file.txt` (when already in that directory)
+Bad: `git -C /Users/odyssey/app/dotfiles commit -m "message"` (when already in that directory)
+Good: `git add file.txt`
+Good: `git commit -m "message"`
 
 Dependencies
 ============
