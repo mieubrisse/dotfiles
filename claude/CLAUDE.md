@@ -77,39 +77,46 @@ My h2 Text
 ----------
 ```
 
-When modifying Git repositories
-===============================
-### Commit Automatically
-When working in a Git repository and you're about to finish a task and return control to the user, automatically `git add` and `git commit` your changes. Do not ask for permission or propose the commands—just commit. The user can always amend, reset, or revert if needed.
+Git Command Rules
+=================
+The following rules apply to ALL git commands — whether run directly by you, by a subagent you spawn, or proposed to the user.
 
-**IMPORTANT - Commit Message Format:** Use a single-line commit message only. Do NOT use multi-line commit messages. Do NOT add "Co-Authored-By", "Authored-by", or any attribution lines. Just a simple `-m "message"` with a succinct, descriptive message.
+### Never use `git -C`
 
-Good: `git commit -m "Add user authentication to login flow"`
-Bad: `git commit -m "Add user authentication" -m "Co-Authored-By: ..."`
+Do not use the `-C` flag with git. Run `git` directly without `-C`.
 
-### Separate Git Operations
+This rule exists because agents repeatedly add `-C` pointing to the current working directory, which is redundant and unwanted. The simplest fix is to never use `-C` at all.
+
+- Bad: `git -C /any/path status`
+- Bad: `git -C /any/path add file.txt`
+- Bad: `git -C /any/path commit -m "message"`
+- Good: `git status`
+- Good: `git add file.txt`
+- Good: `git commit -m "message"`
+
+### When spawning subagents that may run git commands
+
+When you use the Task tool to spawn a subagent that might run git commands (e.g., Bash agents doing commits, status checks, or diffs), you **must** include this line in the prompt you pass to the subagent:
+
+> "Never use the -C flag with git commands. Always run git without -C."
+
+Subagents do not see this CLAUDE.md file. If you do not include the rule in the subagent's prompt, the subagent will use `git -C` and violate the user's preferences.
+
+### Commit automatically
+
+When working in a Git repository and you're about to finish a task and return control to the user, automatically `git add` and `git commit` your changes. Do not ask for permission or propose the commands — just commit. The user can always amend, reset, or revert if needed.
+
+**Commit message format:** Use a single-line commit message only. Do NOT use multi-line commit messages. Do NOT add "Co-Authored-By", "Authored-by", or any attribution lines. Just a simple `-m "message"` with a succinct, descriptive message.
+
+- Good: `git commit -m "Add user authentication to login flow"`
+- Bad: `git commit -m "Add user authentication" -m "Co-Authored-By: ..."`
+
+### Separate git operations
+
 **NEVER chain git commands with `&&`.** Whether executing commands yourself OR proposing commands to the user, always keep `git add`, `git commit`, and `git push` as separate commands.
 
-Bad: `git add file.txt && git commit -m "message"`
-Good:
-```
-git add file.txt
-git commit -m "message"
-```
-
-### 🚨 NEVER Use `git -C` To Target Your Current Directory — This Means You 🚨
-
-**BEFORE running ANY git command, check yourself:** Does this command contain `-C` pointing to the same directory as your current working directory? If yes, REMOVE the `-C` flag. Just use `git` directly. This applies to `git add`, `git commit`, `git status`, `git diff`, `git log`, and every other git subcommand.
-
-Using `git -C` to operate on a **different** directory than your current working directory is fine.
-
-Bad: `git -C /Users/odyssey/app/dotfiles add file.txt` (when PWD is `/Users/odyssey/app/dotfiles`)
-Bad: `git -C /Users/odyssey/app/dotfiles commit -m "message"` (when PWD is `/Users/odyssey/app/dotfiles`)
-Bad: `git -C /Users/odyssey/app/dotfiles status` (when PWD is `/Users/odyssey/app/dotfiles`)
-Good: `git add file.txt`
-Good: `git commit -m "message"`
-Good: `git status`
-OK: `git -C /some/other/repo status` (when PWD is a different directory)
+- Bad: `git add file.txt && git commit -m "message"`
+- Good: run `git add file.txt` and `git commit -m "message"` as separate commands
 
 Dependencies
 ============
@@ -132,7 +139,7 @@ Golang
 ======
 When you add or update Go dependencies to a Go project, use `go install`. Do not directly manipulate the `go.mod` file.
 
-When starting a new project from scratch, use this error-handling library: https://github.com/kurtosis-tech/stacktrace . It provides good stacktrace support that makes debugging easier.
+When starting a new project from scratch, use this error-handling library: https://github.com/mieubrisse/stacktrace  It provides good stacktrace support that makes debugging easier.
 
 When writing CLI tools, use the Cobra CLI tool library: https://github.com/spf13/cobra
 
