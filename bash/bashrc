@@ -182,6 +182,13 @@ opwriting_tools="${HOME}/app/opwriting"
 eval "$(${opwriting_tools}/opwriting shell)"
 PATH_ADDITIONS+=("${opwriting_tools}")
 
+# ----------- Agenc -------------------------------------------
+agenc_bin_dirpath="${HOME}/app/agenc"
+PATH_ADDITIONS+=("${agenc_bin_dirpath}")
+eval "$(${agenc_bin_dirpath}/agenc completion bash)"
+alias agc="${agenc_bin_dirpath}/agenc"
+complete -o default -F __start_agenc agc
+
 # ----------- Bash Prompt -----------------------------------------------------------
 run_perf_checkpoint "Before saving __render_working_dir function"
 # Renders the working directory, highlighting the current Git directory (if any)
