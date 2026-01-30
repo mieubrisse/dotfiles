@@ -252,7 +252,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bash ~/.claude/hooks/block-redundant-git-c.sh"
+            "command": "bash ~/.claude/hooks/remove-redundant-git-c.sh"
           }
         ]
       }

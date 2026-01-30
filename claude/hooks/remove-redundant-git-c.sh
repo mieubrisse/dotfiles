@@ -1,8 +1,17 @@
 #!/usr/bin/env bash
 
 # PreToolUse hook for Bash commands.
+#
 # Rewrites `git -C <path>` to plain `git` when <path> resolves to the current
 # working directory, since the -C flag is redundant in that case.
+#
+# Why this exists: Claude Code's settings.json permissions can allowlist plain
+# git commands (e.g. "Bash(git status *)"), but `git -C <path> status` does not
+# match those patterns. Agents — especially subagents spawned via the Task
+# tool — frequently add a redundant `-C` flag pointing at the current working
+# directory, which causes the command to fall outside the allowlist and trigger
+# a permission prompt. By stripping the unnecessary `-C` before execution, the
+# command matches the allowlist and runs without interruption.
 
 set -euo pipefail
 
