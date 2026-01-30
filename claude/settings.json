@@ -45,6 +45,7 @@
       "Bash(git commit -m *)",
       "Bash(git push)",
       "Bash(git push *)",
+      "Bash(git revert *)",
       "Read(${HOME}/.claude/*)",
       "Read(${HOME}/.vim/*)",
       "Read(${HOME}/.nvim/*)",
