@@ -1311,6 +1311,29 @@ jn() {
     vim "${filepath}"
 }
 
+# Create a new journal entry with a symlink in the current directory
+jnl() {
+    local sanitized_name
+    if ! sanitized_name=$(_sanitize_journal_name "${@}"); then
+        echo "Error: Provide name for journal entry: jnl [name_fragments...]" >&2
+        return 1
+    fi
+
+    local journal_filepath="${journal_dirpath}/${sanitized_name}~$(now)~.md"
+    local symlink_filepath="${sanitized_name}.md"
+
+    # Create the symlink before opening vim
+    ln -sf "${journal_filepath}" "${symlink_filepath}"
+
+    # Open vim for the journal entry
+    vim "${journal_filepath}"
+
+    # If the user quit without writing, clean up the symlink
+    if [ ! -f "${journal_filepath}" ]; then
+        rm -f "${symlink_filepath}"
+    fi
+}
+
 # Create a journal entry from template
 jt() {
     local sanitized_name
