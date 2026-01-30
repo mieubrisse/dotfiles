@@ -97,14 +97,19 @@ git add file.txt
 git commit -m "message"
 ```
 
-### Avoid Unnecessary `git -C`
+### 🚨 NEVER Use `git -C` — This Means You 🚨
 
-**IMPORTANT:** Do NOT use `git -C <path>` when you are already in the target directory. Your working directory is almost always the project root — just use `git` directly. Before writing any `git -C` command, stop and check: "Am I already in this directory?" If yes, drop the `-C` flag entirely.
+**Using `git -C` is BANNED.** Do not use `git -C <path>` under any circumstances. You are already in the correct directory. Every single time an agent has used `git -C` in this project, it was unnecessary. There are no exceptions.
 
-Bad: `git -C /Users/odyssey/app/dotfiles add file.txt` (when already in that directory)
-Bad: `git -C /Users/odyssey/app/dotfiles commit -m "message"` (when already in that directory)
+**BEFORE running ANY git command, check yourself:** Does this command contain `-C`? If yes, REMOVE IT. Just use `git` directly. This applies to `git add`, `git commit`, `git status`, `git diff`, `git log`, and every other git subcommand.
+
+Bad: `git -C /Users/odyssey/app/dotfiles add file.txt`
+Bad: `git -C /Users/odyssey/app/dotfiles commit -m "message"`
+Bad: `git -C /Users/odyssey/app/dotfiles status`
+Bad: `git -C /any/path/at/all log`
 Good: `git add file.txt`
 Good: `git commit -m "message"`
+Good: `git status`
 
 Dependencies
 ============
