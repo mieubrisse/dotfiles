@@ -246,6 +246,17 @@
     "//": "Started from https://github.com/dwillitzer/claude-settings/blob/main/settings.jsonc"
   },
   "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash ~/.claude/hooks/block-redundant-git-c.sh"
+          }
+        ]
+      }
+    ],
     "PreCompact": [
       {
         "matcher": "auto",
@@ -263,6 +274,17 @@
           {
             "type": "command",
             "command": "printf '\\a' > /dev/tty"
+          }
+        ]
+      }
+    ],
+    "Notification": [
+      {
+        "matcher": "idle_prompt",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "exit 2"
           }
         ]
       }
