@@ -85,7 +85,7 @@ The following rules apply to ALL git commands — whether run directly by you, b
 
 Do not use `git -C <path>` when `<path>` is the current working directory. Just run `git` directly.
 
-A PreToolUse hook (`block-redundant-git-c.sh`) enforces this rule mechanically and will block any Bash command where `git -C` targets the current directory. Using `git -C` to target a genuinely different directory is allowed.
+A PreToolUse hook (`block-redundant-git-c.sh`) enforces this by automatically stripping `-C <path>` from any git command where the path matches the current working directory. Using `git -C` to target a genuinely different directory is unaffected.
 
 - Bad: `git -C /Users/odyssey/app/dotfiles status` (when PWD is `/Users/odyssey/app/dotfiles`)
 - Good: `git status`

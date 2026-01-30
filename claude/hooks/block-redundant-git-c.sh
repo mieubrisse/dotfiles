@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 
 # PreToolUse hook for Bash commands.
-# Blocks `git -C <path>` when <path> resolves to the current working directory,
-# since the -C flag is redundant in that case.
+# Rewrites `git -C <path>` to plain `git` when <path> resolves to the current
+# working directory, since the -C flag is redundant in that case.
 
 set -euo pipefail
 
@@ -10,7 +10,6 @@ input="$(cat)"
 
 # Extract the command from the tool input JSON
 if ! command -v jq &>/dev/null; then
-    # Can't parse JSON without jq; no opinion
     exit 0
 fi
 
@@ -45,10 +44,21 @@ resolved_c_path="${resolved_c_path%/}"
 resolved_pwd="${resolved_pwd%/}"
 
 if [ "${resolved_c_path}" = "${resolved_pwd}" ]; then
-    reason="git -C is pointing to the current working directory (${resolved_pwd}), making the -C flag redundant. Remove -C and run git directly."
-    echo "{\"decision\":\"block\",\"reason\":$(echo "${reason}" | jq -Rs '.')}"
+    # Strip the -C and its path argument, collapsing extra whitespace
+    rewritten="$(echo "${command_str}" | sed -E "s/git[[:space:]]+-C[[:space:]]+(\"[^\"]+\"|'[^']+'|[^[:space:]]+)[[:space:]]*/git /g")"
+
+    jq -n \
+        --arg cmd "${rewritten}" \
+        '{
+            hookSpecificOutput: {
+                hookEventName: "PreToolUse",
+                permissionDecision: "allow",
+                permissionDecisionReason: "Removed redundant -C flag targeting current directory",
+                updatedInput: { command: $cmd }
+            }
+        }'
     exit 0
 fi
 
-# Different directory — allow it
+# Different directory — no modification needed
 exit 0
