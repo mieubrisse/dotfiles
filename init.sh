@@ -41,6 +41,7 @@ symlink_arr=(
     "${script_dirpath}/claude/CLAUDE.md,${claude_dirpath}/CLAUDE.md"
     "${script_dirpath}/claude/settings.json,${claude_dirpath}/settings.json"
     "${script_dirpath}/claude/skills,${HOME}/.claude/skills"
+    "${script_dirpath}/claude/hooks,${HOME}/.claude/hooks"
     "${script_dirpath}/hushlogin,${HOME}/.hushlogin"
     "${script_dirpath}/overpowered-writing/overpowered-writing.env,${HOME}/.overpowered-writing.env"
     "${script_dirpath}/nvim/init.vim,${HOME}/.vimrc"

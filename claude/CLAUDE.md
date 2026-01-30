@@ -81,26 +81,15 @@ Git Command Rules
 =================
 The following rules apply to ALL git commands — whether run directly by you, by a subagent you spawn, or proposed to the user.
 
-### Never use `git -C`
+### Do not use `git -C` to target the current working directory
 
-Do not use the `-C` flag with git. Run `git` directly without `-C`.
+Do not use `git -C <path>` when `<path>` is the current working directory. Just run `git` directly.
 
-This rule exists because agents repeatedly add `-C` pointing to the current working directory, which is redundant and unwanted. The simplest fix is to never use `-C` at all.
+A PreToolUse hook (`block-redundant-git-c.sh`) enforces this rule mechanically and will block any Bash command where `git -C` targets the current directory. Using `git -C` to target a genuinely different directory is allowed.
 
-- Bad: `git -C /any/path status`
-- Bad: `git -C /any/path add file.txt`
-- Bad: `git -C /any/path commit -m "message"`
+- Bad: `git -C /Users/odyssey/app/dotfiles status` (when PWD is `/Users/odyssey/app/dotfiles`)
 - Good: `git status`
-- Good: `git add file.txt`
-- Good: `git commit -m "message"`
-
-### When spawning subagents that may run git commands
-
-When you use the Task tool to spawn a subagent that might run git commands (e.g., Bash agents doing commits, status checks, or diffs), you **must** include this line in the prompt you pass to the subagent:
-
-> "Never use the -C flag with git commands. Always run git without -C."
-
-Subagents do not see this CLAUDE.md file. If you do not include the rule in the subagent's prompt, the subagent will use `git -C` and violate the user's preferences.
+- OK: `git -C /some/other/repo status` (when PWD is a different directory)
 
 ### Commit automatically
 
