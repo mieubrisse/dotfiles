@@ -97,19 +97,19 @@ git add file.txt
 git commit -m "message"
 ```
 
-### 🚨 NEVER Use `git -C` — This Means You 🚨
+### 🚨 NEVER Use `git -C` To Target Your Current Directory — This Means You 🚨
 
-**Using `git -C` is BANNED.** Do not use `git -C <path>` under any circumstances. You are already in the correct directory. Every single time an agent has used `git -C` in this project, it was unnecessary. There are no exceptions.
+**BEFORE running ANY git command, check yourself:** Does this command contain `-C` pointing to the same directory as your current working directory? If yes, REMOVE the `-C` flag. Just use `git` directly. This applies to `git add`, `git commit`, `git status`, `git diff`, `git log`, and every other git subcommand.
 
-**BEFORE running ANY git command, check yourself:** Does this command contain `-C`? If yes, REMOVE IT. Just use `git` directly. This applies to `git add`, `git commit`, `git status`, `git diff`, `git log`, and every other git subcommand.
+Using `git -C` to operate on a **different** directory than your current working directory is fine.
 
-Bad: `git -C /Users/odyssey/app/dotfiles add file.txt`
-Bad: `git -C /Users/odyssey/app/dotfiles commit -m "message"`
-Bad: `git -C /Users/odyssey/app/dotfiles status`
-Bad: `git -C /any/path/at/all log`
+Bad: `git -C /Users/odyssey/app/dotfiles add file.txt` (when PWD is `/Users/odyssey/app/dotfiles`)
+Bad: `git -C /Users/odyssey/app/dotfiles commit -m "message"` (when PWD is `/Users/odyssey/app/dotfiles`)
+Bad: `git -C /Users/odyssey/app/dotfiles status` (when PWD is `/Users/odyssey/app/dotfiles`)
 Good: `git add file.txt`
 Good: `git commit -m "message"`
 Good: `git status`
+OK: `git -C /some/other/repo status` (when PWD is a different directory)
 
 Dependencies
 ============
