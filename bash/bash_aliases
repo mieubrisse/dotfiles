@@ -571,7 +571,17 @@ grs() {    # Use fzf to select files to reset if no arguments are provided
 alias grs1="git reset --soft HEAD^"
 
 # Dealing with remotes
-alias gcl="git clone"
+function gcl() {
+    if [[ $# -eq 0 ]]; then
+        local selection
+        selection="$(gh repo list --limit 100 | fzf --reverse | awk '{print $1}')"
+        if [[ -n "${selection}" ]]; then
+            git clone "https://github.com/${selection}.git"
+        fi
+    else
+        git clone "$@"
+    fi
+}
 alias gf="git fetch --prune"
 alias gpl="git pull"
 function gp() {	# Push the branch upstream if it doesn't exist; otherwise just git push
