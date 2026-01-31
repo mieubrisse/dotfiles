@@ -1801,3 +1801,9 @@ claude() {
         ${BREW_PREFIX}/bin/claude "${@}"
     fi
 }
+
+# ======================================================================================
+#                                       AgenC
+# ======================================================================================
+alias researcher="agenc mission new researcher"
+alias todoist="agenc mission new todoist"
