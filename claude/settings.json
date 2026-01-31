@@ -275,6 +275,10 @@
           {
             "type": "command",
             "command": "printf '\\a' > /dev/tty"
+          },
+          {
+            "type": "command",
+            "command": "date > ../stop-time.txt"
           }
         ]
       }
