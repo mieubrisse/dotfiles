@@ -274,7 +274,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bash ~/.claude/hooks/set-tmux-window-style.sh 'bg=blue,fg=white,bold'"
+            "command": "bash ~/.claude/hooks/set-tmux-window-style.sh 'bg=colour24,fg=white'"
           }
         ]
       }
