@@ -574,7 +574,7 @@ alias grs1="git reset --soft HEAD^"
 function gcl() {
     if [[ $# -eq 0 ]]; then
         local selection
-        selection="$(gh repo list --limit 100 | fzf --reverse | awk '{print $1}')"
+        selection="$(gh repo list --limit 100 --json nameWithOwner --jq '.[].nameWithOwner' | fzf --reverse)"
         if [[ -n "${selection}" ]]; then
             git clone "https://github.com/${selection}.git"
         fi
