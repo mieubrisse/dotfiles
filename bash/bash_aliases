@@ -1805,10 +1805,10 @@ claude() {
 # ======================================================================================
 #                                       AgenC
 # ======================================================================================
-function runAgencMission() {
+function run_agenc_mission() {
     local agent_name="${1}"
     shift
     agenc mission new --agent "${agent_name}" "${*}"
 }
-alias researcher="runAgencMission researcher"
-alias todoist="runAgencMission todoist"
+alias researcher="run_agenc_mission researcher"
+alias todoist="run_agenc_mission todoist"
