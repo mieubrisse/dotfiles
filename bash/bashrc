@@ -186,8 +186,11 @@ PATH_ADDITIONS+=("${opwriting_tools}")
 agenc_bin_dirpath="${HOME}/app/agenc"
 PATH_ADDITIONS+=("${agenc_bin_dirpath}")
 eval "$(${agenc_bin_dirpath}/agenc completion bash)"
-alias ag="${agenc_bin_dirpath}/agenc"
+alias ag="agenc"
 complete -o default -F __start_agenc ag
+
+alias agt="AGENC_DIRPATH=${HOME}/.agenc-test agenc"
+complete -o default -F __start_agenc agt
 
 # ----------- Bash Prompt -----------------------------------------------------------
 run_perf_checkpoint "Before saving __render_working_dir function"

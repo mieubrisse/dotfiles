@@ -1810,5 +1810,5 @@ function _run_agenc_mission() {
     shift
     agenc mission new --agent "${agent_name}" --prompt "${*}"
 }
-alias researcher="_run_agenc_mission researcher"
-alias todoist="_run_agenc_mission todoist"
+alias agresearcher="_run_agenc_mission researcher"
+alias agtodoist="_run_agenc_mission todoist"
