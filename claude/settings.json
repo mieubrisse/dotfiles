@@ -279,6 +279,16 @@
         ]
       }
     ],
+    "SessionEnd": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash ~/.claude/hooks/set-tmux-window-style.sh --unset"
+          }
+        ]
+      }
+    ],
     "Stop": [
       {
         "hooks": [
