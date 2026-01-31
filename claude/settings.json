@@ -303,17 +303,6 @@
         ]
       }
     ],
-    "Notification": [
-      {
-        "matcher": "idle_prompt",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "exit 2"
-          }
-        ]
-      }
-    ],
     "PermissionRequest": [
       {
         "hooks": [
