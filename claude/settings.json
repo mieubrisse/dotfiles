@@ -269,12 +269,26 @@
         ]
       }
     ],
+    "UserPromptSubmit": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash ~/.claude/hooks/set-tmux-window-style.sh 'bg=blue,fg=white,bold'"
+          }
+        ]
+      }
+    ],
     "Stop": [
       {
         "hooks": [
           {
             "type": "command",
             "command": "printf '\\a' > /dev/tty"
+          },
+          {
+            "type": "command",
+            "command": "bash ~/.claude/hooks/set-tmux-window-style.sh --unset"
           }
         ]
       }
